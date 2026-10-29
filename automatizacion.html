@@ -139,6 +139,9 @@ footer{color:var(--mu);font-size:13px;text-align:center;padding:20px}
 
 .radio label{font-weight:600}
 #v-encuesta textarea{min-height:80px}
+.niveles4{grid-template-columns:repeat(4,1fr)}
+.grid2>*,.grid3>*,.intro>*{min-width:0}
+@media(max-width:860px){.niveles4{grid-template-columns:1fr 1fr}.barra select{min-width:0;max-width:100%}}
 </style>
 </head>
 <body>
@@ -214,7 +217,7 @@ footer{color:var(--mu);font-size:13px;text-align:center;padding:20px}
    <div class="mision" id="m2"><div class="card">
     <div class="mh"><div class="num">2</div><div><h2>Las estaciones de la cinta</h2><div class="sub">Quién decide en cada estación</div></div><span class="min">10 min</span></div>
     <div class="porque"><b>La regla.</b> La <b>IA</b> decide lo difuso (qué es esto, qué dice). El <b>código</b> decide lo exacto (montos, plazos, reglas). Una <b>persona</b> decide lo riesgoso (dinero, compromisos, lo dudoso). El <b>sistema</b> solo ejecuta y deja registro.</div>
-    <div class="niveles" style="grid-template-columns:repeat(4,1fr)">
+    <div class="niveles niveles4">
      <div class="nivbox C" style="border-left-color:#6C4CD6;background:#ECE7FB"><b>IA</b>Clasificar, extraer, resumir lenguaje natural.</div>
      <div class="nivbox L"><b>Código</b>Validar, calcular, aplicar reglas y umbrales.</div>
      <div class="nivbox C"><b>Persona</b>Aprobar lo riesgoso, resolver lo dudoso.</div>
@@ -367,8 +370,8 @@ const ESCQ=[['A','Camino feliz'],['B','Fuera de alcance'],['C','El tope'],['D','
 const SW=[['pytest','Pruebas unitarias con pytest (cada función de cálculo y cada herramienta)',true],['cov','Medición de cobertura (pytest-cov)',false],['lint','Linter y formato (ruff, eslint o similar)',false],['ci','Integración continua (GitHub Actions) que corre todo en cada push',false],['evalci','La evaluación del RAG, el agente y el flujo también corre en CI',false]];
 const SEG=[['texto','Todo lo que entra por el disparador es texto no confiable'],['esquema','La IA solo produce campos de un esquema validado; nunca ejecuta acciones'],['dinero','Ninguna estación automática mueve dinero ni envía a terceros sin una persona'],['idem','Las acciones que escriben son idempotentes (no se duplican si se reintentan)']];
 const DEC=['IA','Código','Persona','Sistema'];
-const EXACTO=/calcul|monto|precio|pago|multa|impuesto|dosis|plazo|vencim|prioridad|severidad|garant|liquidaci|tarifa|suma/i;
-const RIESGO=/pagar|transferir|cobrar|aprobar|presentar|enviar al|enviar a |reservar |diagnostic|vender|merge|publicar|firmar|despedir|sancionar/i;
+const EXACTO=/\b(calcul\w*|sumar|suma\b|prioriz\w*|asign\w* (la )?(prioridad|severidad)|determin\w* (el |la )?(monto|plazo|prioridad|severidad|multa|dosis|impuesto|precio|fecha de vencimiento|valor))/i;
+const RIESGO=/\b(pagar|transferir|cobrar|aprobar|presentar|enviar al|enviar a |reservar|diagnosticar|vender|hacer merge|publicar|firmar|despedir|sancionar)\b/i;
 
 let S=null, mision=1, codSel5='adr';
 const $=s=>document.querySelector(s);
@@ -428,7 +431,9 @@ function pintarM2(){ $('#tbEst').innerHTML=S.est.map((e,i)=>{ const al=alertasEs
  return '<tr><td><input data-e="'+i+'" data-k="nombre" value="'+esc(e.nombre)+'" placeholder="Clasificar"></td><td><input data-e="'+i+'" data-k="que" value="'+esc(e.que)+'" placeholder="Qué hace, en pocas palabras">'+(al.length?'<div class="aviso">'+al.map(esc).join('<br>')+'<br><label><input type="checkbox" data-ack="'+esc(k)+'"'+(S.ack[k]?' checked':'')+'>Lo revisamos y está bien así</label></div>':'')+'</td><td><select data-e="'+i+'" data-k="dec">'+DEC.map(d=>'<option'+(e.dec===d?' selected':'')+'>'+d+'</option>').join('')+'</select></td><td><input data-e="'+i+'" data-k="sale" value="'+esc(e.sale)+'" placeholder="JSON, registro, aviso…"></td><td><button class="del" data-del="'+i+'">×</button></td></tr>'; }).join('')||'<tr><td colspan="5" class="ayuda">Agreguen sus estaciones o carguen el ejemplo de su caso para editarlo.</td></tr>';
  pintarCheck('#chk2',v2()); }
 $('#tbEst').addEventListener('input',e=>{ const el=e.target; if(el.dataset.e!=null){ S.est[+el.dataset.e][el.dataset.k]=el.value; cambio(false); pintarCheck('#chk2',v2()); } });
-$('#tbEst').addEventListener('change',e=>{ const el=e.target; if(el.dataset.ack!=null) S.ack[el.dataset.ack]=el.checked; else if(el.dataset.e!=null) S.est[+el.dataset.e][el.dataset.k]=el.value; cambio(); });
+$('#tbEst').addEventListener('change',e=>{ const el=e.target; if(el.dataset.ack!=null) S.ack[el.dataset.ack]=el.checked; else if(el.dataset.e!=null) S.est[+el.dataset.e][el.dataset.k]=el.value; guardarLocal(); setTimeout(repintarConFoco,0); });
+function repintarConFoco(){ const a=document.activeElement; const d=a&&a.dataset&&a.dataset.e!=null?{e:a.dataset.e,k:a.dataset.k,s:a.selectionStart,t:a.selectionEnd}:null; pintarTodo();
+ if(d){ const n=document.querySelector('#tbEst [data-e="'+d.e+'"][data-k="'+d.k+'"]'); if(n){ n.focus(); try{ if(d.s!=null) n.setSelectionRange(d.s,d.t); }catch(x){} } } }
 $('#tbEst').addEventListener('click',e=>{ const b=e.target.closest('[data-del]'); if(b){ S.est.splice(+b.dataset.del,1); cambio(); } });
 $('#addEst').onclick=()=>{ if(S.est.length>=10) return toast('Máximo 10 estaciones.',true); S.est.push({nombre:'',que:'',dec:'IA',sale:''}); cambio(); };
 $('#ejEst').onclick=()=>{ if(estVal().length && !confirm('Esto reemplaza sus estaciones por el ejemplo. ¿Continuar?')) return; S.est=ejemploEst(); cambio(); toast('Ejemplo cargado: ajústenlo a su producto real.'); };
