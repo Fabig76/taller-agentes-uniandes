@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taller · Automaticen un flujo de su proyecto · Seminario IA UNIANDES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--d:#1B1730;--d2:#2A2546;--l:#F4F2FB;--card:#FFFFFF;--or:#F2B33D;--or2:#946200;--orS:#FDF3DC;--aq:#6C4CD6;--aq2:#4E33A8;--aqS:#ECE7FB;--gr:#3C9D5D;--gr2:#2B7A47;--grS:#E7F4EC;--rd:#B83A3A;--rdS:#F8E3E1;--tx:#13262B;--mu:#4A5A5E;--bd:#DCD6EE;--code:#0E1220}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--l);color:var(--tx);font-family:'Source Sans 3','Segoe UI',Roboto,Arial,sans-serif;font-size:16px;line-height:1.5}
+h1,h2,h3,h4{font-family:Outfit,'Segoe UI',Arial,sans-serif;line-height:1.15;margin:0}
+code,pre,.mono{font-family:'JetBrains Mono',Consolas,monospace}
+a{color:var(--or2)}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--tx);background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:9px 12px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--aq);border-color:var(--aq)}
+textarea{resize:vertical;min-height:70px}
+label{font-weight:600;font-size:14px;display:block;margin:0 0 4px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header{background:var(--d);color:var(--l);padding:22px 0 0}
+header .ey{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--or)}
+header h1{font-size:30px;margin:6px 0 4px}
+header p{color:#B7C9CC;margin:0 0 16px;max-width:820px}
+.tabs{display:flex;gap:6px}
+.tab{background:transparent;color:#B7C9CC;border:0;padding:12px 18px;border-radius:12px 12px 0 0;font-weight:700}
+.tab.on{background:var(--l);color:var(--d)}
+.vista{display:none}.vista.on{display:block}
+.barra{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1.5px solid var(--bd);box-shadow:0 2px 10px rgba(19,38,43,.06)}
+.barra .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px 20px}
+.barra select{width:auto;min-width:200px;max-width:300px}
+.pasos{display:flex;gap:6px;flex-wrap:wrap}
+.paso{border:1.5px solid var(--bd);background:#fff;border-radius:20px;padding:5px 10px;font-size:12.5px;font-weight:700;color:var(--mu)}
+.paso.on{background:var(--d);color:#fff;border-color:var(--d)}
+.paso.ok{border-color:var(--gr);color:var(--gr2)}
+.paso.ok.on{background:var(--gr2);color:#fff}
+.espacio{flex:1}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700}
+.btn.p{background:var(--or);color:var(--d)}
+.btn.d{background:var(--d);color:#fff}
+.btn.s{background:#EDE6DA;color:var(--d)}
+.btn.g{background:var(--gr);color:#fff}
+.btn.r{background:var(--rd);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.estado{font-size:13px;color:var(--mu)}
+main{padding:22px 0 60px}
+.card{background:var(--card);border:1.5px solid var(--bd);border-radius:16px;padding:20px 22px;margin-bottom:16px}
+.intro{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+@media(max-width:860px){.intro{grid-template-columns:1fr}}
+.reglas li{margin-bottom:6px}
+.mision{display:none}.mision.on{display:block}
+.mh{display:flex;gap:16px;align-items:flex-start;margin-bottom:14px}
+.mh .num{flex:none;width:58px;height:58px;border-radius:14px;background:var(--or);color:var(--d);display:grid;place-items:center;font-family:Outfit;font-weight:700;font-size:26px}
+.mh h2{font-size:26px}
+.mh .sub{color:var(--mu);margin-top:4px}
+.mh .min{margin-left:auto;font-family:'JetBrains Mono';font-size:13px;background:var(--d);color:#fff;border-radius:8px;padding:4px 10px;white-space:nowrap}
+.porque{background:var(--aqS);border-left:5px solid var(--aq);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:15px}
+.porque b{color:var(--aq2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+.campo{margin-bottom:12px}
+.ayuda{font-size:13px;color:var(--mu);margin-top:3px}
+.ejemplo{background:var(--orS);border:1.5px dashed var(--or);border-radius:12px;padding:12px 14px;font-size:14px}
+.ejemplo b{color:var(--or2)}
+.check{background:#fff;border:1.5px solid var(--bd);border-radius:12px;padding:12px 16px}
+.check h4{font-size:15px;margin-bottom:6px}
+.check ul{list-style:none;margin:0;padding:0}
+.check li{padding:3px 0 3px 26px;position:relative;font-size:14px}
+.check li:before{content:"○";position:absolute;left:4px;color:#9AA7AA;font-weight:700}
+.check li.ok{color:var(--gr2)}
+.check li.ok:before{content:"✔";color:var(--gr)}
+.check li.warn{color:var(--or2)}
+.check li.warn:before{content:"!";color:var(--or2)}
+.nav{display:flex;gap:10px;justify-content:space-between;margin-top:16px;flex-wrap:wrap}
+table{border-collapse:collapse;width:100%}
+.tools td,.tools th{border-bottom:1px solid var(--bd);padding:8px 6px;vertical-align:top;text-align:left;font-size:14px}
+.tools th{font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--mu)}
+.niv{display:inline-block;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700}
+.niv.L{background:var(--grS);color:var(--gr2)}.niv.C{background:var(--orS);color:var(--or2)}.niv.F{background:var(--rdS);color:var(--rd)}
+.aviso{background:var(--orS);color:var(--or2);border-radius:8px;padding:6px 10px;font-size:13px;margin-top:6px}
+.aviso label{display:inline;font-weight:600;font-size:13px}
+.aviso input{width:auto;margin-right:6px}
+.del{background:transparent;border:0;color:var(--rd);font-weight:700;font-size:18px}
+.niveles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:860px){.niveles{grid-template-columns:1fr}}
+.nivbox{border-radius:12px;padding:10px 14px;font-size:14px}
+.nivbox b{display:block;font-size:16px}
+.nivbox.L{background:var(--grS);border-left:6px solid var(--gr)}.nivbox.C{background:var(--orS);border-left:6px solid var(--or)}.nivbox.F{background:var(--rdS);border-left:6px solid var(--rd)}
+pre.cod{background:var(--code);color:#E9F1EF;border-radius:12px;padding:14px 16px;font-size:13px;line-height:1.5;overflow:auto;max-height:420px;margin:0;white-space:pre}
+.codtabs{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.codtabs button{border:1.5px solid var(--bd);background:#fff;border-radius:8px;padding:5px 10px;font-size:13px;font-weight:700}
+.codtabs button.on{background:var(--d);color:#fff;border-color:var(--d)}
+.esc-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.esc-tabs button{border:1.5px solid var(--bd);background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;font-size:14px}
+.esc-tabs button.on{background:var(--d);color:#fff;border-color:var(--d)}
+.esc-tabs button.ok{border-color:var(--gr)}
+.esc-tabs button.ok:after{content:" ✔";color:var(--gr)}
+.sim{display:grid;grid-template-columns:1fr 1.15fr;gap:16px}
+@media(max-width:960px){.sim{grid-template-columns:1fr}}
+.consola{background:var(--code);color:#E9F1EF;border-radius:14px;padding:12px;min-height:380px;max-height:560px;overflow:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.ln{border-left:3px solid #3A5A60;padding:6px 9px;margin-bottom:6px;background:#162C31;border-radius:0 8px 8px 0;white-space:pre-wrap;word-break:break-word}
+.ln .k{display:block;font-size:10.5px;letter-spacing:1px;color:#7E9A9E;margin-bottom:2px}
+.ln.user{border-color:var(--or)}.ln.call{border-color:#9CC3E6}.ln.tool{border-color:var(--aq)}.ln.text{border-color:#FFB38A}
+.ln.ok{border-color:var(--gr);background:#16302A}.ln.no{border-color:#E25B45;background:#33201E}.ln.pend{border-color:#F4C15A;background:#33301E}.ln.sys{border-color:#7E9A9E;background:#1B2B2E;color:#B7C9CC}
+.vuelta{font-family:Outfit;font-weight:700;font-size:28px}
+.vuelta small{font-size:14px;color:var(--mu);font-family:'Source Sans 3'}
+.aprob{background:#FFF6E8;border:2px solid #F4C15A;border-radius:12px;padding:12px 14px;margin:10px 0}
+.aprob h4{color:#8A5A00}
+.doc{background:#fff;border:1.5px solid var(--bd);border-radius:10px;padding:10px 12px;font-size:14px}
+.doc .oculto{color:#b9b0a2;font-size:12px}
+.radio{display:flex;gap:16px;margin-bottom:8px;flex-wrap:wrap}
+.radio label{display:flex;gap:6px;align-items:center;font-weight:600;font-size:14px;margin:0}
+.radio input{width:auto}
+.objetivo{background:var(--d);color:var(--l);border-radius:12px;padding:12px 14px;font-size:14px;margin-bottom:12px}
+.objetivo b{color:var(--or)}
+.fuentes label{display:flex;gap:8px;align-items:flex-start;font-weight:400;font-size:15px;margin-bottom:6px}
+.fuentes input{width:auto;margin-top:5px}
+.descargas{display:flex;gap:8px;flex-wrap:wrap}
+.toast{position:fixed;right:20px;bottom:20px;background:var(--d);color:#fff;padding:12px 16px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:420px;display:none;z-index:50}
+.toast.err{background:var(--rd)}
+/* docente */
+.login{max-width:420px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+@media(max-width:860px){.kpis{grid-template-columns:1fr 1fr}}
+.kpi{background:var(--d);color:#fff;border-radius:14px;padding:14px}
+.kpi b{display:block;font-family:Outfit;font-size:30px;color:var(--or)}
+.tdoc td,.tdoc th{border-bottom:1px solid var(--bd);padding:8px 6px;text-align:left;font-size:14px;vertical-align:top}
+.tdoc th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--mu)}
+.dots span{display:inline-block;width:12px;height:12px;border-radius:50%;background:#DDD5C8;margin-right:3px}
+.dots span.on{background:var(--gr)}
+.chip{display:inline-block;border-radius:6px;padding:1px 6px;font-size:12px;font-weight:700;margin-right:3px}
+.chip.ok{background:var(--grS);color:var(--gr2)}.chip.no{background:#EDE6DA;color:#8A8276}
+.alerta{color:var(--or2);font-size:13px}
+.detalle{display:none}.detalle.on{display:block}
+footer{color:var(--mu);font-size:13px;text-align:center;padding:20px}
+
+.radio label{font-weight:600}
+#v-encuesta textarea{min-height:80px}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap">
+  <div class="ey">SEMINARIO IA GENERATIVA · MÓDULO 3 · CLASE 4 · TALLER POR GRUPO</div>
+  <h1>Automaticen un flujo de su proyecto</h1>
+  <p>Cinco misiones, 45 minutos. No necesitan que su código funcione hoy: diseñan la cinta, prueban el umbral con datos, arman el plan de calidad y se llevan los archivos para la Entrega 3.</p>
+  <div class="tabs"><button class="tab on" data-v="taller">Taller del grupo</button><button class="tab" data-v="encuesta">Encuesta de salida</button><button class="tab" data-v="docente">Docente</button></div>
+ </div>
+</header>
+
+<!-- ================= TALLER ================= -->
+<section class="vista on" id="v-taller">
+ <div class="barra"><div class="wrap">
+  <select id="selGrupo" aria-label="Grupo"><option value="">① Elijan su grupo…</option></select>
+  <div class="pasos" id="pasos"></div>
+  <div class="espacio"></div>
+  <span class="estado" id="estadoEnvio">Sin enviar</span>
+  <button class="btn d" id="btnGuardar" disabled>Guardar avance</button>
+ </div></div>
+ <main class="wrap">
+  <div id="sinGrupo" class="card">
+   <div class="intro">
+    <div>
+     <h2 style="font-size:24px;margin-bottom:10px">Cómo funciona el taller</h2>
+     <ol class="reglas">
+      <li><b>Elijan su grupo</b> arriba. La página carga su caso y un ejemplo para orientarse.</li>
+      <li><b>Una persona comparte pantalla</b> y escribe; el resto decide y revisa.</li>
+      <li><b>Avancen misión por misión.</b> Cuando la lista de cumplimiento está toda en verde, pasan a la siguiente.</li>
+      <li><b>Pulsen «Guardar avance»</b> al terminar cada misión: el docente ve su progreso en vivo.</li>
+      <li><b>Al final</b> descargan los archivos para su repositorio y envían la versión final.</li>
+     </ol>
+     <p class="ayuda">Lo que escriban se guarda también en este navegador: si recargan la página, no se pierde.</p>
+    </div>
+    <div class="check">
+     <h4>Lo que van a lograr (y cubre la Entrega 3)</h4>
+     <ul>
+      <li>Misión 1 · El flujo: qué lo dispara, qué entra, qué sale, y por qué flujo y no agente</li>
+      <li>Misión 2 · Las estaciones: qué decide la IA, qué decide el código y qué decide una persona</li>
+      <li>Misión 3 · El umbral, elegido con 10 casos de prueba: cero errores silenciosos</li>
+      <li>Misión 4 · El plan de calidad: cómo medirán el RAG, el agente y el flujo, y las pruebas del software</li>
+      <li>Misión 5 · Seguridad, archivos para el repositorio y la línea del grupo</li>
+     </ul>
+    </div>
+   </div>
+  </div>
+
+  <div id="conGrupo" style="display:none">
+   <!-- M1 -->
+   <div class="mision" id="m1"><div class="card">
+    <div class="mh"><div class="num">1</div><div><h2>El flujo</h2><div class="sub" id="m1caso"></div></div><span class="min">5 min</span></div>
+    <div class="porque"><b>Por qué.</b> Automatizar empieza por un proceso que hoy hace una persona a mano y que se repite. La cinta arranca con un <b>evento</b> (llega algo), procesa una <b>entrada típica</b> y termina en una <b>acción</b> en un sistema.</div>
+    <div class="grid2">
+     <div>
+      <div class="campo"><label for="f-integ">Integrantes del grupo (nombres y apellidos)</label><input id="f-integ" placeholder="Separados por comas"></div>
+      <div class="campo"><label for="f-disp">¿Qué dispara el flujo?</label><select id="f-disp"><option value="">Elijan…</option><option>Formulario web</option><option>Correo electrónico</option><option>Archivo en una carpeta</option><option>Mensaje (WhatsApp, Telegram)</option><option>Evento de otro sistema (webhook)</option><option>Programado (cada cierto tiempo)</option></select></div>
+      <div class="campo"><label for="f-ent">¿Qué entra? La entrada típica</label><input id="f-ent" placeholder="Ej.: solicitud de liquidación con fechas y sueldo"></div>
+      <div class="campo"><label for="f-acc">¿Qué hace al final? La acción en un sistema</label><input id="f-acc" placeholder="Ej.: registrar la liquidación como pendiente y avisar a RR. HH."></div>
+      <div class="campo"><label for="f-vol">¿Cuántas llegan? (aproximado)</label><div style="display:flex;gap:8px"><input id="f-vol" type="number" min="1" style="width:120px"><select id="f-volu" style="width:auto"><option>por día</option><option>por semana</option><option>por mes</option></select></div></div>
+     </div>
+     <div>
+      <div class="ejemplo" id="m1ej"></div>
+      <div class="campo" style="margin-top:12px"><label>¿Por qué un flujo fijo y no un agente? (marquen las que apliquen)</label><div class="fuentes" id="porque"></div></div>
+      <div class="campo"><label for="f-pq">Explíquenlo en una frase</label><input id="f-pq" placeholder="Ej.: los pasos son siempre los mismos y cada monto debe poder auditarse"></div>
+      <div class="check"><h4>Lista de cumplimiento</h4><ul id="chk1"></ul></div>
+     </div>
+    </div>
+    <div class="nav"><span></span><button class="btn p" data-ir="2">Siguiente: las estaciones →</button></div>
+   </div></div>
+
+   <!-- M2 -->
+   <div class="mision" id="m2"><div class="card">
+    <div class="mh"><div class="num">2</div><div><h2>Las estaciones de la cinta</h2><div class="sub">Quién decide en cada estación</div></div><span class="min">10 min</span></div>
+    <div class="porque"><b>La regla.</b> La <b>IA</b> decide lo difuso (qué es esto, qué dice). El <b>código</b> decide lo exacto (montos, plazos, reglas). Una <b>persona</b> decide lo riesgoso (dinero, compromisos, lo dudoso). El <b>sistema</b> solo ejecuta y deja registro.</div>
+    <div class="niveles" style="grid-template-columns:repeat(4,1fr)">
+     <div class="nivbox C" style="border-left-color:#6C4CD6;background:#ECE7FB"><b>IA</b>Clasificar, extraer, resumir lenguaje natural.</div>
+     <div class="nivbox L"><b>Código</b>Validar, calcular, aplicar reglas y umbrales.</div>
+     <div class="nivbox C"><b>Persona</b>Aprobar lo riesgoso, resolver lo dudoso.</div>
+     <div class="nivbox" style="background:#E6EAF2;border-left:6px solid #3A4A66"><b>Sistema</b>Recibir el evento, registrar, notificar.</div>
+    </div>
+    <div style="overflow:auto"><table class="tools"><thead><tr><th style="width:18%">Estación</th><th style="width:40%">Qué hace</th><th style="width:15%">Decide</th><th style="width:24%">Qué sale</th><th></th></tr></thead><tbody id="tbEst"></tbody></table></div>
+    <div style="display:flex;gap:8px;margin:10px 0 16px;flex-wrap:wrap"><button class="btn s" id="addEst">+ Agregar estación</button><button class="btn s" id="ejEst">Cargar ejemplo de nuestro caso (para editar)</button></div>
+    <div class="check"><h4>Lista de cumplimiento</h4><ul id="chk2"></ul></div>
+    <div class="nav"><button class="btn s" data-ir="1">← El flujo</button><button class="btn p" data-ir="3">Siguiente: el umbral →</button></div>
+   </div></div>
+
+   <!-- M3 -->
+   <div class="mision" id="m3"><div class="card">
+    <div class="mh"><div class="num">3</div><div><h2>El umbral, elegido con datos</h2><div class="sub">10 casos de prueba con la respuesta correcta conocida</div></div><span class="min">10 min</span></div>
+    <div class="porque"><b>Cómo se juega.</b> Su IA clasificó estos 10 casos y dio una confianza. Ustedes saben cuáles acertó (✔) y cuáles no (✘). Muevan el umbral: lo que queda <b>por encima</b> sale automático; lo que queda <b>por debajo</b> va a una persona. Un <b>error silencioso</b> es un caso equivocado que salió automático. <b>Meta: cero errores silenciosos con la menor carga humana posible.</b> Pista: prueben primero 0.80.</div>
+    <div class="grid2">
+     <div>
+      <label for="f-umb">Umbral: <span class="mono" id="umbV" style="font-size:20px"></span></label>
+      <input id="f-umb" type="range" min="0.50" max="0.99" step="0.01" style="padding:0">
+      <div class="kpis" style="grid-template-columns:repeat(3,1fr);margin-top:12px" id="umbK"></div>
+      <table class="tools"><thead><tr><th>Caso</th><th>Confianza</th><th>¿La IA acertó?</th><th>Con este umbral</th></tr></thead><tbody id="tbCasos"></tbody></table>
+     </div>
+     <div>
+      <div class="campo"><label for="f-umbpq">¿Por qué eligieron ese umbral?</label><textarea id="f-umbpq" placeholder="Ej.: con 0.80 el caso de los dos temas salía automático y mal; desde 0.85 no hay errores silenciosos y solo 3 de 10 van a revisión"></textarea></div>
+      <div class="campo"><label for="f-rev">¿Qué recibe la persona que revisa?</label><input id="f-rev" placeholder="Ej.: el documento ya clasificado, los campos prellenados y el motivo"></div>
+      <div class="ejemplo"><b>Para su proyecto real:</b> estos 10 casos son de práctica. En su repositorio, el umbral se elige igual, pero con su conjunto de prueba (mínimo 20 casos) y se guarda en <code>config/parametros.yaml</code>.</div>
+      <div class="check" style="margin-top:12px"><h4>Lista de cumplimiento</h4><ul id="chk3"></ul></div>
+     </div>
+    </div>
+    <div class="nav"><button class="btn s" data-ir="2">← Estaciones</button><button class="btn p" data-ir="4">Siguiente: plan de calidad →</button></div>
+   </div></div>
+
+   <!-- M4 -->
+   <div class="mision" id="m4"><div class="card">
+    <div class="mh"><div class="num">4</div><div><h2>El plan de calidad y evaluación</h2><div class="sub">Lo que piden los dos últimos puntos de la Entrega 3</div></div><span class="min">10 min</span></div>
+    <div class="porque"><b>Por qué.</b> «Funcionó en la demo» no es evidencia. Cada parte del sistema se mide con casos cuya respuesta correcta se escribió antes, y las pruebas corren solas cada vez que cambian el prompt, el modelo o el umbral.</div>
+    <div class="grid3">
+     <div class="check"><h4>RAG</h4>
+      <div class="campo"><label for="q-rn">Preguntas en su conjunto de prueba (el del lunes)</label><input id="q-rn" type="number" min="1"></div>
+      <div class="campo"><label for="q-rk">Acierto de recuperación: la fuente correcta aparece en los primeros…</label><select id="q-rk"><option>3</option><option>5</option><option>10</option></select></div>
+      <div class="campo"><label for="q-rm">Meta de acierto (%)</label><input id="q-rm" type="number" min="1" max="100"></div>
+      <div class="campo"><label for="q-cm">Meta de respuestas con cita (%)</label><input id="q-cm" type="number" min="1" max="100"></div>
+      <div class="campo"><label for="q-sn">Preguntas cuya respuesta NO está en sus documentos (para probar el silencio)</label><input id="q-sn" type="number" min="0"></div>
+     </div>
+     <div class="check"><h4>Agente y flujo</h4>
+      <label>Escenarios del agente que probarán</label>
+      <div class="fuentes" id="q-esc"></div>
+      <div class="campo"><label for="q-am">Meta de tareas cumplidas del agente (%)</label><input id="q-am" type="number" min="1" max="100"></div>
+      <div class="campo"><label for="q-fn">Casos en el conjunto dorado del flujo</label><input id="q-fn" type="number" min="1"></div>
+      <div class="campo"><label for="q-fr">Máximo a revisión humana (%)</label><input id="q-fr" type="number" min="0" max="100"></div>
+      <p class="ayuda" style="margin:0">Errores silenciosos permitidos: <b>0</b> (no se negocia).</p>
+     </div>
+     <div class="check"><h4>Calidad del software</h4>
+      <div class="fuentes" id="q-sw"></div>
+      <div class="campo"><label for="q-cov">Meta de cobertura (%)</label><input id="q-cov" type="number" min="0" max="100"></div>
+      <div class="campo"><label for="q-cuando">¿Quién corre la evaluación y cuándo?</label><input id="q-cuando" placeholder="Ej.: GitHub Actions en cada push a main"></div>
+     </div>
+    </div>
+    <div class="check" style="margin-top:12px"><h4>Lista de cumplimiento</h4><ul id="chk4"></ul></div>
+    <div class="nav"><button class="btn s" data-ir="3">← El umbral</button><button class="btn p" data-ir="5">Siguiente: cierre y archivos →</button></div>
+   </div></div>
+
+   <!-- M5 -->
+   <div class="mision" id="m5"><div class="card">
+    <div class="mh"><div class="num">5</div><div><h2>Seguridad, archivos y la línea del grupo</h2><div class="sub">Lo que entra por el disparador es texto no confiable</div></div><span class="min">5 min</span></div>
+    <div class="grid2">
+     <div>
+      <label>Confirmen las cuatro reglas de seguridad de su cinta</label>
+      <div class="fuentes" id="seg"></div>
+      <div class="campo" style="margin-top:12px"><label for="f-linea">La línea del grupo para el chat (se arma sola; pueden editarla)</label><textarea id="f-linea"></textarea></div>
+      <div class="check"><h4>Lista de cumplimiento del taller</h4><ul id="chk5"></ul></div>
+     </div>
+     <div>
+      <h3 style="font-size:18px;margin-bottom:8px">Archivos para su repositorio</h3>
+      <p class="ayuda" style="margin-top:0">Cópienlos a su proyecto aunque todavía no funcione: son el esqueleto de la Entrega 3.</p>
+      <div class="descargas" id="descargas"></div>
+      <div class="codtabs" id="codTabs5" style="margin-top:12px"></div>
+      <pre class="cod" id="codigo5"></pre>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn g" id="btnFinal">Enviar versión final al docente</button><button class="btn s" id="btnCopiarLinea">Copiar la línea del grupo</button></div>
+     </div>
+    </div>
+    <div class="nav"><button class="btn s" data-ir="4">← Plan de calidad</button><span></span></div>
+   </div></div>
+  </div>
+ </main>
+</section>
+
+<!-- ================= ENCUESTA ================= -->
+<section class="vista" id="v-encuesta">
+ <main class="wrap">
+  <div class="card" style="max-width:720px">
+   <h2 style="font-size:24px;margin-bottom:6px">Encuesta de salida · 2 minutos</h2>
+   <p class="ayuda" style="margin-top:0">Es individual: respóndanla cada uno desde su dispositivo. No pide su nombre; solo su grupo.</p>
+   <div id="encForm">
+    <div class="campo"><label for="e-g">Su grupo</label><select id="e-g"><option value="">Elijan…</option></select></div>
+    <div class="campo"><label for="e-util">1. ¿Qué fue lo más útil de las clases de esta semana?</label><textarea id="e-util"></textarea></div>
+    <div class="campo"><label for="e-camb">2. ¿Qué cambiarías para las próximas clases?</label><textarea id="e-camb"></textarea></div>
+    <div class="campo"><label>3. ¿Cuánto avanzó su proyecto esta semana?</label><div class="radio" id="e-av"></div><div class="ayuda">1 = casi nada · 5 = lo que esperábamos o más</div></div>
+    <button class="btn d" id="e-env">Enviar respuesta</button> <span class="estado" id="e-msg"></span>
+   </div>
+   <div id="encGracias" style="display:none"><h3 style="font-size:20px;color:var(--gr2)">¡Gracias! Su respuesta llegó.</h3><p>El docente la verá en el resumen de la clase.</p><button class="btn s" id="e-otra">Responder de nuevo desde este dispositivo</button></div>
+  </div>
+ </main>
+</section>
+
+<!-- ================= DOCENTE ================= -->
+<section class="vista" id="v-docente">
+ <main class="wrap">
+  <div class="card login" id="login">
+   <h2 style="font-size:22px;margin-bottom:12px">Panel del docente</h2>
+   <div class="campo"><label for="d-u">Usuario</label><input id="d-u" autocomplete="username"></div>
+   <div class="campo"><label for="d-p">Contraseña</label><input id="d-p" type="password" autocomplete="current-password"></div>
+   <button class="btn d" id="btnLogin">Entrar</button>
+   <p class="estado" id="loginMsg"></p>
+  </div>
+  <div id="panel" style="display:none">
+   <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap"><h2 style="font-size:24px">Clase 4 · Taller de automatización</h2><span class="espacio"></span><span class="estado" id="actualizado"></span><label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" id="auto" checked style="width:auto"> Actualizar cada 30 s</label><button class="btn s" id="btnRefrescar">Actualizar ahora</button><button class="btn s" id="btnCsv">Descargar CSV</button><button class="btn s" id="btnSalir">Salir</button></div>
+   <div class="kpis" id="kpis"></div>
+   <div class="card" style="overflow:auto"><table class="tdoc"><thead><tr><th>Grupo</th><th>Último envío</th><th>Misiones</th><th>IA · Código · Persona</th><th>Umbral</th><th>Con 10 casos</th><th>Plan de calidad</th><th>Alertas</th><th></th></tr></thead><tbody id="tbDoc"></tbody></table></div>
+   <div class="card detalle" id="detalle"></div>
+   <div class="card" id="encPanel"></div>
+  </div>
+ </main>
+</section>
+
+<div class="toast" id="toast"></div>
+<footer>Taller de la Clase 4 · Automatización inteligente y calidad · Seminario Ingeniería de Software con IA Generativa · UNIANDES · 29 de octubre de 2026</footer>
+
+<script>
+// ==== CONFIGURACIÓN: la misma URL /exec del taller de ayer (no hace falta cambiar el servidor) ====
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbwtrNEKpjka0IsS7npcY4zTlq1yagnRgBWFfjVrX9mgccJklrgUE_UJHkjhhppvtZZt/exec';
+// ==================================================================================================
+const TALLER='automatizacion';
+const CASOS=[
+ {n:'Titulación y normativa académica',N:'Solicitud',disp:'Formulario web',ent:'Solicitud de designación de tutor con el perfil del proyecto',acc:'Registrar la solicitud y avisar a coordinación',tipos:'tutor, prórroga u otro trámite',campos:'nombre, carrera, título del proyecto, fecha de egreso',regla:'Verificar requisitos y plazo según el artículo del reglamento',per:'Coordinación revisa lo que no cumple o lo dudoso',act:'Registrar la solicitud (idempotente) y notificar a coordinación'},
+ {n:'Reclamos de consumo',N:'Reclamo',disp:'Formulario web',ent:'Reclamo del consumidor con la factura adjunta',acc:'Registrar el reclamo con su artículo y preparar el borrador para el proveedor',tipos:'reclamo, consulta u otro',campos:'proveedor, producto, fecha de compra, monto',regla:'Calcular si está dentro del plazo legal y qué derecho aplica',per:'Un asesor aprueba el envío al proveedor',act:'Registrar el reclamo; el envío queda pendiente de aprobación'},
+ {n:'Triaje de soporte tecnológico',N:'Incidente',disp:'Correo electrónico',ent:'Incidente descrito por el usuario',acc:'Crear el ticket con su prioridad y asignarlo',tipos:'incidente, solicitud o consulta',campos:'servicio afectado, usuarios afectados, desde cuándo',regla:'Prioridad con la matriz impacto × urgencia de config/',per:'El técnico de guardia confirma los P1',act:'Crear el ticket (idempotente) y asignarlo'},
+ {n:'Planificador turístico',N:'Pedido',disp:'Formulario web',ent:'Pedido de itinerario con fechas, personas y presupuesto',acc:'Armar la propuesta y dejar la reserva lista para que el viajero confirme',tipos:'itinerario, cambio o consulta',campos:'destino, fechas, personas, presupuesto',regla:'Sumar costos con las tarifas de config/ y verificar el presupuesto',per:'El viajero confirma antes de reservar',act:'Registrar la propuesta; la reserva espera la confirmación'},
+ {n:'Orientación sobre dengue',N:'Reporte de síntomas',disp:'Formulario web',ent:'Síntomas reportados por la persona o un familiar',acc:'Orientar según la guía oficial y registrar el caso',tipos:'síntomas, consulta u otro',campos:'días con fiebre, signos presentes, edad, ubicación',regla:'Comparar con la lista oficial de signos de alarma',per:'Un profesional de salud revisa si hay signos de alarma',act:'Registrar el caso y mostrar el centro de salud más cercano'},
+ {n:'Pliegos de contratación pública',N:'Pliego',disp:'Archivo en una carpeta',ent:'Pliego de contratación en PDF',acc:'Extraer requisitos y registrar la matriz de cumplimiento',tipos:'pliego, adenda u otro',campos:'objeto, presupuesto referencial, plazos, requisitos',regla:'Calcular garantías y comparar requisitos con el perfil de la empresa',per:'El analista legal revisa los requisitos dudosos',act:'Registrar la matriz de cumplimiento'},
+ {n:'Beneficios y liquidaciones laborales',N:'Solicitud',disp:'Formulario web',ent:'Solicitud de liquidación con fechas y sueldo',acc:'Registrar la liquidación como pendiente y avisar a RR. HH.',tipos:'liquidación, consulta u otro',campos:'nombre, fecha de ingreso, fecha de salida, sueldo',regla:'Calcular décimos y vacaciones con Decimal y config/',per:'RR. HH. aprueba antes de cualquier pago',act:'Registrar como pendiente (idempotente) y notificar a RR. HH.'},
+ {n:'Simulador de situaciones viales',N:'Situación descrita',disp:'Formulario web',ent:'Descripción de una situación vial',acc:'Explicar la contravención con su base legal y registrar la simulación',tipos:'contravención, delito o consulta',campos:'velocidad, zona, alcohol, daños',regla:'Calcular multa y puntos con la tabla de config/',per:'Un abogado revisa si parece delito',act:'Registrar la simulación'},
+ {n:'Asistente para productores de cacao',N:'Consulta',disp:'Mensaje (WhatsApp, Telegram)',ent:'Consulta del productor con una foto del cultivo',acc:'Recomendar el manejo y registrar el lote',tipos:'plaga, fertilización o venta',campos:'hectáreas, edad de las plantas, síntoma',regla:'Calcular la dosis por hectárea con la guía técnica',per:'Un técnico agrícola revisa las fotos dudosas',act:'Registrar el lote y la recomendación'},
+ {n:'Revisor de código seguro',N:'Fragmento de código',disp:'Evento de otro sistema (webhook)',ent:'Pull request con un fragmento de código',acc:'Comentar los hallazgos en el PR y crear el issue',tipos:'vulnerabilidad, estilo o sin hallazgos',campos:'archivo, línea, CWE probable',regla:'Severidad con la matriz de config/',per:'El responsable de seguridad revisa la severidad alta',act:'Comentar el PR y crear el issue (idempotente)'},
+ {n:'Calendario tributario RIMPE',N:'Factura',disp:'Archivo en una carpeta',ent:'Facturas del mes del contribuyente',acc:'Calcular el impuesto y registrar el recordatorio de vencimiento',tipos:'factura, declaración o consulta',campos:'RUC, montos, fechas',regla:'Fecha de vencimiento por el noveno dígito y tarifa de config/',per:'Un contador revisa los montos altos',act:'Registrar el recordatorio'}
+];
+const PORQUE=[['iguales','Los pasos son siempre los mismos'],['audit','Hay que poder auditar cada decisión'],['volumen','El volumen es alto y repetitivo'],['riesgo','Un error tiene consecuencias de dinero o legales'],['agente','En realidad conviene un agente: los pasos cambian según el caso']];
+const BASE10=[[0.98,1,'{N} claro y completo'],[0.96,1,'{N} completo, con un dato opcional vacío'],[0.95,1,'{N} con faltas de ortografía'],[0.93,1,'{N} escrito de forma muy informal'],[0.91,1,'{N} con un adjunto de buena calidad'],[0.90,1,'{N} largo, con mucho contexto'],[0.87,1,'{N} breve, pero suficiente'],[0.84,0,'Dos temas en un mismo mensaje: la IA eligió el equivocado'],[0.76,1,'{N} con una foto inclinada pero legible'],[0.62,0,'Escaneo borroso: la IA adivinó']];
+const ESCQ=[['A','Camino feliz'],['B','Fuera de alcance'],['C','El tope'],['D','Inyección en un documento']];
+const SW=[['pytest','Pruebas unitarias con pytest (cada función de cálculo y cada herramienta)',true],['cov','Medición de cobertura (pytest-cov)',false],['lint','Linter y formato (ruff, eslint o similar)',false],['ci','Integración continua (GitHub Actions) que corre todo en cada push',false],['evalci','La evaluación del RAG, el agente y el flujo también corre en CI',false]];
+const SEG=[['texto','Todo lo que entra por el disparador es texto no confiable'],['esquema','La IA solo produce campos de un esquema validado; nunca ejecuta acciones'],['dinero','Ninguna estación automática mueve dinero ni envía a terceros sin una persona'],['idem','Las acciones que escriben son idempotentes (no se duplican si se reintentan)']];
+const DEC=['IA','Código','Persona','Sistema'];
+const EXACTO=/calcul|monto|precio|pago|multa|impuesto|dosis|plazo|vencim|prioridad|severidad|garant|liquidaci|tarifa|suma/i;
+const RIESGO=/pagar|transferir|cobrar|aprobar|presentar|enviar al|enviar a |reservar |diagnostic|vender|merge|publicar|firmar|despedir|sancionar/i;
+
+let S=null, mision=1, codSel5='adr';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function toast(m,err){ const t=$('#toast'); t.textContent=m; t.className='toast'+(err?' err':''); t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',4500); }
+function nuevo(g){ return {v:1,taller:TALLER,grupo:g,integrantes:'',flujo:{disp:'',ent:'',acc:'',vol:'',volu:'por día',porque:{},pq:''},est:[],ack:{},umbral:0.80,umbpq:'',rev:'',q:{rn:'',rk:'5',rm:'',cm:'',sn:'',esc:{},am:'',fn:'',fr:'',sw:{},cov:'',cuando:''},seg:{},linea:'',lineaEditada:false,envios:[]}; }
+function key(g){ return 'taller_auto_g'+g; }
+function guardarLocal(){ if(!S) return; try{ localStorage.setItem(key(S.grupo), JSON.stringify(S)); }catch(e){} }
+function cargarLocal(g){ try{ const t=localStorage.getItem(key(g)); if(t){ const o=JSON.parse(t); if(o&&o.grupo==g) return o; } }catch(e){} return null; }
+function caso(){ return CASOS[S.grupo-1]; }
+function casos10(){ const N=caso().N; return BASE10.map((c,i)=>({id:i+1,conf:c[0],ok:!!c[1],d:c[2].replace('{N}',N)})); }
+function umbralStats(u){ const C=casos10(); let a=0,r=0,e=0; C.forEach(c=>{ if(c.conf>=u){ a++; if(!c.ok) e++; } else r++; }); return {auto:a,rev:r,err:e,pct:Math.round(r*10)}; }
+
+// ---------- validaciones ----------
+function v1(){ const f=S.flujo; const pq=Object.values(f.porque).filter(Boolean).length;
+ return [[S.integrantes.trim().length>=5,'Escribieron los integrantes'],[!!f.disp,'Eligieron qué dispara el flujo'],[f.ent.trim().length>=10,'Describieron la entrada típica'],[f.acc.trim().length>=10,'Describieron la acción final en un sistema'],[+f.vol>0,'Estimaron cuántas llegan'],[pq>=1 && f.pq.trim().length>=20,'Dijeron por qué flujo y no agente, con una frase']]; }
+function alertasEst(e){ const a=[]; const t=(e.que||'')+' '+(e.nombre||''); if(e.dec==='IA' && EXACTO.test(t)) a.push('La IA aparece decidiendo algo exacto (montos, plazos, prioridades): ¿no debería decidirlo el código?'); if((e.dec==='Sistema'||e.dec==='Código'||e.dec==='IA') && RIESGO.test(t)) a.push('Esta estación hace algo con consecuencias (dinero, compromisos, terceros) sin una persona: ¿no debería pasar por revisión?'); return a; }
+function estVal(){ return S.est.filter(e=>(e.nombre||'').trim()); }
+function v2(){ const E=estVal(); const c={IA:0,'Código':0,Persona:0,Sistema:0}; E.forEach(e=>c[e.dec]++);
+ const comp=E.length>0 && E.every(e=>(e.que||'').trim().length>=5 && (e.sale||'').trim().length>=3);
+ const pend=E.filter(e=>alertasEst(e).length && !S.ack[(e.nombre||'').trim()]);
+ return [[E.length>=5,'Al menos 5 estaciones ('+E.length+')'],[c.IA>=1,'Al menos una decide la IA ('+c.IA+')'],[c['Código']>=1,'Al menos una decide el código ('+c['Código']+')'],[c.Persona>=1,'Al menos una decide una persona ('+c.Persona+')'],[comp,'Cada estación dice qué hace y qué sale'],[pend.length===0, pend.length?'Revisen quién decide en: '+pend.map(e=>e.nombre).join(', '):'Quién decide, revisado']]; }
+function v3(){ const st=umbralStats(+S.umbral); return [[st.err===0,'Cero errores silenciosos ('+st.err+')'],[st.pct<=50,'Como máximo la mitad va a revisión ('+st.pct+' %)'],[S.umbpq.trim().length>=25,'Explicaron por qué ese umbral'],[S.rev.trim().length>=15,'Dijeron qué recibe la persona que revisa']]; }
+function v4(){ const q=S.q; const nEsc=Object.values(q.esc).filter(Boolean).length; const nSw=Object.values(q.sw).filter(Boolean).length;
+ return [[+q.rn>=10,'Conjunto de prueba del RAG con 10 preguntas o más'],[+q.rm>0 && +q.cm>0,'Metas de acierto y de respuestas con cita'],[+q.sn>=2,'Al menos 2 preguntas para probar el silencio'],[nEsc>=3 && +q.am>0,'Al menos 3 escenarios del agente y su meta'],[+q.fn>=20,'Conjunto dorado del flujo con 20 casos o más'],[q.fr!=='' && +q.fr<=50,'Máximo a revisión definido (50 % o menos)'],[q.sw.pytest && nSw>=3,'pytest y al menos dos prácticas más de calidad'],[q.cuando.trim().length>=10,'Dijeron quién corre la evaluación y cuándo']]; }
+function v5(){ return [[SEG.every(x=>S.seg[x[0]]),'Confirmaron las cuatro reglas de seguridad'],[S.linea.trim().length>=40,'La línea del grupo está lista'],[[1,2,3,4].every(todoOk),'Misiones 1 a 4 completas']]; }
+const V={1:v1,2:v2,3:v3,4:v4,5:v5};
+function todoOk(i){ return V[i]().every(x=>x[0]); }
+function pintarCheck(id,items){ $(id).innerHTML=items.map(x=>'<li class="'+(x[0]?'ok':'')+'">'+esc(x[1])+'</li>').join(''); }
+
+// ---------- barra ----------
+const NOM=['','Flujo','Estaciones','Umbral','Calidad','Cierre'];
+function pintarPasos(){ $('#pasos').innerHTML=[1,2,3,4,5].map(i=>'<button class="paso '+(i===mision?'on ':'')+(S&&todoOk(i)?'ok':'')+'" data-ir="'+i+'">'+i+' · '+NOM[i]+'</button>').join(''); }
+function ir(i){ i=+i; mision=i; document.querySelectorAll('.mision').forEach(m=>m.classList.toggle('on',m.id==='m'+i)); pintarTodo(); window.scrollTo({top:0,behavior:'smooth'}); }
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-ir]'); if(b) ir(b.dataset.ir); });
+
+// ---------- M1 ----------
+function pintarM1(){ const c=caso(); $('#m1caso').textContent='Grupo '+S.grupo+' · '+c.n;
+ $('#m1ej').innerHTML='<b>Ejemplo para su caso (no lo copien: ajústenlo a su producto)</b><br>Disparador: '+esc(c.disp)+'<br>Entra: '+esc(c.ent)+'<br>Al final: '+esc(c.acc);
+ $('#porque').innerHTML=PORQUE.map(p=>'<label><input type="checkbox" data-pq="'+p[0]+'"'+(S.flujo.porque[p[0]]?' checked':'')+'> '+esc(p[1])+'</label>').join('');
+ pintarCheck('#chk1',v1()); }
+function bindM1(){ $('#f-integ').addEventListener('input',e=>{ S.integrantes=e.target.value; cambio(false); pintarCheck('#chk1',v1()); });
+ [['f-disp','disp'],['f-ent','ent'],['f-acc','acc'],['f-vol','vol'],['f-volu','volu'],['f-pq','pq']].forEach(([id,k])=>{ ['input','change'].forEach(ev=>$('#'+id).addEventListener(ev,e=>{ S.flujo[k]=e.target.value; cambio(false); pintarCheck('#chk1',v1()); })); });
+ $('#porque').addEventListener('change',e=>{ const el=e.target; if(el.dataset.pq){ S.flujo.porque[el.dataset.pq]=el.checked; cambio(false); pintarCheck('#chk1',v1()); if(el.dataset.pq==='agente'&&el.checked) toast('Si de verdad conviene un agente, díganlo en la frase: es una decisión válida si los pasos cambian según el caso.'); } }); }
+function llenarM1(){ $('#f-integ').value=S.integrantes; $('#f-disp').value=S.flujo.disp; $('#f-ent').value=S.flujo.ent; $('#f-acc').value=S.flujo.acc; $('#f-vol').value=S.flujo.vol; $('#f-volu').value=S.flujo.volu; $('#f-pq').value=S.flujo.pq; }
+
+// ---------- M2 ----------
+function ejemploEst(){ const c=caso(); return [
+ {nombre:'Disparador',que:'Llega: '+c.ent.charAt(0).toLowerCase()+c.ent.slice(1)+' ('+c.disp.toLowerCase()+')',dec:'Sistema',sale:'Evento en la cola'},
+ {nombre:'Clasificar',que:'Decidir el tipo ('+c.tipos+') con un número de confianza',dec:'IA',sale:'JSON {tipo, confianza}'},
+ {nombre:'Umbral',que:'Si la confianza es baja, desviar a revisión',dec:'Código',sale:'Sigue o va a revisión'},
+ {nombre:'Extraer',que:'Sacar los campos: '+c.campos,dec:'IA',sale:'Datos validados con Pydantic'},
+ {nombre:'Reglas',que:c.regla,dec:'Código',sale:'Resultado exacto con su fuente'},
+ {nombre:'Revisión',que:c.per,dec:'Persona',sale:'Aprobado o corregido'},
+ {nombre:'Actuar',que:c.act,dec:'Sistema',sale:'Registro con auditoría'}]; }
+function pintarM2(){ $('#tbEst').innerHTML=S.est.map((e,i)=>{ const al=alertasEst(e); const k=(e.nombre||'').trim();
+ return '<tr><td><input data-e="'+i+'" data-k="nombre" value="'+esc(e.nombre)+'" placeholder="Clasificar"></td><td><input data-e="'+i+'" data-k="que" value="'+esc(e.que)+'" placeholder="Qué hace, en pocas palabras">'+(al.length?'<div class="aviso">'+al.map(esc).join('<br>')+'<br><label><input type="checkbox" data-ack="'+esc(k)+'"'+(S.ack[k]?' checked':'')+'>Lo revisamos y está bien así</label></div>':'')+'</td><td><select data-e="'+i+'" data-k="dec">'+DEC.map(d=>'<option'+(e.dec===d?' selected':'')+'>'+d+'</option>').join('')+'</select></td><td><input data-e="'+i+'" data-k="sale" value="'+esc(e.sale)+'" placeholder="JSON, registro, aviso…"></td><td><button class="del" data-del="'+i+'">×</button></td></tr>'; }).join('')||'<tr><td colspan="5" class="ayuda">Agreguen sus estaciones o carguen el ejemplo de su caso para editarlo.</td></tr>';
+ pintarCheck('#chk2',v2()); }
+$('#tbEst').addEventListener('input',e=>{ const el=e.target; if(el.dataset.e!=null){ S.est[+el.dataset.e][el.dataset.k]=el.value; cambio(false); pintarCheck('#chk2',v2()); } });
+$('#tbEst').addEventListener('change',e=>{ const el=e.target; if(el.dataset.ack!=null) S.ack[el.dataset.ack]=el.checked; else if(el.dataset.e!=null) S.est[+el.dataset.e][el.dataset.k]=el.value; cambio(); });
+$('#tbEst').addEventListener('click',e=>{ const b=e.target.closest('[data-del]'); if(b){ S.est.splice(+b.dataset.del,1); cambio(); } });
+$('#addEst').onclick=()=>{ if(S.est.length>=10) return toast('Máximo 10 estaciones.',true); S.est.push({nombre:'',que:'',dec:'IA',sale:''}); cambio(); };
+$('#ejEst').onclick=()=>{ if(estVal().length && !confirm('Esto reemplaza sus estaciones por el ejemplo. ¿Continuar?')) return; S.est=ejemploEst(); cambio(); toast('Ejemplo cargado: ajústenlo a su producto real.'); };
+
+// ---------- M3 ----------
+function pintarM3(){ const u=+S.umbral; $('#f-umb').value=u; $('#umbV').textContent=u.toFixed(2); const st=umbralStats(u);
+ $('#umbK').innerHTML='<div class="kpi" style="background:var(--gr2)"><b style="color:#fff">'+st.auto+'</b>salen automáticos</div><div class="kpi" style="background:#946200"><b style="color:#fff">'+st.rev+'</b>a revisión ('+st.pct+' %)</div><div class="kpi" style="background:'+(st.err?'var(--rd)':'var(--d)')+'"><b style="color:#fff">'+st.err+'</b>errores silenciosos</div>';
+ $('#tbCasos').innerHTML=casos10().map(c=>{ const a=c.conf>=u; const malo=a&&!c.ok; return '<tr style="'+(malo?'background:var(--rdS)':'')+'"><td>'+c.id+' · '+esc(c.d)+'</td><td class="mono">'+c.conf.toFixed(2)+'</td><td>'+(c.ok?'✔':'<b style="color:var(--rd)">✘</b>')+'</td><td>'+(a?(malo?'<b style="color:var(--rd)">automático · ERROR SILENCIOSO</b>':'<span style="color:var(--gr2)">automático</span>'):'<span style="color:#946200">a revisión</span>')+'</td></tr>'; }).join('');
+ $('#f-umbpq').value=S.umbpq; $('#f-rev').value=S.rev; pintarCheck('#chk3',v3()); }
+$('#f-umb').addEventListener('input',e=>{ S.umbral=+(+e.target.value).toFixed(2); cambio(false); pintarM3(); });
+$('#f-umbpq').addEventListener('input',e=>{ S.umbpq=e.target.value; cambio(false); pintarCheck('#chk3',v3()); });
+$('#f-rev').addEventListener('input',e=>{ S.rev=e.target.value; cambio(false); pintarCheck('#chk3',v3()); });
+
+// ---------- M4 ----------
+function pintarM4(){ const q=S.q; if(q.fr===''){ q.fr=String(umbralStats(+S.umbral).pct); }
+ ['rn','rk','rm','cm','sn','am','fn','fr','cov','cuando'].forEach(k=>{ $('#q-'+k).value=q[k]; });
+ $('#q-esc').innerHTML=ESCQ.map(x=>'<label><input type="checkbox" data-qe="'+x[0]+'"'+(q.esc[x[0]]?' checked':'')+'> '+x[0]+' · '+esc(x[1])+'</label>').join('');
+ $('#q-sw').innerHTML=SW.map(x=>'<label><input type="checkbox" data-sw="'+x[0]+'"'+(q.sw[x[0]]?' checked':'')+'> '+esc(x[1])+(x[2]?' <b>(obligatorio)</b>':'')+'</label>').join('');
+ pintarCheck('#chk4',v4()); }
+['rn','rk','rm','cm','sn','am','fn','fr','cov','cuando'].forEach(k=>{ ['input','change'].forEach(ev=>$('#q-'+k).addEventListener(ev,e=>{ S.q[k]=e.target.value; cambio(false); pintarCheck('#chk4',v4()); })); });
+$('#q-esc').addEventListener('change',e=>{ const el=e.target; if(el.dataset.qe){ S.q.esc[el.dataset.qe]=el.checked; cambio(false); pintarCheck('#chk4',v4()); } });
+$('#q-sw').addEventListener('change',e=>{ const el=e.target; if(el.dataset.sw){ S.q.sw[el.dataset.sw]=el.checked; cambio(false); pintarCheck('#chk4',v4()); } });
+
+// ---------- generadores ----------
+const quien=d=>estVal().filter(e=>e.dec===d).map(e=>e.nombre.trim().toLowerCase());
+function lineaAuto(){ const st=umbralStats(+S.umbral); const y=a=>!a.length?'__':a.length===1?a[0]:a.slice(0,-1).join(', ')+' y '+a[a.length-1];
+ return 'Grupo '+S.grupo+': automatizamos «'+(S.flujo.acc.trim().replace(/\.$/,'')||'____')+'» cuando llega '+(S.flujo.ent.trim().charAt(0).toLowerCase()+S.flujo.ent.trim().slice(1)||'____')+'; la IA se encarga de '+y(quien('IA'))+'; el código, de '+y(quien('Código'))+'; una persona, de '+y(quien('Persona'))+'; umbral '+(+S.umbral).toFixed(2)+' ('+st.pct+' % a revisión, '+st.err+' errores silenciosos); medimos el RAG con '+(S.q.rn||'__')+' preguntas y el flujo con '+(S.q.fn||'__')+' casos.'; }
+function genADR(){ const st=umbralStats(+S.umbral); const c=caso();
+ return '## ADR · Flujo automatizado con IA\n\n*Taller de la Clase 4 · 29 de octubre de 2026 · Grupo '+S.grupo+' · '+c.n+'*\n*Integrantes: '+(S.integrantes.trim()||'—')+'*\n\n### Contexto\nEn el producto se repite un proceso que hoy hace una persona a mano: '+S.flujo.ent.trim()+' ('+(S.flujo.vol||'¿?')+' '+S.flujo.volu+'). Queremos automatizarlo sin que la IA tome decisiones exactas ni riesgosas.\n\n### Decisión\n- **Disparador:** '+S.flujo.disp+'\n- **Acción final:** '+S.flujo.acc.trim()+'\n- **Flujo fijo y no agente porque:** '+PORQUE.filter(p=>S.flujo.porque[p[0]]).map(p=>p[1].toLowerCase()).join('; ')+'. '+S.flujo.pq.trim()+'\n\n| Estación | Qué hace | Decide | Qué sale |\n|---|---|---|---|\n'+estVal().map(e=>'| '+e.nombre.trim()+' | '+e.que.trim()+' | '+e.dec+' | '+e.sale.trim()+' |').join('\n')+
+ '\n\n- **Umbral de confianza: '+(+S.umbral).toFixed(2)+'** (en `config/parametros.yaml`). Con los 10 casos de práctica: '+st.auto+' automáticos, '+st.rev+' a revisión ('+st.pct+' %), '+st.err+' errores silenciosos. Motivo: '+S.umbpq.trim()+'\n- **La persona que revisa recibe:** '+S.rev.trim()+'\n\n### Seguridad\n'+SEG.filter(x=>S.seg[x[0]]).map(x=>'- '+x[1]+'.').join('\n')+'\n\n### Consecuencias\n- El umbral se recalibra con el conjunto dorado (eval/casos_flujo.jsonl) cada vez que cambian el prompt o el modelo.\n- Todo documento termina en un estado: procesado, en revisión o rechazado con motivo. Nunca se descarta en silencio.\n- Pendiente para la Entrega 3: implementar app/flujo.py, completar los casos reales del conjunto dorado y correr eval/evaluar.py.\n'; }
+function genFlujo(){ const E=estVal(); const st=umbralStats(+S.umbral);
+ const paso=e=>{ const n=e.nombre.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||'estacion'; return n; };
+ return '# app/flujo.py · la cinta del Grupo '+S.grupo+' · generado en el taller del 29-oct-2026\n# Disparador: '+S.flujo.disp+' · Acción final: '+S.flujo.acc.trim()+'\nfrom decimal import Decimal\nfrom pydantic import BaseModel, Field, ValidationError\nfrom typing import Literal\nfrom app.config import PARAMETROS as P      # config/parametros.yaml: umbral, tarifas…\n\nUMBRAL = P["umbral_confianza"]              # '+(+S.umbral).toFixed(2)+' elegido en el taller\n\n\nclass Clase(BaseModel):                     # lo que la IA puede responder al clasificar\n    tipo: Literal["TODO_tipo_1", "TODO_tipo_2", "otro"]\n    confianza: float = Field(ge=0, le=1)\n\n\nclass Datos(BaseModel):                     # lo que la IA puede extraer (sin campos de «monto a pagar»)\n    # TODO: '+caso().campos+'\n    instrucciones_en_texto: bool = False      # la IA marca si el texto trae órdenes al sistema\n\n\ndef procesar(doc):\n    """Cada documento termina en un estado: procesado, en revisión o rechazado con motivo."""\n'+E.map((e,i)=>'    # '+(i+1)+' · '+e.nombre.trim()+' — decide: '+e.dec+'\n    #     '+e.que.trim()+'  →  '+e.sale.trim()+'\n'+(e.dec==='IA'?'    # resultado = llm.parse(doc.texto, schema=…)   # solo devuelve campos del esquema\n':e.dec==='Código'?'    # resultado = '+paso(e)+'(datos, P)          # determinista, con pruebas en tests/\n':e.dec==='Persona'?'    # return revision_humana(doc, motivo=…)        # la persona recibe el trabajo ya hecho\n':'    # sistema.'+paso(e)+'(…, clave=doc.id)         # idempotente: si ya existe, no se repite\n')).join('\n')+
+ '\n\ndef revision_humana(doc, motivo):\n    """Registra el documento como «en revisión» con su motivo y avisa a la persona responsable."""\n    ...\n'; }
+function genCasos(){ const C=casos10(); const L=[]; for(let i=1;i<=20;i++){ const c=C[i-1]; L.push(JSON.stringify({id:'caso-'+String(i).padStart(2,'0'),entrada:c?'TODO: texto real de un '+c.d.charAt(0).toLowerCase()+c.d.slice(1):'TODO: texto real de un caso de su producto',esperado:{tipo:'TODO',destino:c?(c.conf>=+S.umbral&&c.ok?'automatico':'revision'):'TODO automatico|revision',resultado:'TODO: valor o acción esperada'}})); } return L.join('\n')+'\n'; }
+function genEval(){ const q=S.q;
+ return '# eval/evaluar.py · Grupo '+S.grupo+' · corre en CI: python eval/evaluar.py\nimport json, sys\nfrom app.flujo import procesar\nfrom app.rag import buscar            # su recuperador\n\nMETAS = {\n    "rag_acierto_top'+q.rk+'": '+((+q.rm||0)/100)+',\n    "rag_con_cita": '+((+q.cm||0)/100)+',\n    "agente_tareas": '+((+q.am||0)/100)+',\n    "flujo_max_revision": '+((+q.fr||0)/100)+',\n    "flujo_errores_silenciosos": 0,\n}\n\n\ndef leer(ruta):\n    return [json.loads(l) for l in open(ruta, encoding="utf-8") if l.strip()]\n\n\ndef evaluar_rag(preguntas, k='+q.rk+'):\n    """Cada pregunta trae la fuente correcta; cuenta si aparece en los primeros k."""\n    aciertos = sum(p["fuente"] in [f.id for f in buscar(p["pregunta"], k=k)]\n                   for p in preguntas if p.get("fuente"))\n    con_fuente = [p for p in preguntas if p.get("fuente")]\n    return aciertos / max(1, len(con_fuente))\n\n\ndef evaluar_flujo(casos):\n    auto = rev = silenciosos = 0\n    for c in casos:\n        r = procesar(c)                  # devuelve {"destino": ..., "resultado": ...}\n        if r["destino"] == "revision":\n            rev += 1\n        else:\n            auto += 1\n            if r["resultado"] != c["esperado"]["resultado"]:\n                silenciosos += 1           # salió automático y mal\n    return {"revision": rev / len(casos), "silenciosos": silenciosos}\n\n\nif __name__ == "__main__":\n    rag = evaluar_rag(leer("eval/preguntas_rag.jsonl"))   # '+(q.rn||'__')+' preguntas, '+(q.sn||'__')+' sin respuesta\n    flujo = evaluar_flujo(leer("eval/casos_flujo.jsonl")) # '+(q.fn||'__')+' casos\n    print(f"RAG acierto top-'+q.rk+': {rag:.0%}  ·  flujo a revisión: {flujo[\'revision\']:.0%}  ·  errores silenciosos: {flujo[\'silenciosos\']}")\n    ok = (rag >= METAS["rag_acierto_top'+q.rk+'"] and flujo["silenciosos"] == 0\n          and flujo["revision"] <= METAS["flujo_max_revision"])\n    sys.exit(0 if ok else 1)             # en CI, falla el build si no se cumplen las metas\n'; }
+function genPlan(){ const q=S.q; const si=k=>q.sw[k]?'Sí':'No';
+ return '## Plan de calidad y evaluación\n\n*Grupo '+S.grupo+' · '+caso().n+' · taller de la Clase 4, 29 de octubre de 2026*\n\n### 1. Evaluación básica del RAG\n| Métrica | Cómo se mide | Meta |\n|---|---|---|\n| Acierto de recuperación | La fuente correcta aparece en los primeros '+q.rk+' resultados, sobre '+(q.rn||'__')+' preguntas del conjunto del lunes | '+(q.rm||'__')+' % |\n| Respuestas con cita | Respuestas que citan su fuente | '+(q.cm||'__')+' % |\n| Silencio correcto | '+(q.sn||'__')+' preguntas cuya respuesta no está en los documentos: el sistema debe decir que no sabe | 100 % |\n\n### 2. Evaluación básica del agente\n- Escenarios: '+ESCQ.filter(x=>q.esc[x[0]]).map(x=>x[0]+' · '+x[1]).join('; ')+'.\n- Meta de tareas cumplidas: '+(q.am||'__')+' %. Rechazos correctos en fuera de alcance e inyección: 100 %.\n\n### 3. Evaluación del flujo automatizado\n- Conjunto dorado: '+(q.fn||'__')+' casos en `eval/casos_flujo.jsonl`, con el resultado esperado escrito antes de correr.\n- Errores silenciosos: **0**. Máximo a revisión humana: '+(q.fr||'__')+' %. Umbral actual: '+(+S.umbral).toFixed(2)+'.\n\n### 4. Calidad del software\n| Práctica | Se aplica |\n|---|---|\n'+SW.map(x=>'| '+x[1]+' | '+si(x[0])+' |').join('\n')+'\n\n- Meta de cobertura: '+(q.cov||'—')+' %.\n- Quién y cuándo: '+q.cuando.trim()+'\n\n### Evidencia para la Revisión 3 y la Entrega 3\n- Salida de `python eval/evaluar.py` y de `pytest` en `docs/evidencias/semana-3/`.\n'; }
+function genYaml(){ return '# config/parametros.yaml · agregar a su archivo existente\numbral_confianza: '+(+S.umbral).toFixed(2)+'   # elegido con el conjunto de prueba; recalibrar si cambia el modelo\n'; }
+
+// ---------- M5 ----------
+const ARCH=[['adr','docs/10-automatizacion.md',genADR,'10-automatizacion.md'],['flujo','app/flujo.py',genFlujo,'flujo.py'],['casos','eval/casos_flujo.jsonl',genCasos,'casos_flujo.jsonl'],['eval','eval/evaluar.py',genEval,'evaluar.py'],['plan','docs/11-plan-de-calidad.md',genPlan,'11-plan-de-calidad.md'],['yaml','config/parametros.yaml',genYaml,'parametros_umbral.yaml']];
+function pintarM5(){ $('#seg').innerHTML=SEG.map(x=>'<label><input type="checkbox" data-sg="'+x[0]+'"'+(S.seg[x[0]]?' checked':'')+'> '+esc(x[1])+'</label>').join('');
+ if(!S.lineaEditada) S.linea=lineaAuto(); $('#f-linea').value=S.linea;
+ $('#descargas').innerHTML=ARCH.map(a=>'<button class="btn s" data-dl="'+a[0]+'">⬇ '+esc(a[1])+'</button>').join('')+'<button class="btn s" data-dl="json">⬇ respaldo .json</button>';
+ $('#codTabs5').innerHTML=ARCH.map(a=>'<button data-c5="'+a[0]+'"'+(codSel5===a[0]?' class="on"':'')+'>'+esc(a[1])+'</button>').join('');
+ $('#codigo5').textContent=ARCH.find(a=>a[0]===codSel5)[2](); pintarCheck('#chk5',v5()); }
+$('#seg').addEventListener('change',e=>{ const el=e.target; if(el.dataset.sg){ S.seg[el.dataset.sg]=el.checked; cambio(); } });
+$('#f-linea').addEventListener('input',e=>{ S.linea=e.target.value; S.lineaEditada=true; cambio(false); pintarCheck('#chk5',v5()); });
+$('#codTabs5').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ codSel5=b.dataset.c5; pintarM5(); } });
+$('#descargas').addEventListener('click',e=>{ const b=e.target.closest('[data-dl]'); if(!b) return; const k=b.dataset.dl; if(k==='json') return bajar('taller_automatizacion_grupo'+S.grupo+'.json',JSON.stringify(S,null,2)); const a=ARCH.find(x=>x[0]===k); bajar(a[3],a[2]()); });
+function bajar(nombre,texto){ const b=new Blob([texto],{type:'text/plain;charset=utf-8'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=nombre; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),2000); }
+$('#btnCopiarLinea').onclick=()=>{ navigator.clipboard.writeText(S.linea).then(()=>toast('Línea copiada: péguenla en el chat de la clase.'),()=>toast('No se pudo copiar: selecciónenla y cópienla a mano.',true)); };
+
+// ---------- envío (compatible con el servidor de ayer) ----------
+function alertas(){ return estVal().filter(e=>alertasEst(e).length).map(e=>e.nombre.trim()+(S.ack[e.nombre.trim()]?' (revisado)':'')).join('; '); }
+function resumen(tipo){ const c={IA:0,'Código':0,Persona:0}; estVal().forEach(e=>{ if(c[e.dec]!=null) c[e.dec]++; }); const st=umbralStats(+S.umbral);
+ const planOk=v4().filter(x=>x[0]).length;
+ return {grupo:S.grupo,integrantes:S.integrantes,tipo:tipo,misiones:[1,2,3,4,5].filter(todoOk).length+'/5',meta:'[Automatización] '+S.flujo.acc,libres:c.IA,confirmacion:c['Código'],fuera:c.Persona,max_iter:Math.round(+S.umbral*100),escenarios:'auto'+st.auto+' rev'+st.rev+' err'+st.err+' plan'+planOk+'/8',alertas:alertas(),json:JSON.stringify(S)}; }
+async function post(body){ for(let i=0;i<3;i++){ try{ const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}); const j=await r.json(); return j; }catch(x){ await new Promise(r=>setTimeout(r,1500*(i+1))); } } return null; }
+async function enviar(tipo){ if(!ENDPOINT){ toast('El envío al docente no está activado. Descarguen el respaldo .json en la misión 5.',true); return; }
+ $('#estadoEnvio').textContent='Enviando…'; const j=await post(resumen(tipo));
+ if(j&&j.ok){ const h=new Date().toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'}); S.envios.push({tipo:tipo,hora:h}); guardarLocal(); $('#estadoEnvio').textContent=(tipo==='final'?'Versión final enviada ':'Avance guardado ')+h; toast(tipo==='final'?'¡Versión final enviada al docente!':'Avance guardado: el docente ya lo ve.'); }
+ else if(j){ toast('El servidor respondió: '+j.error,true); $('#estadoEnvio').textContent='No se guardó'; }
+ else { $('#estadoEnvio').textContent='Sin conexión'; toast('No se pudo conectar después de 3 intentos. Intenten en un minuto; su trabajo sigue guardado en este navegador.',true); } }
+$('#btnGuardar').onclick=()=>enviar('avance');
+$('#btnFinal').onclick=()=>{ if(!v5().every(x=>x[0])) return toast('Todavía falta algo en la lista de cumplimiento del taller.',true); enviar('final'); };
+
+// ---------- grupo ----------
+$('#selGrupo').innerHTML+=CASOS.map((c,i)=>'<option value="'+(i+1)+'">Grupo '+(i+1)+' · '+esc(c.n)+'</option>').join('');
+$('#selGrupo').onchange=e=>{ const g=+e.target.value; if(!g){ S=null; $('#sinGrupo').style.display=''; $('#conGrupo').style.display='none'; $('#btnGuardar').disabled=true; $('#pasos').innerHTML=''; return; }
+ S=cargarLocal(g)||nuevo(g); try{ localStorage.setItem('taller_auto_ultimo',g); }catch(x){}
+ $('#sinGrupo').style.display='none'; $('#conGrupo').style.display=''; $('#btnGuardar').disabled=false; llenarM1();
+ const u=S.envios[S.envios.length-1]; $('#estadoEnvio').textContent=u?('Último envío '+u.hora):'Sin enviar'; ir(1); };
+function cambio(rep){ guardarLocal(); if(rep!==false) pintarTodo(); else pintarPasos(); }
+function pintarTodo(){ if(!S) return; pintarPasos(); ({1:pintarM1,2:pintarM2,3:pintarM3,4:pintarM4,5:pintarM5})[mision](); }
+bindM1();
+try{ const u=localStorage.getItem('taller_auto_ultimo'); if(u){ $('#selGrupo').value=u; $('#selGrupo').onchange({target:$('#selGrupo')}); } }catch(x){}
+
+// ---------- pestañas ----------
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b)); document.querySelectorAll('.vista').forEach(v=>v.classList.toggle('on',v.id==='v-'+b.dataset.v)); });
+
+// ---------- encuesta ----------
+$('#e-g').innerHTML+=CASOS.map((c,i)=>'<option value="'+(i+1)+'">Grupo '+(i+1)+' · '+esc(c.n)+'</option>').join('');
+$('#e-av').innerHTML=[1,2,3,4,5].map(n=>'<label><input type="radio" name="eav" value="'+n+'"> '+n+'</label>').join('');
+try{ if(localStorage.getItem('encuesta_c4')){ $('#encForm').style.display='none'; $('#encGracias').style.display=''; } }catch(x){}
+$('#e-otra').onclick=()=>{ $('#encForm').style.display=''; $('#encGracias').style.display='none'; };
+$('#e-env').onclick=async()=>{ const g=+$('#e-g').value, u=$('#e-util').value.trim(), c=$('#e-camb').value.trim(), r=document.querySelector('input[name=eav]:checked');
+ if(!g||u.length<3||c.length<3||!r) return toast('Respondan las tres preguntas y elijan su grupo.',true);
+ if(!ENDPOINT) return toast('La encuesta no está conectada todavía.',true);
+ $('#e-msg').textContent='Enviando…'; $('#e-env').disabled=true;
+ const j=await post({grupo:g,integrantes:'Encuesta anónima',tipo:'avance',misiones:'—',meta:'[Encuesta] '+u,libres:+r.value,confirmacion:0,fuera:0,max_iter:0,escenarios:'encuesta',alertas:c,json:JSON.stringify({taller:'encuesta',grupo:g,util:u,cambiar:c,avance:+r.value})});
+ $('#e-env').disabled=false;
+ if(j&&j.ok){ try{ localStorage.setItem('encuesta_c4','1'); }catch(x){} $('#e-msg').textContent=''; $('#e-util').value=''; $('#e-camb').value=''; r.checked=false; $('#encForm').style.display='none'; $('#encGracias').style.display=''; }
+ else { $('#e-msg').textContent=''; toast(j?('El servidor respondió: '+j.error):'No se pudo conectar. Intenten de nuevo en un minuto.',true); } };
+
+// ---------- docente ----------
+let HUELLA=null, FILAS=[], ENC=[], timer=null;
+async function sha256(t){ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+function tipoFila(f){ try{ return JSON.parse(f.json).taller||''; }catch(x){ return ''; } }
+async function cargarDocente(){ try{ const r=await fetch(ENDPOINT+'?a=taller&h='+HUELLA); const j=await r.json();
+  if(!j.ok){ if(j.error==='acceso'){ $('#loginMsg').textContent='Usuario o contraseña incorrectos.'; salir(); } else toast(j.error,true); return false; }
+  const todas=j.filas||[]; FILAS=todas.filter(f=>tipoFila(f)===TALLER); ENC=todas.filter(f=>tipoFila(f)==='encuesta');
+  pintarPanel(); $('#actualizado').textContent='Actualizado '+new Date().toLocaleTimeString('es-EC'); return true; }catch(x){ toast('No se pudo leer el servidor.',true); return false; } }
+$('#btnLogin').onclick=async()=>{ const u=$('#d-u').value.trim(), p=$('#d-p').value; if(!u||!p) return; $('#loginMsg').textContent='Verificando…'; HUELLA=await sha256(u+':'+p);
+ if(await cargarDocente()){ try{ sessionStorage.setItem('taller_h',HUELLA); }catch(x){} $('#login').style.display='none'; $('#panel').style.display=''; programar(); $('#d-p').value=''; } };
+$('#d-p').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#btnLogin').click(); });
+function salir(){ HUELLA=null; try{ sessionStorage.removeItem('taller_h'); }catch(x){} $('#panel').style.display='none'; $('#login').style.display=''; clearInterval(timer); }
+$('#btnSalir').onclick=salir; $('#btnRefrescar').onclick=cargarDocente;
+function programar(){ clearInterval(timer); if($('#auto').checked) timer=setInterval(cargarDocente,30000); }
+$('#auto').onchange=programar;
+function ultimos(){ const m={}; FILAS.forEach(f=>{ m[f.grupo]=f; }); return m; }
+function nEnvios(g){ return FILAS.filter(f=>f.grupo===g).length; }
+function pintarPanel(){ const U=ultimos(), L=Object.values(U); const env=L.length, fin=L.filter(f=>f.tipo==='Final').length;
+ const prom=env?(L.reduce((a,f)=>a+(+String(f.misiones).split('/')[0]||0),0)/env).toFixed(1):'0';
+ const cero=L.filter(f=>/err0/.test(f.escenarios)).length;
+ $('#kpis').innerHTML='<div class="kpi"><b>'+env+' / 11</b>grupos con avance</div><div class="kpi"><b>'+fin+'</b>versiones finales</div><div class="kpi"><b>'+prom+'</b>misiones promedio de 5</div><div class="kpi"><b>'+ENC.length+'</b>respuestas a la encuesta</div>';
+ $('#tbDoc').innerHTML=CASOS.map((c,i)=>{ const g=i+1, f=U[g]; if(!f) return '<tr><td><b>G'+g+'</b> · '+esc(c.n)+'</td><td colspan="8" class="estado">Sin envíos todavía</td></tr>';
+  const mis=+String(f.misiones).split('/')[0]||0; const m=String(f.escenarios).match(/auto(\d+) rev(\d+) err(\d+) plan(\d+)\/8/)||[0,'?','?','?','?'];
+  return '<tr><td><b>G'+g+'</b> · '+esc(c.n)+'<div class="estado">'+esc(f.integrantes||'')+'</div></td><td>'+new Date(f.fecha).toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})+'<div class="estado">'+esc(f.tipo)+' · envío '+nEnvios(g)+'</div></td><td class="dots">'+[1,2,3,4,5].map(k=>'<span class="'+(k<=mis?'on':'')+'"></span>').join('')+'<div class="estado">'+esc(f.misiones)+'</div></td><td>'+f.libres+' · '+f.confirmacion+' · '+f.fuera+'</td><td class="mono">'+((+f.max_iter||0)/100).toFixed(2)+'</td><td><span class="chip ok">'+m[1]+' auto</span><span class="chip no">'+m[2]+' rev</span><span class="chip '+(m[3]==='0'?'ok':'no')+'" style="'+(m[3]!=='0'?'background:var(--rdS);color:var(--rd)':'')+'">'+m[3]+' err</span></td><td>'+m[4]+' / 8</td><td class="alerta">'+esc(f.alertas||'')+'</td><td><button class="btn s" data-ver="'+g+'">Ver</button></td></tr>'; }).join('');
+ pintarEncuesta(); const ab=$('#detalle').dataset.g; if(ab&&U[ab]) verDetalle(+ab,true); }
+$('#tbDoc').addEventListener('click',e=>{ const b=e.target.closest('[data-ver]'); if(b) verDetalle(+b.dataset.ver); });
+function verDetalle(g,sil){ const f=ultimos()[g]; if(!f) return; let s; try{ s=JSON.parse(f.json); }catch(x){ s=null; } const d=$('#detalle'); d.dataset.g=g; d.classList.add('on'); if(!s){ d.innerHTML='<p>No se pudo leer el contenido.</p>'; return; }
+ const prev=S; S=s; const st=umbralStats(+S.umbral);
+ let h='<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><h3 style="font-size:20px">Grupo '+g+' · '+esc(CASOS[g-1].n)+'</h3><span class="estado">'+nEnvios(g)+' envío(s) · último: '+esc(f.tipo)+'</span><span class="espacio"></span><button class="btn s" id="dlADR">⬇ ADR</button><button class="btn s" id="dlPlan">⬇ Plan de calidad</button><button class="btn s" id="dlJSON">⬇ JSON</button><button class="btn s" id="cerrarDet">Cerrar</button></div>';
+ h+='<div class="grid2" style="margin-top:12px"><div><h4>El flujo</h4><p>'+esc(s.flujo.disp)+' → '+esc(s.flujo.ent)+' → <b>'+esc(s.flujo.acc)+'</b> ('+esc(s.flujo.vol)+' '+esc(s.flujo.volu)+')<br><span class="estado">Flujo y no agente: '+esc(s.flujo.pq)+'</span></p><h4>Estaciones</h4><table class="tools"><tr><th>Estación</th><th>Decide</th><th>Qué hace</th></tr>'+estVal().map(e=>'<tr><td><b>'+esc(e.nombre)+'</b></td><td>'+esc(e.dec)+(alertasEst(e).length?'<div class="alerta">revisar'+(S.ack[e.nombre.trim()]?' (lo marcaron como revisado)':'')+'</div>':'')+'</td><td>'+esc(e.que)+'</td></tr>').join('')+'</table>';
+ h+='<h4 style="margin-top:10px">Umbral '+(+s.umbral).toFixed(2)+'</h4><p>'+st.auto+' automáticos · '+st.rev+' a revisión · <b style="color:'+(st.err?'var(--rd)':'var(--gr2)')+'">'+st.err+' errores silenciosos</b><br><span class="estado">'+esc(s.umbpq)+'</span></p><h4>Línea del grupo</h4><p>'+esc(s.linea)+'</p></div>';
+ h+='<div><h4>Plan de calidad</h4><pre class="cod" style="white-space:pre-wrap">'+esc(genPlan())+'</pre></div></div>';
+ d.innerHTML=h; const adr=genADR(), plan=genPlan(); S=prev;
+ $('#dlADR').onclick=()=>bajar('ADR_automatizacion_grupo'+g+'.md',adr); $('#dlPlan').onclick=()=>bajar('plan_calidad_grupo'+g+'.md',plan); $('#dlJSON').onclick=()=>bajar('taller_automatizacion_grupo'+g+'.json',JSON.stringify(s,null,2)); $('#cerrarDet').onclick=()=>{ d.classList.remove('on'); d.dataset.g=''; };
+ if(!sil) d.scrollIntoView({behavior:'smooth'}); }
+function pintarEncuesta(){ const R=ENC.map(f=>{ try{ return JSON.parse(f.json); }catch(x){ return null; } }).filter(Boolean);
+ const n=R.length; const prom=n?(R.reduce((a,r)=>a+(+r.avance||0),0)/n).toFixed(1):'—'; const dist=[1,2,3,4,5].map(k=>R.filter(r=>+r.avance===k).length);
+ const max=Math.max(1,...dist);
+ let h='<h3 style="font-size:20px;margin-bottom:8px">Encuesta de salida · '+n+' respuesta(s) · avance promedio '+prom+' / 5</h3>';
+ h+='<div style="display:flex;gap:10px;align-items:flex-end;height:90px;margin-bottom:12px">'+dist.map((c,i)=>'<div style="text-align:center;flex:1;max-width:80px"><div style="background:var(--aq);height:'+Math.round(60*c/max)+'px;border-radius:6px 6px 0 0"></div><div class="estado">'+(i+1)+' · '+c+'</div></div>').join('')+'</div>';
+ h+='<div style="overflow:auto;max-height:420px"><table class="tdoc"><thead><tr><th>Grupo</th><th>Avance</th><th>Lo más útil</th><th>Qué cambiaría</th></tr></thead><tbody>'+(R.map(r=>'<tr><td>G'+r.grupo+'</td><td>'+r.avance+'</td><td>'+esc(r.util)+'</td><td>'+esc(r.cambiar)+'</td></tr>').join('')||'<tr><td colspan="4" class="estado">Sin respuestas todavía</td></tr>')+'</tbody></table></div>';
+ $('#encPanel').innerHTML=h; }
+$('#btnCsv').onclick=()=>{ const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"'; const R=ENC.map(f=>{ try{ return JSON.parse(f.json); }catch(x){ return {}; } });
+ const a='﻿'+['fecha','grupo','integrantes','tipo','misiones','flujo','IA','codigo','persona','umbral','resultado_10_casos','alertas'].join(',')+'\n'+FILAS.map(f=>[f.fecha,f.grupo,f.integrantes,f.tipo,f.misiones,f.meta,f.libres,f.confirmacion,f.fuera,(+f.max_iter||0)/100,f.escenarios,f.alertas].map(q).join(',')).join('\n')+'\n\nENCUESTA\ngrupo,avance,lo_mas_util,que_cambiaria\n'+R.map(r=>[r.grupo,r.avance,r.util,r.cambiar].map(q).join(',')).join('\n');
+ bajar('clase4_taller_y_encuesta.csv',a); };
+try{ const h=sessionStorage.getItem('taller_h'); if(h){ HUELLA=h; cargarDocente().then(ok=>{ if(ok){ $('#login').style.display='none'; $('#panel').style.display=''; programar(); } }); } }catch(x){}
+
+</script>
+</body>
+</html>
