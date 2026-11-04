@@ -441,7 +441,7 @@ function hallReales(st){ return hallVis(st).filter(h=>h.real!=='falso'); }
 function v1(){ const w=wipExcedido(); return [
  [RE_PROJ.test(S.m1.url.trim()),'Enlace del tablero en GitHub Projects'],
  [S.m1.iss.every(x=>x.resp.trim().length>=2),'Los 6 entregables tienen responsable'],
- [S.m1.iss.some(x=>x.col!=='Por hacer'),'Al menos una tarjeta ya se movió'],
+ [S.m1.iss[5].col!=='Por hacer','«Protección de credenciales» en «En curso» (es lo de hoy)'],
  [w.length===0,w.length?'Límite de trabajo en curso excedido: '+w.join(', '):'Nadie con más de 2 tarjetas «En curso»'],
  [S.m1.quiz.primer!==null,'Reto de gestión respondido']]; }
 function v2(){ const a=S.m2.antes, n=a===''?null:+a, c=contarSalida(S.m2.salida); return [
@@ -519,11 +519,11 @@ function m1(){ return cabecera(1,'Un proyecto con IA tiene incertidumbres que el
  '<div class="card bloque"><h3>Pasos <span class="tag">en GitHub</span></h3><ol class="pasos">'+
  '<li>En su repositorio: pestaña <b>Projects</b> → <b>New project</b> → plantilla <b>Board</b>.</li>'+
  '<li>Dejen cuatro columnas: <b>Por hacer</b>, <b>En curso</b>, <b>Revisión</b>, <b>Hecho</b>.</li>'+
- '<li>Creen un <i>issue</i> por cada entregable de la semana 4 (la tabla de abajo) y asígnenlo a una persona.</li>'+
+ '<li>Creen un <i>issue</i> por cada entregable de la semana 4 (la tabla de abajo) y asígnenlo a una persona. <b>No necesitan tenerlos hechos:</b> cada tarjeta es trabajo por hacer de aquí al sábado.</li>'+
  '<li>Regla del tablero: <b>nadie tiene más de 2 tarjetas «En curso»</b>. Si llega algo urgente, primero se libera una.</li>'+
  '<li>Copien el enlace del tablero (se ve así: <code>https://github.com/users/usuario/projects/3</code>) y péguenlo aquí.</li></ol>'+
  '<div class="campo"><label for="m1url">Enlace del tablero</label><input id="m1url" type="url" maxlength="200" placeholder="https://github.com/users/usuario/projects/3" value="'+esc(S.m1.url)+'"><small id="m1urlMsg"></small></div></div>'+
- '<div class="card bloque"><h3>Entregables de la semana 4 <span class="tag">Complexivo</span></h3><div class="scroll"><table class="tabla"><thead><tr><th style="width:38%">Entregable</th><th style="width:34%">Responsable</th><th>Columna hoy</th></tr></thead><tbody>'+
+ '<div class="card bloque"><h3>Entregables de la semana 4 <span class="tag">Complexivo</span></h3><div class="aviso info"><span class="ic">i</span><div><b>Este tablero es para planificar, no para entregar.</b> Lo normal hoy es que casi todo esté en «Por hacer». Solo «Protección de credenciales» pasa a «En curso», porque es lo que trabajan en este taller. Las demás tarjetas avanzan durante la semana: despliegue el jueves, pruebas el viernes y documentación el sábado.</div></div><div class="scroll"><table class="tabla"><thead><tr><th style="width:38%">Entregable</th><th style="width:34%">Responsable</th><th>Columna hoy</th></tr></thead><tbody>'+
  ENTREGABLES.map((e,i)=>'<tr><td><b>'+esc(e)+'</b></td><td><input type="text" maxlength="60" list="dlNombres" data-iss="'+i+'" data-f="resp" value="'+esc(S.m1.iss[i].resp)+'" placeholder="Nombre" aria-label="Responsable de '+esc(e)+'"></td><td><select data-iss="'+i+'" data-f="col" aria-label="Columna de '+esc(e)+'">'+COLS.map(c=>'<option'+(S.m1.iss[i].col===c?' selected':'')+'>'+c+'</option>').join('')+'</select></td></tr>').join('')+
  '</tbody></table></div><datalist id="dlNombres">'+nombres().map(n=>'<option value="'+esc(n)+'">').join('')+'</datalist><div id="m1wip"></div></div>'+
  '<div class="card bloque reto"><h3>Reto · gestión del proyecto de IA <span class="tag">3 preguntas</span></h3>'+htmlQuiz('q1',Q1,S.m1.quiz,false)+'</div>'+htmlChecks(1)+navMision(1); }
