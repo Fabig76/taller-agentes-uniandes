@@ -1,0 +1,1132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desplegar, probar y documentar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+ --bg:#0F1F1C; --bg2:#163A33; --bg3:#1F4A40; --cream:#F4EFE4; --card:#FBF8F1; --ink:#14231F; --mu:#4A5A55; --mu2:#5A6964;
+ --line:#D9D1C0; --or:#FF6B35; --orL:#FF8A5B; --orD:#B93D0A; --orS:#FFE4D8; --te:#3DD6C3; --teD:#0F766E; --teS:#DDF5EF;
+ --bad:#B42318; --badS:#FDE7E4; --warn:#8A5A00; --warnS:#FFF1D6; --soft:#BFD8D2;
+ --r:18px; --sh:0 6px 28px rgba(15,31,28,.10);
+ --f:'Work Sans',Arial,sans-serif; --fd:'Space Grotesk',Arial,sans-serif; --fm:'JetBrains Mono','Courier New',monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.55 var(--f)}
+a{color:var(--teD)}
+button,input,select,textarea{font:inherit;color:inherit}
+code,.mono{font-family:var(--fm);font-size:.92em}
+code{background:#EDE6D6;border-radius:6px;padding:1px 6px;overflow-wrap:anywhere}
+h1,h2,h3,h4{font-family:var(--fd);line-height:1.15;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* ---------- cabecera ---------- */
+header.hero{background:radial-gradient(circle at 85% 20%,var(--bg3) 0%,var(--bg) 55%);color:var(--cream);padding:34px 0 28px;position:relative;overflow:hidden}
+header.hero::after{content:"";position:absolute;right:-80px;top:-80px;width:340px;height:340px;border:2px dashed rgba(61,214,195,.35);border-radius:50%}
+.eyebrow{font-family:var(--fm);font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--te)}
+.hero h1{font-size:clamp(30px,5vw,52px);letter-spacing:-1px;margin:10px 0 8px}
+.hero h1 span{color:var(--or)}
+.hero p.sub{color:var(--soft);max-width:700px;margin:0 0 22px;font-size:17px}
+.tabs{display:flex;gap:8px;margin-bottom:22px;position:relative;z-index:1}
+.tab{background:transparent;border:1.5px solid rgba(244,239,228,.3);color:var(--cream);border-radius:999px;padding:8px 18px;cursor:pointer;font-weight:600}
+.tab.on{background:var(--or);border-color:var(--or);color:#14120F}
+.grupoBar{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.6fr) auto;gap:14px;align-items:end;position:relative;z-index:1}
+.grupoBar label{display:block;font-size:13px;color:var(--soft);margin-bottom:6px}
+.grupoBar select,.grupoBar input{width:100%;background:var(--bg2);border:1.5px solid rgba(61,214,195,.35);border-radius:12px;padding:11px 12px;color:var(--cream)}
+.grupoBar select:focus,.grupoBar input:focus{outline:2px solid var(--te);outline-offset:1px}
+.avance{min-width:190px}
+.avance .barra{height:10px;background:rgba(244,239,228,.15);border-radius:6px;overflow:hidden}
+.avance .barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--te),var(--or));transition:width .4s}
+.avance small{display:block;color:var(--soft);margin-top:6px;font-size:13px}
+
+/* ---------- vistas ---------- */
+.vista{display:none}.vista.on{display:block}
+.intro{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:26px 0}
+.intro .card{padding:18px}
+.intro b{display:block;font-family:var(--fd);font-size:18px;margin-bottom:4px}
+.intro .n{font-family:var(--fd);font-size:30px;color:var(--or);line-height:1}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.aviso{border-radius:14px;padding:14px 16px;margin:14px 0;display:flex;gap:12px;align-items:flex-start}
+.aviso.info{background:var(--teS);border:1.5px solid #9EE3D7}
+.aviso.warn{background:var(--warnS);border:1.5px solid #F2D18A}
+.aviso.bad{background:var(--badS);border:1.5px solid #F4B3AA}
+.aviso .ic{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;font-size:14px}
+.aviso.info .ic{background:var(--teD)}.aviso.warn .ic{background:var(--warn)}.aviso.bad .ic{background:var(--bad)}
+
+/* ---------- navegación de misiones ---------- */
+.misNav{position:sticky;top:0;z-index:5;background:rgba(244,239,228,.94);backdrop-filter:blur(8px);border-bottom:1.5px solid var(--line);padding:10px 0}
+.misNav .wrap{display:flex;gap:8px;overflow-x:auto}
+.mpill{flex:none;display:flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px 7px 7px;cursor:pointer;font-weight:600;font-size:14px}
+.mpill .num{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#E9E2D2;font-family:var(--fd)}
+.mpill.on{border-color:var(--bg);background:var(--bg);color:var(--cream)}
+.mpill.on .num{background:var(--or);color:#14120F}
+.mpill.ok .num{background:var(--teD);color:#fff}
+.mpill.ok .num::after{content:"✓"}
+.mpill.ok .num span{display:none}
+
+/* ---------- misión ---------- */
+.mision{margin:28px 0 40px}
+.mhead{display:flex;gap:18px;align-items:flex-start;margin-bottom:18px}
+.mhead .big{flex:none;width:64px;height:64px;border-radius:18px;background:var(--bg);color:var(--or);display:grid;place-items:center;font-family:var(--fd);font-size:34px;font-weight:700}
+.mhead h2{font-size:clamp(24px,3.4vw,34px);letter-spacing:-.5px}
+.mhead .meta{font-family:var(--fm);font-size:13px;color:var(--teD);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.mhead p{margin:6px 0 0;color:var(--mu)}
+.bloque{padding:22px;margin:16px 0}
+.bloque h3{font-size:21px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.bloque h3 .tag{font-family:var(--fm);font-size:11px;letter-spacing:2px;text-transform:uppercase;border-radius:999px;padding:3px 10px;background:#E9E2D2;color:var(--ink)}
+ol.pasos{margin:0;padding-left:0;list-style:none;counter-reset:p}
+ol.pasos>li{counter-increment:p;position:relative;padding:10px 0 10px 44px;border-top:1px dashed var(--line)}
+ol.pasos>li:first-child{border-top:none}
+ol.pasos>li::before{content:counter(p);position:absolute;left:0;top:9px;width:30px;height:30px;border-radius:50%;background:var(--bg);color:var(--cream);display:grid;place-items:center;font-family:var(--fd);font-weight:700;font-size:15px}
+.reto{border:2.5px solid var(--or);background:linear-gradient(180deg,#FFF6F1,var(--card))}
+.reto h3 .tag{background:var(--or);color:#14120F}
+.nivel{display:inline-block;font-family:var(--fm);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;border-radius:6px;padding:2px 8px;margin-right:6px}
+.nivel.min{background:var(--teS);color:var(--teD)}.nivel.rec{background:#D6EEE9;color:#0B5A53}.nivel.ava{background:var(--orS);color:var(--orD)}
+.campo{margin:12px 0}
+.campo label{display:block;font-weight:600;margin-bottom:6px}
+.campo small{display:block;color:var(--mu2);margin-top:4px}
+input[type=text],input[type=url],input[type=number],select,textarea{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:110px;font-family:var(--fm);font-size:14px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--te);outline-offset:1px;border-color:var(--teD)}
+.inv{border-color:var(--bad)!important;background:#FFF8F7!important}
+.fila{display:grid;gap:10px}
+.btn{border:none;border-radius:12px;padding:11px 18px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn.p{background:var(--or);color:#14120F}.btn.p:hover{background:var(--orL)}
+.btn.s{background:var(--bg);color:var(--cream)}.btn.s:hover{background:var(--bg2)}
+.btn.g{background:transparent;border:1.5px solid var(--line);color:var(--ink)}.btn.g:hover{border-color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+pre.cod{background:var(--bg);color:#E7F3EF;border-radius:14px;padding:16px 18px;overflow-x:auto;font:13.5px/1.6 var(--fm);margin:10px 0;position:relative}
+pre.cod code{background:none;padding:0;border-radius:0;color:inherit;font-size:inherit;white-space:pre}
+pre.cod .c{color:#8FB3AA}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.g2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.gN{grid-template-columns:minmax(0,180px) minmax(0,1fr)}
+.copiar{position:absolute;right:10px;top:10px;background:var(--bg3);color:var(--cream);border:none;border-radius:8px;padding:5px 10px;font:600 12px var(--f);cursor:pointer}
+.oss{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.oss button{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;font-weight:600;font-size:14px}
+.oss button.on{background:var(--bg);color:var(--cream);border-color:var(--bg)}
+
+/* ---------- quiz ---------- */
+.q{border-top:1px dashed var(--line);padding:14px 0}
+.q:first-of-type{border-top:none}
+.q p.pr{margin:0 0 10px;font-weight:600}
+.q .op{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;margin:6px 0;cursor:pointer}
+.q .op input{margin-top:4px;accent-color:var(--or)}
+.q .op.sel{border-color:var(--bg)}
+.q .op.bien{border-color:var(--teD);background:var(--teS)}
+.q .op.mal{border-color:var(--bad);background:var(--badS)}
+.q .exp{margin-top:8px;font-size:15px;color:var(--mu);border-left:4px solid var(--te);padding-left:12px}
+.puntaje{font-family:var(--fd);font-size:20px;font-weight:700}
+.puntaje small{font-family:var(--f);font-size:14px;font-weight:400;color:var(--mu)}
+
+/* ---------- caza del secreto ---------- */
+.repo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.archivo{background:var(--bg);border-radius:14px;overflow:hidden}
+.archivo .nom{background:var(--bg2);color:var(--te);font:600 13px var(--fm);padding:8px 14px}
+.archivo .lin{display:grid;grid-template-columns:34px 1fr 26px;gap:8px;align-items:start;padding:3px 10px;font:13px/1.55 var(--fm);color:#E7F3EF;cursor:pointer;border-left:4px solid transparent}
+.archivo .lin:hover{background:rgba(61,214,195,.08)}
+.archivo .lin .nl{color:#6F948B;text-align:right;user-select:none}
+.archivo .lin .tx{white-space:pre-wrap;word-break:break-all}
+.archivo .lin .mk{text-align:center;font-weight:700}
+.archivo .lin.sel{background:rgba(255,107,53,.22);border-left-color:var(--or)}
+.archivo .lin.acierto{background:rgba(61,214,195,.22);border-left-color:var(--te)}
+.archivo .lin.falso{background:rgba(180,35,24,.35);border-left-color:#FF8B7E}
+.archivo .lin.perdido{background:rgba(255,193,7,.18);border-left-color:#FFC107}
+.archivo .lin:focus{outline:2px solid var(--or);outline-offset:-2px}
+.explic{font-size:14px;margin:8px 0 0;padding-left:0;list-style:none}
+.explic li{padding:6px 0;border-top:1px dashed var(--line)}
+
+/* ---------- comprobación ---------- */
+.chk{list-style:none;margin:0;padding:0}
+.chk li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px dashed var(--line)}
+.chk li:first-child{border-top:none}
+.chk .d{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;margin-top:1px}
+.chk .d.si{background:var(--teD);color:#fff}.chk .d.no{background:#E9E2D2;color:var(--mu)}
+.chk .d.si::after{content:"✓"}.chk .d.no::after{content:"·"}
+.estadoM{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.sello{font-family:var(--fm);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;border-radius:999px;padding:5px 12px}
+.sello.si{background:var(--teD);color:#fff}.sello.no{background:#E9E2D2;color:var(--mu)}
+.navM{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+
+/* ---------- tablas ---------- */
+.tabla{width:100%;border-collapse:collapse;font-size:14px}
+.tabla th{background:var(--bg);color:var(--cream);text-align:left;padding:9px 10px;font-weight:600}
+.tabla td{border-bottom:1px solid var(--line);padding:8px 10px;vertical-align:top}
+.tabla input,.tabla select{padding:7px 8px;font-size:14px}
+.scroll{overflow-x:auto}
+.recom{background:var(--bg);color:var(--cream);border-radius:16px;padding:20px;margin:14px 0}
+.recom h4{font-size:22px;color:var(--or);margin:4px 0 8px}
+.recom ul{margin:6px 0 0;padding-left:20px;color:var(--soft)}
+.recom .eyebrow{color:var(--te)}
+
+/* ---------- barra inferior ---------- */
+.envio{position:sticky;bottom:0;z-index:6;background:var(--bg);color:var(--cream);padding:12px 0;box-shadow:0 -6px 24px rgba(0,0,0,.18)}
+.envio .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.envio .est{font-size:14px;color:var(--soft)}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--cream);padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;max-width:min(560px,92vw);z-index:20;box-shadow:var(--sh)}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.toast.err{background:var(--bad)}
+.vacio{text-align:center;padding:50px 20px}
+.vacio h2{font-size:28px;margin-bottom:8px}
+
+/* ---------- docente ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.kpi{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px}
+.kpi b{display:block;font-family:var(--fd);font-size:28px}
+.dots span{display:inline-block;width:11px;height:11px;border-radius:50%;background:#E3DCCB;margin-right:3px}
+.dots span.on{background:var(--teD)}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;margin:1px 2px}
+.chip.ok{background:var(--teS);color:var(--teD)}.chip.no{background:var(--badS);color:var(--bad)}.chip.n{background:#E9E2D2;color:var(--mu)}
+#detalle{display:none;margin-top:16px}#detalle.on{display:block}
+footer{color:var(--mu2);font-size:13px;text-align:center;padding:26px 0 90px}
+
+@media (max-width:820px){
+ .grupoBar{grid-template-columns:1fr}
+ .intro{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .repo{grid-template-columns:1fr}
+ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .bloque{padding:16px}
+ .mhead .big{width:50px;height:50px;font-size:26px}
+ .envio{padding:8px 0}
+ .envio .est{width:100%;font-size:13px}
+ .envio .btns{width:100%;gap:6px}
+ .envio .btn{flex:1;justify-content:center;padding:9px 8px;font-size:13px}
+ .intro .card{padding:14px}
+ .toast{bottom:150px}
+}
+@media (max-width:600px){ .g2,.g3,.gN{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* ---------- taller de despliegue ---------- */
+.concepto{border-left:6px solid var(--te)}
+.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tres.cuatro{grid-template-columns:repeat(4,1fr)}
+.tres>div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.tres b{display:block;font-family:var(--fd);font-size:17px;margin-bottom:4px}
+.tres span{color:var(--mu);font-size:15px}
+@media(max-width:820px){.tres,.tres.cuatro{grid-template-columns:1fr}}
+.dia{display:inline-flex;align-items:center;font-family:var(--fm);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--teD);background:var(--teS);border-radius:999px;padding:4px 10px;margin:0 2px;white-space:nowrap}
+.nota{color:var(--mu);font-size:14.5px}
+.check{display:flex;gap:10px;align-items:flex-start;margin:10px 0;cursor:pointer}
+.check input{margin-top:4px;flex:none;width:18px;height:18px}
+.lista2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+@media(max-width:700px){.lista2{grid-template-columns:1fr}}
+textarea{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;resize:vertical;line-height:1.45}
+textarea.mono{font-family:var(--fm);font-size:13.5px}
+textarea:focus,input:focus,select:focus{outline:3px solid rgba(61,214,195,.45);border-color:var(--teD)}
+.casos td{vertical-align:top}
+.casos input,.casos select,.casos textarea{width:100%;min-width:90px;background:#fff;border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;font-size:14px}
+.casos textarea{min-width:180px}
+.casos .d{display:inline-block;vertical-align:middle}
+.btn.mini{padding:4px 10px;font-size:14px}
+details{margin:6px 0}
+details summary{cursor:pointer;color:var(--teD);font-weight:600}
+.platBox{background:var(--teS);border-color:#9fd9cc}
+input.inv,textarea.inv{border-color:var(--bad)!important;background:var(--badS)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+ <div class="wrap">
+  <div class="eyebrow">Semana 4 · Clases 2 y 3 · Taller práctico</div>
+  <h1>Desplegar, <span>probar</span> y documentar</h1>
+  <p class="sub">Ocho misiones para llevar su proyecto a internet con un enlace público: la caja (Docker), el pulso (/health), los datos, el despliegue y el pipeline el jueves; las pruebas funcionales, la integración estable con el modelo y la documentación el viernes.</p>
+  <div class="tabs" role="tablist">
+   <button class="tab on" data-v="taller" role="tab" aria-selected="true">Taller</button>
+   <button class="tab" data-v="docente" role="tab" aria-selected="false">Docente</button>
+  </div>
+  <div class="grupoBar" id="grupoBar">
+   <div><label for="selGrupo">1. Elijan su grupo</label><select id="selGrupo"><option value="">— Seleccionar —</option></select></div>
+   <div><label for="integrantes">2. Integrantes (nombres separados por coma)</label><input id="integrantes" type="text" maxlength="200" placeholder="Ana Pérez, Luis Mora, Sofía Ruiz" disabled></div>
+   <div class="avance"><span style="display:block;font-size:13px;color:var(--soft);margin-bottom:6px">Avance</span><div class="barra"><i id="barraAv"></i></div><small id="txtAv">0 de 8 misiones</small></div>
+  </div>
+ </div>
+</header>
+
+<!-- ===================== VISTA TALLER ===================== -->
+<section class="vista on" id="v-taller">
+ <div class="wrap">
+  <div class="intro">
+   <div class="card"><span class="n">1</span><b>Jueves: desplegar</b>Misiones 1 a 5. Al final del jueves su proyecto debe tener un enlace público que responda en <code>/health</code>.</div>
+   <div class="card"><span class="n">2</span><b>Viernes: validar</b>Misiones 6 a 8: pruebas funcionales contra el enlace, integración estable con el modelo y documentación técnica.</div>
+   <div class="card"><span class="n">3</span><b>Niveles</b><span class="nivel min">Mínimo</span><span class="nivel rec">Recomendado</span><span class="nivel ava">Avanzado</span><br>Diseñen la solución según su capacidad técnica; el mínimo es obligatorio.</div>
+   <div class="card"><span class="n">4</span><b>Guarden y envíen</b>Todo se guarda en este navegador. «Guardar avance» lo envía al docente; al terminar las 8 misiones, «Enviar versión final».</div>
+  </div>
+  <div class="aviso warn"><span class="ic">!</span><div><b>Nunca peguen una clave real en esta página.</b> El Dockerfile, el workflow y las respuestas que peguen aquí no deben tener valores secretos. Si el taller detecta algo con forma de clave, lo marca y no lo envía.</div></div>
+ </div>
+
+ <div id="sinGrupo" class="wrap"><div class="card vacio"><h2>Elijan su grupo para empezar</h2><p>Arriba, en «Elijan su grupo». Si ya habían empezado en este navegador, su avance se recupera solo.</p></div></div>
+
+ <div id="conGrupo" style="display:none">
+  <nav class="misNav" aria-label="Misiones"><div class="wrap" id="misNav"></div></nav>
+  <div class="wrap"><div id="misionBox"></div></div>
+ </div>
+</section>
+
+<!-- ===================== VISTA DOCENTE ===================== -->
+<section class="vista" id="v-docente">
+ <div class="wrap" style="padding-top:26px">
+  <div id="login" class="card bloque" style="max-width:460px">
+   <h3>Panel del docente</h3>
+   <p style="color:var(--mu);margin-top:0">Ingrese con su usuario. La contraseña no se guarda: se verifica en el servidor.</p>
+   <div class="campo"><label for="d-u">Usuario</label><input id="d-u" type="text" autocomplete="username"></div>
+   <div class="campo"><label for="d-p">Contraseña</label><input id="d-p" type="password" autocomplete="current-password" style="width:100%;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px"></div>
+   <div class="btns"><button class="btn s" id="btnLogin">Entrar</button><span id="loginMsg" style="color:var(--bad)"></span></div>
+  </div>
+  <div id="panel" style="display:none">
+   <div class="btns" style="justify-content:space-between">
+    <h2 style="font-size:28px">Avance del taller · despliegue</h2>
+    <div class="btns" style="margin:0"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="auto" checked> Actualizar cada 30 s</label><button class="btn g" id="btnRefrescar">Actualizar</button><button class="btn g" id="btnSalir">Salir</button></div>
+   </div>
+   <small id="actualizado" style="color:var(--mu2)"></small>
+   <div class="kpis" id="kpis"></div>
+   <div class="card scroll"><table class="tabla"><thead><tr><th>Grupo</th><th>Último envío</th><th>Misiones</th><th>Retos</th><th>Plataforma</th><th>Enlace público</th><th>CI</th><th>Humo</th><th>Pendiente</th><th></th></tr></thead><tbody id="tbDoc"></tbody></table></div>
+   <div id="detalle" class="card bloque"></div>
+  </div>
+ </div>
+</section>
+
+<div class="envio" id="barraEnvio" style="display:none">
+ <div class="wrap">
+  <span class="est" id="estadoEnvio">Sin enviar</span>
+  <div class="btns" style="margin:0">
+   <button class="btn g" id="btnRespaldo" style="color:var(--cream);border-color:rgba(244,239,228,.35)">Descargar respaldo</button>
+   <button class="btn s" id="btnGuardar" style="background:var(--bg3)">Guardar avance</button>
+   <button class="btn p" id="btnFinal">Enviar versión final</button>
+  </div>
+ </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<footer>Seminario Ingeniería de Software con IA Generativa · Módulo 4: Proyecto y Despliegue de Aplicaciones Inteligentes · UNIANDES · 5 y 6 de noviembre de 2026</footer>
+
+<script>
+// =====================================================================
+// 1. BASE
+// =====================================================================
+const ENDPOINT='https://script.google.com/macros/s/AKfycbwtrNEKpjka0IsS7npcY4zTlq1yagnRgBWFfjVrX9mgccJklrgUE_UJHkjhhppvtZZt/exec';
+const TALLER='despliegue';
+const PREFIJO='taller_desp_g';
+const NM=8;
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+let toastT=null;
+function toast(m,err){ const t=$('#toast'); t.textContent=m; t.classList.toggle('err',!!err); t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),4800); }
+function copiar(txt){ const ok=()=>toast('Copiado al portapapeles.'); if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(txt).then(ok,()=>copiaRespaldo(txt)); } else copiaRespaldo(txt); }
+function copiaRespaldo(txt){ const a=document.createElement('textarea'); a.value=txt; a.style.position='fixed'; a.style.opacity='0'; document.body.appendChild(a); a.select(); try{ document.execCommand('copy'); toast('Copiado al portapapeles.'); }catch(e){ toast('No se pudo copiar; selecciónenlo a mano.',true); } a.remove(); }
+function descargar(nombre,txt,tipo){ const b=new Blob([txt],{type:tipo||'text/markdown;charset=utf-8'}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=nombre; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500); }
+function bloqueCodigo(txt,id){ return '<pre class="cod"'+(id?' id="'+id+'"':'')+'><button class="copiar" type="button" data-copiar>Copiar</button><code>'+esc(txt)+'</code></pre>'; }
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-copiar]'); if(b){ copiar(b.parentElement.querySelector('code').textContent); } });
+
+const CASOS=['Titulación y normativa académica','Reclamos de consumo','Triaje de soporte tecnológico','Planificador turístico','Orientación sobre dengue','Pliegos de contratación pública','Beneficios y liquidaciones laborales','Simulador de situaciones viales','Asistente para productores de cacao','Revisor de código seguro','Calendario tributario RIMPE'];
+// Lo que cada grupo eligió en el taller del 4 de noviembre (misión 5) y lo que mostró la revisión del 5
+const PREV={1:{plat:'cloudrun',emb:'api',stack:'py',nota:'Ayer eligieron Cloud Run. Ojo: su SQLite y los archivos subidos se pierden en cada reinicio (misión 3).'},
+ 2:{plat:'cloudrun',emb:'api',stack:'java',nota:'Ayer propusieron solo una demo local, pero el Complexivo pide despliegue. Su app es liviana (embeddings por API; Qdrant y Redis ya están en la nube): Cloud Run con Java funciona igual.'},
+ 3:{plat:'azure',emb:'local',stack:'py',nota:'Ayer eligieron Azure for Students (sin tarjeta). Confirmen que el correo UNIANDES ya está validado.'},
+ 4:{plat:'azure',emb:'local',stack:'py',nota:'Ayer eligieron Azure for Students (sin tarjeta). Confirmen que el correo UNIANDES ya está validado.'},
+ 5:{plat:'cloudrun',emb:'local',stack:'py',nota:'Ayer eligieron Cloud Run y ya tienen workflows de despliegue: hoy toca publicar la URL real.'},
+ 6:{plat:'ya',emb:'local',stack:'py',nota:'Ya están desplegados en Oracle. Hoy: /health, pipeline con pruebas y que el despliegue sea reproducible.'},
+ 7:{plat:'cloudrun',emb:'local',stack:'py',nota:'Ayer eligieron Cloud Run (1–2 GiB por torch y e5). Todavía no tienen Dockerfile: empiecen por la misión 1.'},
+ 8:{plat:'cloudrun',emb:'local',stack:'py',nota:'Ayer eligieron Cloud Run y ya tienen Dockerfile: revísenlo con la misión 1 y metan el índice en la imagen.'},
+ 9:{plat:'cloudrun',emb:'local',stack:'py',nota:'Ayer eligieron Cloud Run. Ojo: lo que guarda registrar_consulta se pierde en cada reinicio (misión 3).'},
+ 10:{plat:'ya',emb:'local',stack:'py',nota:'Ya están desplegados en Railway con volumen. Hoy: pipeline que corra las pruebas en main y pruebas funcionales contra la URL.'},
+ 11:{plat:'',emb:'no',stack:'py',nota:'Ayer no terminaron el taller de credenciales: completen allí las misiones 4, 5 y 6 y luego elijan aquí su plataforma.'}};
+const PLATS=[['cloudrun','Google Cloud Run'],['azure','Azure for Students (Container Apps)'],['render','Render (solo apps livianas)'],['ya','Ya desplegado (Oracle, Railway u otra)']];
+const PLATN=k=>(PLATS.find(p=>p[0]===k)||['',''])[1];
+const ENTREGABLES=['Producto final operativo','Integración IA estable','Despliegue','Documentación técnica','Pruebas funcionales','Protección de credenciales'];
+
+const MIS=[
+ {t:'La caja: Dockerfile',min:'25 min',tema:'Jueves · Contenedores'},
+ {t:'¿Está viva? /health',min:'10 min',tema:'Jueves · Observabilidad mínima'},
+ {t:'¿Dónde viven los datos?',min:'15 min',tema:'Jueves · Persistencia'},
+ {t:'Desplegar',min:'35 min',tema:'Jueves · Despliegue'},
+ {t:'Pipeline: probar antes de publicar',min:'25 min',tema:'Jueves · CI/CD'},
+ {t:'Pruebas funcionales',min:'35 min',tema:'Viernes · Pruebas'},
+ {t:'Integración IA estable',min:'30 min',tema:'Viernes · Robustez'},
+ {t:'Documentación y cierre',min:'30 min',tema:'Viernes · Documentación'}
+];
+
+// =====================================================================
+// 2. CONTENIDO DE LOS RETOS
+// =====================================================================
+const Q1=[
+ {q:'¿Cuál es la diferencia entre una imagen y un contenedor?',ops:['La imagen es el paquete armado con el Dockerfile (solo lectura); el contenedor es esa imagen ejecutándose','Son lo mismo con distinto nombre','El contenedor es el archivo Dockerfile y la imagen es el resultado en la nube'],ok:0,exp:'El Dockerfile es la receta, la imagen es la caja armada y el contenedor es la caja funcionando. De una imagen pueden correr varios contenedores.'},
+ {q:'¿Por qué el Dockerfile nunca debe copiar el archivo .env?',ops:['Porque Docker no puede leer archivos ocultos','Porque la imagen se sube a un registro y cualquiera con acceso a ella puede leer las claves que lleve dentro','Porque el .env hace la imagen mucho más pesada'],ok:1,exp:'Lo que entra en la imagen viaja con ella. Las claves se entregan al contenedor como variables de entorno o secretos de la plataforma, nunca dentro de la caja.'},
+ {q:'Su app usa e5 local. ¿Por qué descargar el modelo durante el build y no al arrancar?',ops:['Para que cada arranque no lo descargue de internet: arranca más rápido y no depende de Hugging Face','Porque las plataformas prohíben internet a los contenedores','Porque así el modelo ocupa menos memoria'],ok:0,exp:'Con escalado a cero, la app arranca muchas veces. Si cada arranque descarga 470 MB, el arranque en frío se vuelve de minutos y falla si Hugging Face no responde.'},
+ {q:'Cloud Run, Azure y Render indican el puerto con la variable PORT. ¿Qué pasa si la app escucha siempre en el 8000?',ops:['Nada, la plataforma se adapta sola','La app funciona pero más lenta','La plataforma no encuentra la app en el puerto que espera y el despliegue falla aunque el código esté bien'],ok:2,exp:'La plataforma envía el tráfico al puerto que anunció en PORT. Por eso el comando de arranque usa ${PORT}.'}];
+const Q3=[
+ {q:'El agente guarda una consulta confirmada en SQLite dentro del contenedor. Al día siguiente ya no está. ¿Por qué?',ops:['Porque SQLite borra los datos antiguos','Porque el contenedor se reinició y su disco es temporal: todo lo que se escribió se perdió','Porque la plataforma bloquea las bases de datos'],ok:1,exp:'El disco de un contenedor nace limpio en cada arranque, desde la imagen. Lo que deba sobrevivir va a una base o almacenamiento externo.'},
+ {q:'El índice del RAG se construye con ingest.py y luego solo se lee. ¿Dónde conviene?',ops:['Dentro de la imagen, construido durante el build','En la carpeta del usuario','Se reconstruye en cada consulta'],ok:0,exp:'Si solo se lee, la imagen es el mejor lugar: llega igual a todas las copias y no hay que esperar a construirlo al arrancar.'},
+ {q:'La plataforma abre dos copias de la app porque hay tráfico. Cada copia guarda el historial en su propio SQLite. ¿Qué ve el usuario?',ops:['Siempre todo su historial','A veces su historial y a veces no, según qué copia le responda','Un error de base de datos'],ok:1,exp:'Cada copia tiene su propio disco. Por eso el historial compartido va a una base externa, o se limita a una sola copia con max-instances 1 y se acepta el riesgo.'},
+ {q:'¿Qué debe quedar escrito en el ADR de despliegue sobre los datos?',ops:['Nada, es un detalle técnico','Solo el nombre de la base de datos','Qué se guarda dónde, qué se acepta perder y por qué'],ok:2,exp:'Así el tribunal y el siguiente equipo entienden la decisión y sus consecuencias, en vez de descubrirlas cuando se pierden datos.'}];
+const Q5=[
+ {q:'¿Qué es integración continua (CI)?',ops:['Que en cada push o pull request se ejecuten solas las pruebas y revisiones del proyecto','Que el equipo se reúna todos los días','Que la app se actualice cada hora'],ok:0,exp:'CI detecta el error en el commit que lo introdujo, no el día de la defensa.'},
+ {q:'¿Para qué sirve needs: pruebas en el job de despliegue?',ops:['Para que el despliegue vaya más rápido','Para que el despliegue solo corra si el job de pruebas terminó bien','Para que GitHub cobre menos minutos'],ok:1,exp:'Eso es la «D» de CI/CD bien hecha: si las pruebas fallan, no se publica.'},
+ {q:'¿Dónde va la credencial que GitHub Actions usa para desplegar?',ops:['En el workflow, en texto plano','En el README','En Settings › Secrets and variables › Actions, y el workflow la lee con ${{ secrets.NOMBRE }}'],ok:2,exp:'GitHub la cifra y la oculta en los registros. Es lo mismo que practicaron ayer con el .env, pero para el pipeline.'},
+ {q:'Las pruebas del pipeline llaman a Gemini de verdad. ¿Qué problema hay?',ops:['Ninguno, así prueban mejor','Gastan cuota, fallan por razones ajenas al código y obligan a poner la clave en CI: hay que simular el modelo','Que GitHub bloquea las llamadas a Google'],ok:1,exp:'Las pruebas unitarias usan un modelo simulado. La prueba con el modelo real es la de humo contra la URL desplegada (misión 6).'}];
+const Q7=[
+ {q:'Gemini responde 429 (demasiadas peticiones). ¿Qué debe hacer la app?',ops:['Reintentar sin parar hasta que funcione','Esperar un poco, reintentar pocas veces y, si sigue, pasar al respaldo o avisar al usuario con un mensaje claro','Mostrar el error técnico completo'],ok:1,exp:'Reintentos con espera creciente y un tope, más un respaldo. Reintentar sin parar empeora el bloqueo.'},
+ {q:'¿Por qué cada llamada al modelo necesita un tiempo límite (timeout)?',ops:['Porque sin él una llamada colgada deja al usuario esperando y ocupa el servidor indefinidamente','Porque los modelos cobran por segundo','Porque lo exige Python'],ok:0,exp:'Con timeout la app decide qué hacer (reintentar, respaldo o mensaje) en vez de quedarse esperando.'},
+ {q:'La primera visita después de 20 minutos sin uso tarda 25 s y el frontend muestra error. ¿Qué es y qué se hace?',ops:['Un ataque: hay que bloquear la IP','Un error del modelo: hay que cambiarlo','Arranque en frío: dar más tiempo de espera a la primera llamada, mostrar «despertando el servicio» y llamar a /health antes de la demo'],ok:2,exp:'Con min-instances 0 la app se apaga sin tráfico. Es el precio de no pagar; se maneja en la interfaz y en la demo.'},
+ {q:'¿Qué NO debe guardarse en los registros (logs) de las llamadas al modelo?',ops:['La latencia y los tokens','El proveedor que respondió','El texto del usuario con datos personales y cualquier clave'],ok:2,exp:'Los logs sirven para medir y depurar: latencia, tokens, proveedor, errores. Los datos personales y las claves no van ahí (LLM02).'}];
+
+const COMP=[['indice','Índice del RAG (fragmentos y vectores)','lee'],['docs','Documentos originales del caso','lee'],['config','Configuración (config/, prompts)','lee'],['historial','Historial de conversaciones','escribe'],['registros','Lo que registra el agente (tickets, consultas, reclamos)','escribe'],['subidos','Archivos que sube el usuario','escribe'],['logs','Registros de llamadas al modelo','escribe']];
+const DEST=[['imagen','Dentro de la imagen (solo lectura)'],['externa','Base o almacenamiento externo'],['efimera','Se pierde al reiniciar (lo aceptamos)'],['na','No existe en nuestro proyecto']];
+const CTL=[['timeout','Tiempo límite en cada llamada al modelo',true],['reintentos','Reintentos con espera creciente ante 429 o 5xx',false],['respaldo','Proveedor o modelo de respaldo',false],['limite','Límite de peticiones por usuario o IP (responde 429)',false],['entrada','Tope de tamaño de la entrada y de tokens de salida',true],['mensaje','Mensaje claro al usuario cuando el modelo falla (sin trazas de error)',true],['frio','La primera llamada tras un arranque en frío no falla',false],['logs','Registro de llamadas sin datos personales ni claves',false]];
+const README_CHK=['Qué problema resuelve y para quién','Arquitectura (diagrama o lista de componentes)','Cómo ejecutarlo en local, paso a paso','Variables de entorno (remite a .env.example, sin valores)','Cómo se despliega y la URL pública','Cómo correr las pruebas y la evaluación, con resultados reales','Decisiones (ADR) y riesgos (docs/riesgos.md)','Limitaciones conocidas','Integrantes y responsabilidades'];
+const TIPOS_CASO=[['salud','Salud (/health)'],['caso','Pregunta o tarea del caso'],['fuera','Fuera de dominio (debe abstenerse)'],['inyeccion','Intento de inyección'],['invalida','Entrada inválida (vacía o mal formada)']];
+
+// =====================================================================
+// 3. ESTADO (guardado en este navegador)
+// =====================================================================
+const QN=()=>({resp:{},comp:false,primer:null});
+const CASOS_BASE=()=>[
+ {tipo:'salud',met:'GET',ruta:'/health',cuerpo:'',estado:'200',contiene:'ok'},
+ {tipo:'caso',met:'POST',ruta:'',cuerpo:'',estado:'200',contiene:''},
+ {tipo:'caso',met:'POST',ruta:'',cuerpo:'',estado:'200',contiene:''},
+ {tipo:'fuera',met:'POST',ruta:'',cuerpo:'',estado:'200',contiene:''},
+ {tipo:'inyeccion',met:'POST',ruta:'',cuerpo:'',estado:'200',contiene:''},
+ {tipo:'invalida',met:'POST',ruta:'',cuerpo:'{}',estado:'422',contiene:''}];
+let S=null, mision=1;
+function nuevo(g){ const p=PREV[g]||{}; return {taller:TALLER,v:1,grupo:g,integrantes:'',plat:p.plat||'',stack:p.stack||'py',emb:p.emb||'local',
+ m1:{docker:'',ignore:'',build:false,quiz:QN()},
+ m2:{resp:'',prueba:false},
+ m3:{dest:{},porque:'',quiz:QN()},
+ m4:{url:'',health:'',claves:false,mem:'',max:'',presupuesto:false,frio:'',prueba:''},
+ m5:{yml:'',run:'',quiz:QN()},
+ m6:{casos:CASOS_BASE(),salida:'',plan:''},
+ m7:{ctl:{},falla:'',quiz:QN()},
+ m8:{readme:'',chk:{},ent:{}},
+ envios:[]}; }
+function clave(g){ return PREFIJO+g; }
+function cargarLocal(g){ try{ const t=localStorage.getItem(clave(g)); if(!t) return null; return completar(JSON.parse(t),g); }catch(e){ return null; } }
+const PN=x=>(x===null||x===undefined||x===''||!Number.isFinite(+x))?null:Math.max(0,Math.round(+x));
+const TX=(x,m)=>String(x??'').slice(0,m||300);
+const OBJ=x=>x&&typeof x==='object'&&!Array.isArray(x);
+function quizN(q){ if(!OBJ(q)) return QN(); return {resp:OBJ(q.resp)?q.resp:{},comp:!!q.comp,primer:PN(q.primer)}; }
+function completar(o,g){ const n=nuevo(g); if(!OBJ(o)) return n;
+ for(const k in n){ if(o[k]===undefined||o[k]===null||typeof o[k]!==typeof n[k]||Array.isArray(o[k])!==Array.isArray(n[k])) o[k]=n[k]; else if(OBJ(n[k])){ for(const j in n[k]) if(o[k][j]===undefined||o[k][j]===null) o[k][j]=n[k][j]; } }
+ o.grupo=+o.grupo||g; o.integrantes=TX(o.integrantes,200);
+ o.plat=PLATS.some(p=>p[0]===o.plat)?o.plat:''; o.stack=o.stack==='java'?'java':'py'; o.emb=['api','local','no'].includes(o.emb)?o.emb:'local';
+ o.m1.docker=TX(o.m1.docker,5000); o.m1.ignore=TX(o.m1.ignore,1500); o.m1.build=!!o.m1.build; o.m1.quiz=quizN(o.m1.quiz);
+ o.m2.resp=TX(o.m2.resp,600); o.m2.prueba=!!o.m2.prueba;
+ const d={}; if(OBJ(o.m3.dest)) COMP.forEach(c=>{ if(DEST.some(x=>x[0]===o.m3.dest[c[0]])) d[c[0]]=o.m3.dest[c[0]]; }); o.m3.dest=d; o.m3.porque=TX(o.m3.porque,1500); o.m3.quiz=quizN(o.m3.quiz);
+ o.m4.url=TX(o.m4.url,200); o.m4.health=TX(o.m4.health,600); o.m4.claves=!!o.m4.claves; o.m4.mem=TX(o.m4.mem,10); o.m4.max=TX(o.m4.max,6); o.m4.presupuesto=!!o.m4.presupuesto; o.m4.frio=TX(o.m4.frio,6); o.m4.prueba=TX(o.m4.prueba,200);
+ o.m5.yml=TX(o.m5.yml,6000); o.m5.run=TX(o.m5.run,200); o.m5.quiz=quizN(o.m5.quiz);
+ o.m6.casos=(Array.isArray(o.m6.casos)?o.m6.casos:CASOS_BASE()).filter(OBJ).slice(0,12).map(c=>({tipo:TIPOS_CASO.some(t=>t[0]===c.tipo)?c.tipo:'caso',met:c.met==='GET'?'GET':'POST',ruta:TX(c.ruta,120),cuerpo:TX(c.cuerpo,600),estado:TX(c.estado,3),contiene:TX(c.contiene,80)}));
+ if(!o.m6.casos.length) o.m6.casos=CASOS_BASE(); o.m6.salida=TX(o.m6.salida,3000); o.m6.plan=TX(o.m6.plan,1000);
+ const ct={}; if(OBJ(o.m7.ctl)) CTL.forEach(c=>{ const x=o.m7.ctl[c[0]]; if(OBJ(x)) ct[c[0]]={e:['si','parcial','no'].includes(x.e)?x.e:'',d:TX(x.d,120)}; }); o.m7.ctl=ct; o.m7.falla=TX(o.m7.falla,600); o.m7.quiz=quizN(o.m7.quiz);
+ o.m8.readme=TX(o.m8.readme,200); const ck={}; if(OBJ(o.m8.chk)) README_CHK.forEach((x,i)=>{ if(o.m8.chk[i]) ck[i]=true; }); o.m8.chk=ck;
+ const en={}; if(OBJ(o.m8.ent)) ENTREGABLES.forEach((x,i)=>{ const v=o.m8.ent[i]; if(OBJ(v)) en[i]={e:['completo','parcial','pendiente'].includes(v.e)?v.e:'',ev:TX(v.ev,160)}; }); o.m8.ent=en;
+ if(!Array.isArray(o.envios)) o.envios=[]; o.envios=o.envios.slice(-30);
+ return o; }
+let guardT=null;
+function guardarYa(){ clearTimeout(guardT); if(S){ try{ localStorage.setItem(clave(S.grupo),JSON.stringify(S)); }catch(e){} } }
+function guardarLocal(){ if(!S) return; clearTimeout(guardT); guardT=setTimeout(guardarYa,200); }
+window.addEventListener('pagehide',guardarYa);
+
+// =====================================================================
+// 4. VALIDADORES
+// =====================================================================
+// Algo con forma de clave real (no un marcador ni una referencia a secretos)
+const RE_CLAVE=/(AIza[0-9A-Za-z_\-]{30,}|gsk_[0-9A-Za-z]{20,}|sk-(proj-)?[0-9A-Za-z_\-]{20,}|ghp_[0-9A-Za-z]{30,}|github_pat_[0-9A-Za-z_]{30,}|xox[bp]-[0-9A-Za-z-]{20,}|-----BEGIN [A-Z ]*PRIVATE KEY-----)/;
+const SENS=/(^|[\s_])(API_?KEY|SECRET|PASSWORD|PASSWD|TOKEN|PRIVATE_KEY|DATABASE_URL)\b/i;
+function asignaSecreto(txt){ // ENV/ARG o variable con nombre sensible y un valor literal
+ const L=[]; String(txt).split('\n').forEach((l,i)=>{ const s=l.replace(/#.*$/,'').trim(); if(!s) return;
+  const m=s.match(/^(?:ENV|ARG)\s+([A-Za-z_][\w]*)\s*[= ]\s*(.+)$/i)||s.match(/^-?\s*([A-Za-z_][\w]*)\s*[:=]\s*(.+)$/);
+  if(m&&SENS.test(' '+m[1])){ const raw=m[2].trim(), v=raw.replace(/^["']|["']$/g,''); if(v&&!/^\$\{\{\s*(secrets|vars|github)\./.test(raw)&&!/^\$\{?[A-Za-z_]+\}?$/.test(v)&&!/^(""|''|<.*>|tu_|xxx|changeme|cambiar|pegar)/i.test(v)) L.push(i+1); } });
+ return L; }
+function hayClave(txt){ return RE_CLAVE.test(String(txt)); }
+const RE_URL=/^https:\/\/[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+(:\d{2,5})?(\/[^\s"'<>]*)?$/i;
+function urlOk(u){ u=String(u).trim(); if(!RE_URL.test(u)) return false; return !/^https:\/\/(localhost|127\.|0\.0\.0\.0|10\.|192\.168\.)/i.test(u); }
+const RE_RUN=/^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/actions\/runs\/\d+(\/[^\s]*)?$/;
+const RE_README=/^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+(\/(blob|tree)\/[^\s]+)?\/?(#[^\s]*)?$/;
+function saludOk(t){ t=String(t||'').trim(); if(!t) return false; try{ const o=JSON.parse(t); const v=String(o.status??o.estado??'').toLowerCase(); return ['ok','up','healthy','pass','vivo'].includes(v); }catch(e){ return false; } }
+function base(u){ return String(u||'').trim().replace(/\/+$/,'').replace(/\/health$/i,''); }
+
+function revisarDocker(t,emb,stack){ const s=String(t||''); const R=[]; const lin=s.split('\n').map(l=>l.replace(/#.*$/,'').trim()).filter(Boolean);
+ const froms=lin.filter(l=>/^FROM\s/i.test(l));
+ R.push([froms.length>0,'Tiene al menos una línea FROM']);
+ R.push([froms.length>0&&froms.every(l=>{ const img=l.split(/\s+/)[1]||''; return /:[^:]+$/.test(img)&&!/:latest$/i.test(img); }),'La imagen base tiene versión fija (por ejemplo python:3.12-slim), no «latest»']);
+ R.push([!lin.some(l=>/^(COPY|ADD)\s/i.test(l)&&/(^|[\s/])\.env(\s|$)/.test(l)),'No copia el archivo .env a la imagen']);
+ R.push([asignaSecreto(s).length===0&&!hayClave(s),'No escribe claves en ENV ni ARG']);
+ R.push([/\$\{?PORT\}?/.test(s)||/server\.port/.test(s),'El comando de arranque usa la variable PORT']);
+ R.push([lin.some(l=>/^(CMD|ENTRYPOINT)\s/i.test(l)),'Tiene CMD o ENTRYPOINT para arrancar la app']);
+ if(emb==='local') R.push([lin.some(l=>/^RUN\s/i.test(l)&&/(SentenceTransformer|snapshot_download|from_pretrained|huggingface|hf_hub|download)/i.test(l)),'Descarga el modelo de embeddings durante el build (RUN …), no al arrancar']);
+ return R; }
+function recDocker(t){ const s=String(t||''); const R=[];
+ if(!/^\s*USER\s+(?!root\b)\S+/im.test(s)) R.push('Agreguen un usuario sin privilegios (USER app). Si alguien rompe la app, no será administrador del contenedor.');
+ if(/torch/i.test(s)&&!/download\.pytorch\.org\/whl\/cpu/.test(s)) R.push('Instalen torch en su versión solo-CPU (--index-url https://download.pytorch.org/whl/cpu): la imagen baja de unos 6 GB a menos de 2 GB.');
+ if(!/--no-cache-dir|PIP_NO_CACHE_DIR/i.test(s)&&/pip install/i.test(s)) R.push('Usen pip con --no-cache-dir para no guardar la caché de pip dentro de la imagen.');
+ return R; }
+function revisarIgnore(t){ const l=String(t||'').split('\n').map(x=>x.trim()).filter(x=>x&&!x.startsWith('#'));
+ return [[l.some(x=>/^\/?\.env(\*|\.\*)?$/.test(x)),'.dockerignore excluye .env'],[l.some(x=>/^\/?\.git\/?$/.test(x)),'.dockerignore excluye .git']]; }
+function revisarYml(t){ const s=String(t||''); const R=[];
+ R.push([/(^|\n)\s*on\s*:/.test(s)&&/\b(push|pull_request)\b/.test(s),'Se dispara con push o pull_request']);
+ R.push([/\b(pytest|mvn\s+(-\S+\s+)*(test|verify)|gradle\w*\s+test|npm\s+(run\s+)?test|vitest)\b/.test(s),'Ejecuta las pruebas (pytest, mvn test, npm test…)']);
+ R.push([/gitleaks/i.test(s),'Revisa secretos con gitleaks (aquí o en secretos.yml de ayer, en el mismo pipeline)']);
+ const despliega=/(deploy-cloudrun|gcloud\s+run\s+deploy|containerapp|azure\/container-apps-deploy|render\.com\/deploy|RENDER_DEPLOY_HOOK|railway\s+up|ssh-action|appleboy)/i.test(s);
+ if(despliega) R.push([/\bneeds\s*:/.test(s),'El despliegue espera a las pruebas (needs: …)']);
+ R.push([asignaSecreto(s).length===0&&!hayClave(s),'No hay claves escritas en el workflow (se leen con ${{ secrets.… }})']);
+ return {R,despliega}; }
+function smokeRes(t){ const m=String(t||'').match(/RESULTADO:\s*(\d+)\s*\/\s*(\d+)\s*pasan(?:\s*·\s*p95\s*([\d.,]+)\s*s)?/i); if(!m) return null; const p=+m[1], n=+m[2]; if(!(n>0)||p>n) return null; return {p,n,p95:m[3]?parseFloat(m[3].replace(',','.')):null}; }
+function casoOk(c){ if(!c.ruta.trim().startsWith('/')) return false; if(!/^\d{3}$/.test(c.estado)) return false; if(c.met==='POST'&&c.cuerpo.trim()){ try{ JSON.parse(c.cuerpo); }catch(e){ return false; } } if(c.met==='POST'&&!c.cuerpo.trim()&&c.tipo!=='invalida') return false; if((c.tipo==='caso'||c.tipo==='fuera')&&!c.contiene.trim()) return false; return true; }
+
+function v1(){ const R=revisarDocker(S.m1.docker,S.emb,S.stack); return [[!!S.plat,'Eligieron su plataforma (arriba de la misión)'],[S.m1.docker.trim().length>20,'Pegaron su Dockerfile']].concat(S.m1.docker.trim()?R:[]).concat(revisarIgnore(S.m1.ignore)).concat([[S.m1.build,'La imagen se construyó sin errores (en su máquina o en la nube)'],[S.m1.quiz.comp,'Respondieron el reto de contenedores']]); }
+function v2(){ return [[saludOk(S.m2.resp),'Pegaron la respuesta de /health en su máquina y dice status «ok»'],[!hayClave(S.m2.resp),'La respuesta no muestra ninguna clave']]; }
+function v3(){ const faltan=COMP.filter(c=>!S.m3.dest[c[0]]); const mal=COMP.filter(c=>c[2]==='escribe'&&S.m3.dest[c[0]]==='imagen'); const ef=COMP.some(c=>S.m3.dest[c[0]]==='efimera');
+ return [[faltan.length===0,'Decidieron el destino de los '+COMP.length+' tipos de datos'+(faltan.length?' (faltan '+faltan.length+')':'')],[mal.length===0,mal.length?'«'+mal.map(c=>c[1]).join('», «')+'» se escribe mientras la app funciona: dentro de la imagen se perdería':'Nada que se escribe quedó «dentro de la imagen»'],[!ef||S.m3.porque.trim().length>=30,'Si aceptan perder algo, explican por qué (30 caracteres o más)'],[S.m3.quiz.comp,'Respondieron el reto de persistencia']]; }
+function v4(){ const ya=S.plat==='ya'; const L=[[urlOk(S.m4.url),'Registraron la URL pública con https (no localhost)'],[saludOk(S.m4.health),'Pegaron la respuesta de URL/health y dice status «ok»'],[S.m4.claves,'Las claves están en la plataforma (variables o secretos), no en la imagen ni en el repo']];
+ if(!ya) L.push([/^\d+(\.\d+)?\s*(mi|gi|mb|gb)?$/i.test(S.m4.mem.trim()),'Anotaron la memoria asignada'],[/^\d+$/.test(S.m4.max.trim())&&+S.m4.max>=1&&+S.m4.max<=3,'Limitaron las copias máximas (1 a 3)']);
+ if(S.plat==='cloudrun'||S.plat==='azure') L.push([S.m4.presupuesto,'Crearon una alerta de presupuesto']);
+ L.push([PN(S.m4.frio)!==null,'Midieron el arranque en frío (segundos)']); return L; }
+function v5(){ const {R}=revisarYml(S.m5.yml); return [[S.m5.yml.trim().length>20,'Pegaron su workflow']].concat(S.m5.yml.trim()?R:[]).concat([[RE_RUN.test(S.m5.run.trim()),'Registraron el enlace a una corrida en verde (…/actions/runs/…)'],[S.m5.quiz.comp,'Respondieron el reto de CI/CD']]); }
+function v6(){ const C=S.m6.casos; const tiene=t=>C.some(c=>c.tipo===t); const r=smokeRes(S.m6.salida);
+ return [[C.length>=6,'Al menos 6 casos'],[tiene('salud')&&tiene('caso')&&tiene('fuera')&&tiene('inyeccion')&&tiene('invalida'),'Hay casos de los 5 tipos: salud, del caso, fuera de dominio, inyección e inválida'],[C.filter(c=>c.tipo==='caso').length>=2,'Al menos 2 preguntas o tareas del caso'],[C.every(casoOk),'Cada caso tiene ruta, estado esperado, cuerpo JSON válido y texto esperado cuando corresponde'],[!!r,'Pegaron la salida de smoke.py con la línea RESULTADO'],[!!r&&(r.p===r.n||S.m6.plan.trim().length>=30),'Si algún caso falla, escriben qué harán (30 caracteres o más)'],[!hayClave(S.m6.salida),'La salida no muestra claves']]; }
+function v7(){ const c=S.m7.ctl; return [[CTL.every(x=>c[x[0]]&&c[x[0]].e),'Evaluaron los '+CTL.length+' controles'],[CTL.every(x=>!c[x[0]]||c[x[0]].e==='no'||c[x[0]].d.trim().length>=3),'Cada control que tienen dice en qué archivo está'],[CTL.filter(x=>x[2]).every(x=>c[x[0]]&&c[x[0]].e==='si'),'Los 3 mínimos están completos: tiempo límite, tope de entrada y mensaje claro al fallar'],[S.m7.quiz.comp,'Respondieron el reto de robustez']]; }
+function v8(){ const n=Object.keys(S.m8.chk).length; const e=S.m8.ent; return [[RE_README.test(S.m8.readme.trim()),'Registraron el enlace a su README en GitHub'],[n>=7,'El README cubre al menos 7 de los 9 puntos ('+n+' marcados)'],[ENTREGABLES.every((x,i)=>e[i]&&e[i].e),'Autoevaluaron los 6 entregables del Complexivo'],[ENTREGABLES.every((x,i)=>!e[i]||e[i].e==='pendiente'||e[i].ev.trim().length>=5),'Cada entregable completo o parcial tiene su evidencia']]; }
+const VAL={1:v1,2:v2,3:v3,4:v4,5:v5,6:v6,7:v7,8:v8};
+function misionOk(k){ return S?VAL[k]().every(x=>x[0]):false; }
+function retos(st){ st=st||S; const r=[['Contenedores',PN(st.m1.quiz.primer),Q1.length],['Persistencia',PN(st.m3.quiz.primer),Q3.length],['CI/CD',PN(st.m5.quiz.primer),Q5.length],['Robustez',PN(st.m7.quiz.primer),Q7.length]];
+ const pts=r.reduce((a,x)=>a+(x[1]||0),0), max=r.reduce((a,x)=>a+x[2],0); return {r,pts,max,pct:max?Math.round(100*pts/max):0}; }
+function puntajeQuiz(preg,resp){ return preg.reduce((a,p,i)=>a+(String(resp[i])===String(p.ok)?1:0),0); }
+
+// =====================================================================
+// 5. COMPONENTES
+// =====================================================================
+function htmlQuiz(id,preg,st){ return '<div id="'+id+'">'+preg.map((p,i)=>{ const r=st.resp[i];
+  const cuerpo=p.ops.map((o,j)=>{ let c='op'; if(String(r)===String(j)) c+=' sel'; if(st.comp){ if(j===p.ok) c+=' bien'; else if(String(r)===String(j)) c+=' mal'; }
+   return '<label class="'+c+'"><input type="radio" name="'+id+'_'+i+'" value="'+j+'" data-quiz="'+id+'" data-i="'+i+'"'+(String(r)===String(j)?' checked':'')+(st.comp?' disabled':'')+'><span>'+esc(o)+'</span></label>'; }).join('')+(st.comp?'<div class="exp">'+esc(p.exp)+'</div>':'');
+  return '<div class="q"><p class="pr">'+(i+1)+'. '+esc(p.q)+'</p>'+cuerpo+'</div>'; }).join('')+
+ '<div class="btns"><button class="btn p" type="button" data-comprobar="'+id+'"'+(st.comp?' style="display:none"':'')+'>Comprobar</button><button class="btn g" type="button" data-reintentar="'+id+'"'+(st.comp?'':' style="display:none"')+'>Reintentar</button><span class="puntaje">'+(st.comp?puntajeQuiz(preg,st.resp)+' / '+preg.length:'')+(st.primer!==null?' <small>Primer intento: '+st.primer+' / '+preg.length+'</small>':'')+'</span></div></div>'; }
+const QUIZ={q1:()=>[Q1,S.m1.quiz],q3:()=>[Q3,S.m3.quiz],q5:()=>[Q5,S.m5.quiz],q7:()=>[Q7,S.m7.quiz]};
+function bindQuiz(id){ const box=$('#'+id); if(!box) return;
+ box.addEventListener('change',e=>{ const t=e.target; if(!t.dataset.quiz) return; const [,st]=QUIZ[id](); st.resp[t.dataset.i]=+t.value; cambio(); box.querySelectorAll('input[name="'+t.name+'"]').forEach(x=>x.closest('.op').classList.toggle('sel',x.checked)); });
+ box.addEventListener('click',e=>{ const c=e.target.closest('[data-comprobar]'), rr=e.target.closest('[data-reintentar]'); const [preg,st]=QUIZ[id]();
+  if(c){ if(preg.some((p,i)=>st.resp[i]===undefined||st.resp[i]==='')) return toast('Respondan todas las preguntas antes de comprobar.',true);
+   st.comp=true; if(st.primer===null) st.primer=puntajeQuiz(preg,st.resp); cambio(); box.outerHTML=htmlQuiz(id,preg,st); bindQuiz(id); refrescar(); }
+  if(rr){ st.comp=false; st.resp={}; cambio(); box.outerHTML=htmlQuiz(id,preg,st); bindQuiz(id); refrescar(); } }); }
+function cardReto(id,titulo,preg,st){ return '<div class="card bloque"><h3>'+esc(titulo)+' <span class="tag">se califica el primer intento</span></h3>'+htmlQuiz(id,preg,st)+'</div>'; }
+function htmlChecks(k){ const L=VAL[k](), ok=L.every(x=>x[0]); return '<div class="card bloque" id="chk'+k+'"><div class="estadoM"><h3>Comprobación de la misión</h3><span class="sello '+(ok?'si':'no')+'">'+(ok?'Misión completa':'En progreso')+'</span></div><ul class="chk">'+L.map(x=>'<li><span class="d '+(x[0]?'si':'no')+'" aria-hidden="true"></span><span><span class="sr">'+(x[0]?'Cumplido: ':'Pendiente: ')+'</span>'+esc(x[1])+'</span></li>').join('')+'</ul></div>'; }
+function cabecera(k,porque){ const m=MIS[k-1]; return '<div class="mhead"><div class="big">'+k+'</div><div><div class="meta">'+esc(m.tema)+' · '+esc(m.min)+'</div><h2>'+esc(m.t)+'</h2><p>'+porque+'</p></div></div>'; }
+function concepto(titulo,html){ return '<div class="card bloque concepto"><h3>'+titulo+'</h3>'+html+'</div>'; }
+function navMision(k){ return '<div class="navM"><button class="btn g" type="button" data-ir="'+(k-1)+'"'+(k===1?' disabled':'')+'>← Anterior</button>'+(k<NM?'<button class="btn s" type="button" data-ir="'+(k+1)+'">Siguiente misión →</button>':'')+'</div>'; }
+function selPlataforma(){ const p=PREV[S.grupo]||{};
+ return '<div class="card bloque platBox"><div class="fila g3"><div class="campo"><label for="selPlat">Plataforma de despliegue</label><select id="selPlat"><option value="">— Elegir —</option>'+PLATS.map(x=>'<option value="'+x[0]+'"'+(S.plat===x[0]?' selected':'')+'>'+esc(x[1])+'</option>').join('')+'</select></div>'+
+ '<div class="campo"><label for="selStack">Backend</label><select id="selStack"><option value="py"'+(S.stack==='py'?' selected':'')+'>Python (FastAPI, Flask…)</option><option value="java"'+(S.stack==='java'?' selected':'')+'>Java (Spring Boot)</option></select></div>'+
+ '<div class="campo"><label for="selEmb">Embeddings</label><select id="selEmb"><option value="local"'+(S.emb==='local'?' selected':'')+'>Locales (e5, MiniLM… con torch)</option><option value="api"'+(S.emb==='api'?' selected':'')+'>Por API (Gemini, OpenAI…)</option><option value="no"'+(S.emb==='no'?' selected':'')+'>No usamos embeddings (BM25)</option></select></div></div>'+
+ (p.nota?'<p class="nota" style="margin:10px 0 0"><b>Su punto de partida.</b> '+esc(p.nota)+'</p>':'')+'</div>'; }
+function bindPlataforma(){ const f=(id,k)=>{ const el=$(id); if(el) el.addEventListener('change',e=>{ S[k]=e.target.value; cambio(); pintar(); }); }; f('#selPlat','plat'); f('#selStack','stack'); f('#selEmb','emb'); }
+function txtArea(id,val,ph,rows){ return '<textarea id="'+id+'" rows="'+(rows||10)+'" spellcheck="false" class="mono" placeholder="'+esc(ph)+'">'+esc(val)+'</textarea>'; }
+function listaRec(L){ return L.length?'<div class="aviso info" style="margin-top:12px"><span class="ic">i</span><div><b>Sugerencias (no obligatorias):</b><ul style="margin:6px 0 0;padding-left:18px">'+L.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div></div>':''; }
+function alertaClave(txt){ return hayClave(txt)?'<div class="aviso warn" style="margin-top:10px"><span class="ic">!</span><div><b>Esto parece una clave real.</b> Bórrenla de aquí y, si estaba en su repositorio, rótenla como ayer.</div></div>':''; }
+
+// =====================================================================
+// 6. PLANTILLAS
+// =====================================================================
+function nombreServ(){ return 'g'+S.grupo+'-'+(['titulacion','reclamos','triaje','turismo','dengue','pliegos','laboral','vial','cacao','revisor','rimpe'][S.grupo-1]||'app'); }
+function memSug(){ return S.stack==='java'?'1Gi':(S.emb==='local'?'2Gi':'1Gi'); }
+function dockerTpl(){ if(S.stack==='java') return `# ---------- Etapa 1: compilar ----------
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /src
+COPY pom.xml .
+RUN mvn -q dependency:go-offline
+COPY src ./src
+RUN mvn -q package -DskipTests
+
+# ---------- Etapa 2: ejecutar (imagen pequeña, solo el JRE) ----------
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+COPY --from=build /src/target/*.jar app.jar
+RUN useradd --create-home app
+USER app
+ENV PORT=8080
+EXPOSE 8080
+# MaxRAMPercentage: la JVM usa como máximo el 75 % de la memoria del contenedor
+CMD ["sh", "-c", "java -XX:MaxRAMPercentage=75 -Dserver.port=\${PORT} -jar app.jar"]`;
+ const modelo=S.emb==='local'?`
+# Modelo de embeddings DENTRO de la imagen: no se descarga en cada arranque
+ENV HF_HOME=/app/.cache/huggingface
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('intfloat/multilingual-e5-small')"
+`:'';
+ const torch=S.emb==='local'?`# torch solo-CPU primero: la imagen baja de ~6 GB a menos de 2 GB
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+`:'';
+ return `FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
+WORKDIR /app
+
+# 1. Dependencias (se cachean mientras requirements.txt no cambie)
+COPY requirements.txt .
+${torch}RUN pip install --no-cache-dir -r requirements.txt
+${modelo}
+# 2. Código y datos de solo lectura
+COPY . .
+# Índice del RAG construido durante el build (solo si su ingest no necesita claves)
+# RUN python scripts/ingest.py
+
+# 3. Usuario sin privilegios
+RUN useradd --create-home app && chown -R app /app
+USER app
+
+# 4. Arranque: la plataforma indica el puerto en PORT
+ENV PORT=8080
+EXPOSE 8080
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port \${PORT}"]`; }
+const IGNORE_TPL=`.git
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.db
+*.sqlite3
+logs/
+node_modules/
+frontend/node_modules/
+.pytest_cache/`;
+const HEALTH_PY=`# app/main.py  (FastAPI)
+import os
+
+@app.get("/health")
+def health():
+    # Responde rápido y sin llamar al modelo: solo dice «estoy viva»
+    return {"status": "ok", "version": os.getenv("APP_VERSION", "dev")}`;
+const HEALTH_PY_AV=`# Avanzado: además informa si lo necesario está listo, SIN mostrar claves
+@app.get("/health")
+def health():
+    return {
+        "status": "ok",
+        "fragmentos": indice.cantidad(),              # cuántos fragmentos cargó el RAG
+        "modelo_configurado": bool(os.getenv("GROQ_API_KEY") or os.getenv("GEMINI_API_KEY")),
+        "version": os.getenv("APP_VERSION", "dev"),
+    }`;
+const HEALTH_JAVA=`// HealthController.java  (Spring Boot)
+@RestController
+public class HealthController {
+    @GetMapping("/health")
+    public Map<String, String> health() {
+        return Map.of("status", "ok");
+    }
+}
+// Alternativa: agregar spring-boot-starter-actuator y usar /actuator/health (responde {"status":"UP"})`;
+const HEALTH_TEST=`# tests/test_health.py
+from fastapi.testclient import TestClient
+from app.main import app
+
+def test_health_responde_ok():
+    r = TestClient(app).get("/health")
+    assert r.status_code == 200
+    assert r.json()["status"] == "ok"`;
+function cmdCloudRun(){ const n=nombreServ(); return {
+ prep:`# En Cloud Shell (console.cloud.google.com, botón >_ arriba a la derecha): ya trae gcloud, git y docker
+git clone https://github.com/USUARIO/REPOSITORIO.git
+cd REPOSITORIO            # la carpeta donde está el Dockerfile
+
+gcloud config set project ID_DE_SU_PROYECTO
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com secretmanager.googleapis.com`,
+ min:`# MÍNIMO · claves en un archivo local que NO se sube (agréguenlo a .gitignore)
+cat > .env.yaml <<'EOF'
+LLM_PRINCIPAL: "groq"
+GROQ_API_KEY: "pegar-aqui-solo-en-cloud-shell"
+EOF
+echo ".env.yaml" >> .gitignore
+
+gcloud run deploy ${n} --source . --region us-central1 \\
+  --memory ${memSug()} --cpu 1 --min-instances 0 --max-instances 1 \\
+  --timeout 120 --allow-unauthenticated --env-vars-file .env.yaml`,
+ rec:`# RECOMENDADO · la clave en Secret Manager (no queda en ningún archivo)
+read -s CLAVE            # pegan la clave; no se ve en pantalla ni queda en el historial
+printf %s "$CLAVE" | gcloud secrets create groq-key --data-file=-
+unset CLAVE
+
+# Permiso para que Cloud Run lea el secreto
+NUM=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
+gcloud secrets add-iam-policy-binding groq-key \\
+  --member="serviceAccount:\${NUM}-compute@developer.gserviceaccount.com" \\
+  --role="roles/secretmanager.secretAccessor"
+
+gcloud run deploy ${n} --source . --region us-central1 \\
+  --memory ${memSug()} --cpu 1 --min-instances 0 --max-instances 1 \\
+  --timeout 120 --allow-unauthenticated \\
+  --set-env-vars LLM_PRINCIPAL=groq --set-secrets GROQ_API_KEY=groq-key:latest`,
+ prueba:`# Al terminar, gcloud muestra «Service URL: https://…run.app»
+curl -s https://SU-URL.run.app/health
+# Registros si algo falla:
+gcloud run services logs read ${n} --region us-central1 --limit 50`}; }
+function cmdAzure(){ const n=nombreServ(), rg='rg-g'+S.grupo; return {
+ prep:`# En portal.azure.com (cuenta Azure for Students) abran Cloud Shell (>_) en modo Bash
+git clone https://github.com/USUARIO/REPOSITORIO.git
+cd REPOSITORIO
+
+az extension add --name containerapp --upgrade
+az provider register --namespace Microsoft.App
+az provider register --namespace Microsoft.OperationalInsights
+az group create --name ${rg} --location eastus
+# Si eastus da error de política, usen la región que el mensaje indica como permitida`,
+ min:`# Construye la imagen en la nube y crea la app con URL pública
+az containerapp up --name ${n} --resource-group ${rg} --location eastus \\
+  --source . --ingress external --target-port 8080
+
+# Claves como secretos de la app (read -s: no se ven ni quedan en el historial)
+read -s CLAVE
+az containerapp secret set --name ${n} --resource-group ${rg} --secrets groq-key="$CLAVE"
+unset CLAVE
+az containerapp update --name ${n} --resource-group ${rg} \\
+  --set-env-vars GROQ_API_KEY=secretref:groq-key LLM_PRINCIPAL=groq PORT=8080 \\
+  --cpu 1 --memory ${memSug()==='2Gi'?'2Gi':'1Gi'} --min-replicas 0 --max-replicas 1`,
+ prueba:`az containerapp show --name ${n} --resource-group ${rg} --query properties.configuration.ingress.fqdn -o tsv
+curl -s https://LA-DIRECCION-ANTERIOR/health
+az containerapp logs show --name ${n} --resource-group ${rg} --tail 50`}; }
+function wfTpl(){ const tests=S.stack==='java'?`      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21', cache: maven }
+      - run: mvn -B verify`:`      - uses: actions/setup-python@v5
+        with: { python-version: '3.12', cache: pip }
+      - run: pip install -r requirements.txt
+      - run: pytest -q            # el modelo va SIMULADO en las pruebas: no hace falta ninguna clave`;
+ const ci=`name: ci-cd
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+${tests}`;
+ let dep='';
+ if(S.plat==='cloudrun') dep=`
+
+  desplegar:
+    needs: pruebas                       # solo si las pruebas pasaron
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: \${{ secrets.GCP_SA_KEY }}   # Settings › Secrets › Actions
+      - uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${nombreServ()}
+          region: us-central1
+          source: .
+          flags: --memory=${memSug()} --max-instances=1 --min-instances=0`;
+ else if(S.plat==='render') dep=`
+
+  desplegar:
+    needs: pruebas
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -fsS -X POST "\${{ secrets.RENDER_DEPLOY_HOOK }}"   # Render › Settings › Deploy Hook
+# En Render desactiven «Auto-Deploy» para que solo despliegue este paso`;
+ else if(S.plat==='azure') dep=`
+
+  desplegar:
+    needs: pruebas
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          creds: \${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: \${{ github.workspace }}
+          containerAppName: ${nombreServ()}
+          resourceGroup: rg-g${S.grupo}`;
+ return ci+dep; }
+
+// =====================================================================
+// 7. MISIONES DEL JUEVES
+// =====================================================================
+function m1(){ const R=S.m1.docker.trim()?revisarDocker(S.m1.docker,S.emb,S.stack):[];
+ return cabecera(1,'Para desplegar, la plataforma no recibe su carpeta: recibe una <b>imagen</b>, una caja que lleva su código, Python o Java, las librerías y, si lo usan, el modelo de embeddings. La receta para armar esa caja es el <b>Dockerfile</b>. Si la caja funciona en su máquina, funciona igual en la nube.')+
+ selPlataforma()+
+ concepto('Las tres palabras de hoy','<div class="tres"><div><b>Dockerfile</b><span>La receta: qué sistema base usar, qué instalar, qué copiar y cómo arrancar.</span></div><div><b>Imagen</b><span>La caja armada con esa receta. Es de solo lectura y se sube a un registro.</span></div><div><b>Contenedor</b><span>La caja funcionando. Si se reinicia, vuelve a nacer limpia desde la imagen.</span></div></div><p style="margin:12px 0 0">Dos reglas: <b>las claves nunca entran a la caja</b> (se entregan como variables al contenedor) y <b>lo pesado que solo se lee entra en la caja</b> (el modelo y el índice), para que cada arranque sea rápido.</p>')+
+ '<div class="card bloque"><h3>Paso 1 · Partan de esta plantilla <span class="nivel min">Mínimo</span></h3><p style="margin-top:0">Está ajustada a lo que eligieron arriba ('+(S.stack==='java'?'Java':'Python')+(S.emb==='local'?', embeddings locales':'')+'). Revisen dos cosas de su proyecto: el comando de arranque (<code>'+(S.stack==='java'?'app.jar':'app.main:app')+'</code>) y que el archivo esté en la carpeta del backend. Si ya tienen Dockerfile, compárenlo con este.</p>'+bloqueCodigo(dockerTpl())+
+ '<div class="btns"><button class="btn s" type="button" id="m1dl">Descargar Dockerfile</button><button class="btn g" type="button" id="m1dl2">Descargar .dockerignore</button></div>'+
+ '<p>El archivo <code>.dockerignore</code> dice qué <b>no</b> entra a la caja, igual que <code>.gitignore</code> para el repositorio:</p>'+bloqueCodigo(IGNORE_TPL)+'</div>'+
+ '<div class="card bloque"><h3>Paso 2 · Peguen su Dockerfile y su .dockerignore</h3><p style="margin-top:0">El taller los revisa al instante. No deben tener ninguna clave.</p><div class="fila g2"><div class="campo"><label for="m1d">Dockerfile</label>'+txtArea('m1d',S.m1.docker,'FROM python:3.12-slim\n…',14)+'</div><div class="campo"><label for="m1i">.dockerignore</label>'+txtArea('m1i',S.m1.ignore,'.git\n.env\n…',14)+'</div></div><div id="m1rev">'+revDockerHtml(R)+'</div></div>'+
+ '<div class="card bloque"><h3>Paso 3 · Construyan la imagen</h3><ul class="pasos"><li><b>Con Docker en su máquina:</b> <code>docker build -t '+nombreServ()+' .</code> y luego <code>docker run --rm -p 8080:8080 --env-file .env '+nombreServ()+'</code>. Abran <code>http://localhost:8080/health</code> (misión 2).</li><li><b>Sin Docker en su máquina:</b> no pasa nada. En la misión 4 la plataforma construye la imagen en la nube; marquen la casilla cuando ese build termine sin errores.</li><li><b>Si el build falla</b> por memoria o tarda mucho, casi siempre es torch: usen la línea de torch solo-CPU de la plantilla.</li></ul><label class="check"><input type="checkbox" id="m1b"'+(S.m1.build?' checked':'')+'> La imagen se construyó sin errores (en mi máquina o en la nube)</label></div>'+
+ cardReto('q1','Reto · Contenedores',Q1,S.m1.quiz)+htmlChecks(1)+navMision(1); }
+function revDockerHtml(R){ if(!S.m1.docker.trim()) return ''; return '<ul class="chk" style="margin-top:10px">'+R.map(x=>'<li><span class="d '+(x[0]?'si':'no')+'" aria-hidden="true"></span><span>'+esc(x[1])+'</span></li>').join('')+revisarIgnore(S.m1.ignore).map(x=>'<li><span class="d '+(x[0]?'si':'no')+'" aria-hidden="true"></span><span>'+esc(x[1])+'</span></li>').join('')+'</ul>'+listaRec(recDocker(S.m1.docker))+alertaClave(S.m1.docker); }
+function bind1(){ bindPlataforma(); $('#m1dl').onclick=()=>descargar('Dockerfile',dockerTpl()+'\n','text/plain;charset=utf-8'); $('#m1dl2').onclick=()=>descargar('.dockerignore',IGNORE_TPL+'\n','text/plain;charset=utf-8');
+ const up=()=>{ $('#m1rev').innerHTML=revDockerHtml(revisarDocker(S.m1.docker,S.emb,S.stack)); refrescar(); };
+ $('#m1d').addEventListener('input',e=>{ S.m1.docker=e.target.value.slice(0,5000); cambio(); up(); });
+ $('#m1i').addEventListener('input',e=>{ S.m1.ignore=e.target.value.slice(0,1500); cambio(); up(); });
+ $('#m1b').addEventListener('change',e=>{ S.m1.build=e.target.checked; cambio(); refrescar(); }); bindQuiz('q1'); }
+
+function m2(){ return cabecera(2,'Una plataforma no sabe si su app arrancó bien: lo pregunta. <code>/health</code> es una dirección que responde <code>{"status":"ok"}</code> en milisegundos y <b>sin llamar al modelo</b>. La plataforma la usa para decidir si la app está lista, y ustedes la usan para despertarla antes de la demo.')+
+ '<div class="card bloque"><h3>Paso 1 · Agreguen la ruta <span class="nivel min">Mínimo</span></h3>'+(S.stack==='java'?bloqueCodigo(HEALTH_JAVA):bloqueCodigo(HEALTH_PY))+'<p>No debe llamar a Gemini ni a Groq: si el proveedor está caído, la app sigue viva y debe poder decirlo.</p></div>'+
+ '<div class="card bloque"><h3>Paso 2 · Pruébenla en su máquina</h3><p style="margin-top:0">Con la app corriendo (con Docker o sin él), abran <code>http://localhost:8080/health</code> o ejecuten <code>curl -s http://localhost:8080/health</code> y peguen la respuesta:</p><div class="campo"><label for="m2r">Respuesta de /health</label><input id="m2r" type="text" class="mono" maxlength="600" placeholder=\'{"status":"ok","version":"dev"}\' value="'+esc(S.m2.resp)+'"><small id="m2msg">'+(S.m2.resp&&!saludOk(S.m2.resp)?'Debe ser JSON con "status": "ok" (o "UP").':'')+'</small></div></div>'+
+ '<div class="card bloque"><h3>Paso 3 · Una prueba que la cuide <span class="nivel rec">Recomendado</span></h3>'+(S.stack==='java'?'<p style="margin-top:0">Una prueba con <code>MockMvc</code> que pida <code>/health</code> y espere 200.</p>':bloqueCodigo(HEALTH_TEST))+'<label class="check"><input type="checkbox" id="m2p"'+(S.m2.prueba?' checked':'')+'> Agregamos la prueba y pasa</label></div>'+
+ (S.stack==='py'?'<div class="card bloque"><h3>Más allá <span class="nivel ava">Avanzado</span></h3><p style="margin-top:0">Que <code>/health</code> también diga si el índice cargó y si hay un modelo configurado, sin mostrar nunca el valor de una clave:</p>'+bloqueCodigo(HEALTH_PY_AV)+'</div>':'')+
+ htmlChecks(2)+navMision(2); }
+function bind2(){ $('#m2r').addEventListener('input',e=>{ S.m2.resp=e.target.value.slice(0,600); e.target.classList.toggle('inv',!!S.m2.resp&&!saludOk(S.m2.resp)); $('#m2msg').textContent=S.m2.resp&&!saludOk(S.m2.resp)?'Debe ser JSON con "status": "ok" (o "UP").':''; cambio(); refrescar(); });
+ $('#m2p').addEventListener('change',e=>{ S.m2.prueba=e.target.checked; cambio(); }); }
+
+function adrDatos(){ const fila=c=>'| '+c[1]+' | '+(DEST.find(d=>d[0]===S.m3.dest[c[0]])||['','— sin decidir —'])[1]+' |';
+ return '## Datos en producción\n\n| Dato | Dónde vive |\n|---|---|\n'+COMP.map(fila).join('\n')+'\n\n'+(S.m3.porque.trim()?'**Lo que aceptamos perder y por qué:** '+S.m3.porque.trim()+'\n':''); }
+function m3(){ return cabecera(3,'El contenedor nace limpio en cada arranque. Todo lo que la app escribe mientras funciona (un historial, un ticket, un archivo subido) <b>se pierde</b> cuando la plataforma la reinicia, la apaga por falta de tráfico o abre otra copia. Hay que decidir, dato por dato, dónde vive.')+
+ concepto('La regla','<div class="tres"><div><b>Solo se lee</b><span>Índice del RAG, documentos, configuración: <b>dentro de la imagen</b>. Llega igual a todas las copias.</span></div><div><b>Se escribe y importa</b><span>Historial, registros del agente, archivos subidos: <b>base externa</b> (Supabase, Firestore, Cosmos DB, un volumen).</span></div><div><b>Se escribe y no importa</b><span>Se acepta que <b>se pierda</b> al reiniciar. Vale, siempre que quede escrito y explicado.</span></div></div>')+
+ '<div class="card bloque"><h3>Decidan cada dato <span class="nivel min">Mínimo</span></h3><div class="scroll"><table class="tabla"><thead><tr><th>Dato</th><th>La app lo…</th><th>Dónde vive en producción</th></tr></thead><tbody>'+COMP.map(c=>'<tr><td>'+esc(c[1])+'</td><td>'+(c[2]==='lee'?'solo lee':'escribe')+'</td><td><select data-dest="'+c[0]+'" aria-label="Destino de '+esc(c[1])+'"><option value="">— Elegir —</option>'+DEST.map(d=>'<option value="'+d[0]+'"'+(S.m3.dest[c[0]]===d[0]?' selected':'')+'>'+esc(d[1])+'</option>').join('')+'</select></td></tr>').join('')+'</tbody></table></div>'+
+ '<div class="campo" style="margin-top:12px"><label for="m3p">Si aceptan perder algo: qué y por qué</label><textarea id="m3p" rows="3" maxlength="1500" placeholder="El historial se pierde al reiniciar: es anónimo, solo sirve durante la sesión y con max-instances 1 no se mezcla entre copias.">'+esc(S.m3.porque)+'</textarea></div>'+
+ '<p>Este bloque va a su ADR de despliegue (el ADR-0003 de ayer):</p><div id="m3adr">'+bloqueCodigo(adrDatos())+'</div></div>'+
+ cardReto('q3','Reto · Persistencia',Q3,S.m3.quiz)+htmlChecks(3)+navMision(3); }
+function bind3(){ $$('[data-dest]').forEach(s=>s.addEventListener('change',e=>{ S.m3.dest[e.target.dataset.dest]=e.target.value; if(!e.target.value) delete S.m3.dest[e.target.dataset.dest]; cambio(); $('#m3adr').innerHTML=bloqueCodigo(adrDatos()); refrescar(); }));
+ $('#m3p').addEventListener('input',e=>{ S.m3.porque=e.target.value.slice(0,1500); cambio(); $('#m3adr').innerHTML=bloqueCodigo(adrDatos()); refrescar(); }); bindQuiz('q3'); }
+
+function guiaPlat(){ const p=S.plat;
+ if(p==='cloudrun'){ const c=cmdCloudRun(); return '<div class="card bloque"><h3>Cloud Run paso a paso</h3><ol class="pasos"><li><b>Preparar.</b> Usen <b>Cloud Shell</b> en el navegador: no necesitan instalar nada en su computador.'+bloqueCodigo(c.prep)+'</li><li><b>Desplegar</b> <span class="nivel min">Mínimo</span>. La primera vez pregunta si crea un repositorio de imágenes: respondan <code>Y</code>. Tarda de 5 a 15 minutos (construye la imagen).'+bloqueCodigo(c.min)+'</li><li><b>O desplegar con la clave en Secret Manager</b> <span class="nivel rec">Recomendado</span>.'+bloqueCodigo(c.rec)+'</li><li><b>Probar.</b>'+bloqueCodigo(c.prueba)+'</li><li><b>Alerta de presupuesto.</b> Consola › Facturación › Presupuestos y alertas › Crear presupuesto de <b>5 USD</b> con alertas al 50, 90 y 100 %. No corta el servicio, pero avisa por correo.</li></ol><p class="nota">Por qué estas opciones: <code>--memory '+memSug()+'</code> porque '+(S.emb==='local'?'torch y e5 necesitan más de 1 GB':'la app no carga modelos locales')+'; <code>--min-instances 0</code> se apaga sin tráfico (no gasta, pero tiene arranque en frío); <code>--max-instances 1</code> evita sorpresas en la factura y que el historial se reparta entre copias; <code>--timeout 120</code> da tiempo al modelo.</p></div>'; }
+ if(p==='azure'){ const c=cmdAzure(); return '<div class="card bloque"><h3>Azure Container Apps paso a paso</h3><ol class="pasos"><li><b>Preparar</b> (una vez).'+bloqueCodigo(c.prep)+'</li><li><b>Desplegar</b> <span class="nivel min">Mínimo</span>. <code>containerapp up</code> construye la imagen en la nube con su Dockerfile; tarda varios minutos.'+bloqueCodigo(c.min)+'</li><li><b>Probar.</b>'+bloqueCodigo(c.prueba)+'</li><li><b>Alerta de presupuesto.</b> Portal › Cost Management › Budgets › crear uno de 10 USD sobre su crédito de 100 USD.</li></ol><p class="nota">Si la cuenta de estudiante todavía no está validada: dejen hoy listo el Dockerfile (misión 1) y /health (misión 2), y desplieguen apenas Azure los habilite.</p></div>'; }
+ if(p==='render') return '<div class="card bloque"><h3>Render paso a paso</h3><ol class="pasos"><li>dashboard.render.com › <b>New › Web Service</b> › conecten su repositorio de GitHub.</li><li><b>Language: Docker</b> (usa su Dockerfile). <b>Instance type: Free</b>.</li><li><b>Environment:</b> agreguen sus claves como variables (quedan en Render, no en el repo).</li><li><b>Advanced › Health Check Path:</b> <code>/health</code>.</li><li><b>Create Web Service</b>. Al terminar, la URL termina en <code>.onrender.com</code>.</li></ol><div class="aviso warn"><span class="ic">!</span><div>El plan gratis tiene <b>512 MB</b> y se duerme tras 15 minutos sin uso. Solo sirve si su app <b>no</b> carga modelos locales (torch + e5 no caben).</div></div></div>';
+ if(p==='ya') return '<div class="card bloque"><h3>Ya están desplegados</h3><p style="margin-top:0">No desplieguen de nuevo. Hoy aseguren que su despliegue:</p><ul class="pasos"><li>responde en <code>URL/health</code> (misión 2);</li><li>tiene las claves en la plataforma o en un archivo del servidor fuera del repositorio;</li><li>se puede repetir desde cero: un Dockerfile o una guía probada en <code>docs/despliegue.md</code>;</li><li>tiene un límite de recursos y, si la plataforma cobra, una alerta de presupuesto.</li></ul></div>';
+ return '<div class="card bloque vacio"><p>Elijan su plataforma arriba para ver la guía paso a paso.</p></div>'; }
+async function probarUrl(){ const u=base(S.m4.url); if(!urlOk(u)) return toast('Primero escriban una URL válida con https.',true);
+ const out=$('#m4probe'); out.textContent='Llamando a '+u+'/health … (si la app estaba dormida puede tardar hasta un minuto)'; const t0=performance.now();
+ const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),90000);
+ try{ const r=await fetch(u+'/health',{signal:ctl.signal,cache:'no-store'}); const txt=(await r.text()).slice(0,600); const s=((performance.now()-t0)/1000).toFixed(1);
+  S.m4.prueba='HTTP '+r.status+' en '+s+' s'; if(saludOk(txt)){ S.m4.health=txt; $('#m4h').value=txt; } if(S.m4.frio===''){ S.m4.frio=String(Math.round(+s)); $('#m4f').value=S.m4.frio; }
+  out.innerHTML='<b>Respondió HTTP '+r.status+' en '+s+' s.</b> '+esc(txt); }
+ catch(e){ const s=((performance.now()-t0)/1000).toFixed(1);
+  if(e.name==='AbortError'){ out.textContent='No respondió en 90 s. Revisen los registros de la plataforma.'; S.m4.prueba='sin respuesta en 90 s'; }
+  else{ try{ await fetch(u+'/health',{mode:'no-cors',cache:'no-store'}); out.innerHTML='<b>Su app responde</b> ('+s+' s), pero no permite que esta página lea la respuesta (CORS). Abran <a href="'+esc(u)+'/health" target="_blank" rel="noopener noreferrer">'+esc(u)+'/health</a> en otra pestaña y peguen lo que muestra.'; S.m4.prueba='responde (CORS) en '+s+' s'; }
+   catch(e2){ out.textContent='No se pudo conectar. ¿La URL es correcta y el servicio terminó de desplegarse?'; S.m4.prueba='sin conexión'; } } }
+ finally{ clearTimeout(to); cambio(); refrescar(); } }
+function m4(){ const ya=S.plat==='ya';
+ return cabecera(4,'Desplegar es poner la caja en un computador de internet que está siempre disponible, con una dirección <b>https</b> que cualquiera puede abrir. La plataforma construye la imagen, la ejecuta, le entrega las claves como variables y la apaga cuando nadie la usa.')+
+ selPlataforma()+guiaPlat()+
+ '<div class="card bloque"><h3>Registren su despliegue</h3><div class="fila g2"><div class="campo"><label for="m4u">URL pública</label><input id="m4u" type="url" maxlength="200" placeholder="https://'+nombreServ()+'-xxxx.us-central1.run.app" value="'+esc(S.m4.url)+'"></div><div class="campo"><label>&nbsp;</label><button class="btn s" type="button" id="m4t">Probar /health desde aquí</button></div></div><p id="m4probe" class="nota" aria-live="polite">'+esc(S.m4.prueba)+'</p>'+
+ '<div class="campo"><label for="m4h">Respuesta de URL/health</label><input id="m4h" type="text" class="mono" maxlength="600" placeholder=\'{"status":"ok"}\' value="'+esc(S.m4.health)+'"></div>'+
+ '<div class="fila g3">'+(ya?'':'<div class="campo"><label for="m4m">Memoria asignada</label><input id="m4m" type="text" maxlength="10" placeholder="'+memSug()+'" value="'+esc(S.m4.mem)+'"></div><div class="campo"><label for="m4x">Copias máximas</label><input id="m4x" type="number" min="1" max="3" step="1" placeholder="1" value="'+esc(S.m4.max)+'"></div>')+
+ '<div class="campo"><label for="m4f">Arranque en frío (segundos)</label><input id="m4f" type="number" min="0" max="600" step="1" placeholder="12" value="'+esc(S.m4.frio)+'"><small>Esperen 20 minutos sin uso y midan la primera llamada; o usen el botón de arriba.</small></div></div>'+
+ '<label class="check"><input type="checkbox" id="m4c"'+(S.m4.claves?' checked':'')+'> Las claves están en la plataforma (variables o secretos), no en la imagen ni en el repositorio</label>'+
+ ((S.plat==='cloudrun'||S.plat==='azure')?'<label class="check"><input type="checkbox" id="m4b"'+(S.m4.presupuesto?' checked':'')+'> Creamos la alerta de presupuesto</label>':'')+'</div>'+
+ htmlChecks(4)+navMision(4); }
+function bind4(){ bindPlataforma(); const t=(id,k,n)=>{ const el=$(id); if(el) el.addEventListener('input',e=>{ S.m4[k]=e.target.value.slice(0,n); cambio(); refrescar(); }); };
+ t('#m4u','url',200); t('#m4h','health',600); t('#m4m','mem',10); t('#m4x','max',6); t('#m4f','frio',6);
+ const c=(id,k)=>{ const el=$(id); if(el) el.addEventListener('change',e=>{ S.m4[k]=e.target.checked; cambio(); refrescar(); }); }; c('#m4c','claves'); c('#m4b','presupuesto');
+ $('#m4t').onclick=probarUrl; }
+
+function revYmlHtml(){ if(!S.m5.yml.trim()) return ''; const {R,despliega}=revisarYml(S.m5.yml); return '<ul class="chk" style="margin-top:10px">'+R.map(x=>'<li><span class="d '+(x[0]?'si':'no')+'" aria-hidden="true"></span><span>'+esc(x[1])+'</span></li>').join('')+'</ul>'+(despliega?'':'<p class="nota">Su workflow solo prueba (nivel mínimo). Para el recomendado, agreguen el job de despliegue con <code>needs: pruebas</code>.</p>')+alertaClave(S.m5.yml); }
+function m5(){ const secreto=S.plat==='cloudrun'?'<li><b>Para el despliegue automático en Cloud Run</b> <span class="nivel rec">Recomendado</span>: creen una cuenta de servicio con los roles <i>Cloud Run Admin</i>, <i>Service Account User</i>, <i>Cloud Build Editor</i>, <i>Artifact Registry Writer</i> y <i>Storage Admin</i>; descarguen su clave JSON y guárdenla en GitHub › Settings › Secrets and variables › Actions como <code>GCP_SA_KEY</code>. Borren el archivo JSON de su computador después. <span class="nivel ava">Avanzado</span>: Workload Identity Federation, sin ninguna clave guardada.</li>':S.plat==='azure'?'<li><b>Para el despliegue automático en Azure</b> <span class="nivel rec">Recomendado</span>: <code>az ad sp create-for-rbac --name gh-g'+S.grupo+' --role contributor --scopes /subscriptions/ID/resourceGroups/rg-g'+S.grupo+' --json-auth</code> y guarden la salida en GitHub como el secreto <code>AZURE_CREDENTIALS</code>.</li>':S.plat==='render'?'<li><b>Para el despliegue automático en Render</b>: copien el <i>Deploy Hook</i> (Settings) en el secreto <code>RENDER_DEPLOY_HOOK</code>.</li>':'<li>Si ya despliegan con otro mecanismo, basta con que el pipeline pruebe en cada push a <code>main</code>.</li>';
+ return cabecera(5,'Hoy despliegan a mano. El día de la defensa no puede pasar que alguien suba un cambio que rompe la app. Un <b>pipeline de CI/CD</b> hace que GitHub, en cada push, ejecute las pruebas y revise secretos; y solo si todo pasa, despliegue la versión nueva.')+
+ concepto('CI y CD en una línea','<div class="tres"><div><b>CI · integración continua</b><span>En cada push o pull request se corren solas las pruebas y gitleaks. Si algo falla, el commit queda en rojo.</span></div><div><b>CD · despliegue continuo</b><span>Si CI pasa en <code>main</code>, el pipeline despliega solo. <code>needs:</code> es lo que impide publicar algo roto.</span></div><div><b>Secretos del pipeline</b><span>Las credenciales para desplegar van en GitHub › Settings › Secrets. El workflow las lee con <code>${{ secrets.NOMBRE }}</code>.</span></div></div>')+
+ '<div class="card bloque"><h3>Paso 1 · Su workflow</h3><p style="margin-top:0">Guárdenlo como <code>.github/workflows/ci-cd.yml</code>. Las pruebas usan el modelo <b>simulado</b>: CI no necesita la clave de Gemini ni de Groq. Si ayer crearon <code>secretos.yml</code>, pueden quitar el paso de gitleaks de aquí o dejar ambos.</p>'+bloqueCodigo(wfTpl())+'<div class="btns"><button class="btn s" type="button" id="m5dl">Descargar ci-cd.yml</button></div><ul class="pasos"><li><b>Mínimo</b>: el job <code>pruebas</code> en cada push y pull request.</li>'+secreto+'</ul></div>'+
+ '<div class="card bloque"><h3>Paso 2 · Peguen su workflow y el enlace a una corrida verde</h3><div class="campo"><label for="m5y">ci-cd.yml (sin ninguna clave: solo referencias ${{ secrets.… }})</label>'+txtArea('m5y',S.m5.yml,'name: ci-cd\non:\n  push:\n…',14)+'</div><div id="m5rev">'+revYmlHtml()+'</div>'+
+ '<div class="campo" style="margin-top:12px"><label for="m5r">Enlace a la corrida en verde (pestaña Actions › clic en la corrida)</label><input id="m5r" type="url" maxlength="200" placeholder="https://github.com/usuario/repo/actions/runs/1234567890" value="'+esc(S.m5.run)+'"></div></div>'+
+ cardReto('q5','Reto · CI/CD',Q5,S.m5.quiz)+htmlChecks(5)+navMision(5); }
+function bind5(){ $('#m5dl').onclick=()=>descargar('ci-cd.yml',wfTpl()+'\n','text/yaml;charset=utf-8');
+ $('#m5y').addEventListener('input',e=>{ S.m5.yml=e.target.value.slice(0,6000); cambio(); $('#m5rev').innerHTML=revYmlHtml(); refrescar(); });
+ $('#m5r').addEventListener('input',e=>{ S.m5.run=e.target.value.slice(0,200); e.target.classList.toggle('inv',!!S.m5.run&&!RE_RUN.test(S.m5.run.trim())); cambio(); refrescar(); }); bindQuiz('q5'); }
+
+// =====================================================================
+// 8. MISIONES DEL VIERNES
+// =====================================================================
+function smokePy(){ const casos=S.m6.casos.map(c=>{ let cuerpo=null; if(c.met==='POST'){ try{ cuerpo=c.cuerpo.trim()?JSON.parse(c.cuerpo):null; }catch(e){ cuerpo=null; } }
+  return {tipo:c.tipo,metodo:c.met,ruta:c.ruta.trim()||'/',cuerpo:cuerpo,estado:+c.estado||200,contiene:c.contiene.trim()}; });
+ const js=JSON.stringify(casos,null,1).replace(/'/g,'\\u0027');
+ const url=urlOk(base(S.m4.url))?base(S.m4.url):'https://SU-URL';
+ return `#!/usr/bin/env python3
+"""Pruebas funcionales de humo del Grupo ${S.grupo} contra la app DESPLEGADA.
+
+Uso:   python smoke.py ${url}
+Solo usa la biblioteca estándar de Python y no necesita ninguna clave.
+Cada caso llama a la app como lo haría un usuario y compara el estado HTTP
+y un texto esperado en la respuesta.
+"""
+import json
+import sys
+import time
+import unicodedata
+import urllib.error
+import urllib.request
+
+BASE = (sys.argv[1] if len(sys.argv) > 1 else "${url}").rstrip("/")
+CASOS = json.loads(r'''${js}''')
+
+
+def llamar(caso):
+    datos = json.dumps(caso["cuerpo"]).encode("utf-8") if caso["cuerpo"] is not None else None
+    req = urllib.request.Request(
+        BASE + caso["ruta"], data=datos, method=caso["metodo"],
+        headers={"Content-Type": "application/json", "User-Agent": "smoke-seminario-uniandes"})
+    inicio = time.time()
+    try:
+        with urllib.request.urlopen(req, timeout=90) as r:
+            estado, cuerpo = r.status, r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as e:
+        estado, cuerpo = e.code, e.read().decode("utf-8", "replace")
+    except Exception as e:  # sin conexión, tiempo agotado…
+        estado, cuerpo = 0, f"ERROR: {e}"
+    return estado, cuerpo, time.time() - inicio
+
+
+def normal(texto):
+    """Minúsculas y sin tildes, para comparar «artículo» con «articulo» o «\\u00ed»."""
+    try:  # si es JSON, se vuelve a escribir sin escapes \\u00ed
+        texto = json.dumps(json.loads(texto), ensure_ascii=False)
+    except ValueError:
+        pass
+    sin_tildes = unicodedata.normalize("NFD", texto)
+    return "".join(c for c in sin_tildes if unicodedata.category(c) != "Mn").lower()
+
+
+def main():
+    pasan, tiempos = 0, []
+    for i, caso in enumerate(CASOS, 1):
+        estado, cuerpo, seg = llamar(caso)
+        tiempos.append(seg)
+        ok = estado == caso["estado"] and (not caso["contiene"] or normal(caso["contiene"]) in normal(cuerpo))
+        pasan += ok
+        print(f"{'PASA ' if ok else 'FALLA'} {i:>2}. [{caso['tipo']}] {caso['metodo']} {caso['ruta']} -> {estado} en {seg:.1f} s")
+        if not ok:
+            esperado = f"{caso['estado']}" + (f" con «{caso['contiene']}»" if caso["contiene"] else "")
+            print(f"         esperado {esperado}; recibido: {cuerpo[:200]!r}")
+    orden = sorted(tiempos)
+    p95 = orden[max(0, round(0.95 * len(orden)) - 1)]
+    print(f"RESULTADO: {pasan}/{len(CASOS)} pasan · p95 {p95:.1f} s · más lento {orden[-1]:.1f} s")
+    sys.exit(0 if pasan == len(CASOS) else 1)
+
+
+if __name__ == "__main__":
+    main()
+`; }
+function filaCaso(c,i){ return '<tr data-c="'+i+'"><td><select data-k="tipo" aria-label="Tipo del caso '+(i+1)+'">'+TIPOS_CASO.map(t=>'<option value="'+t[0]+'"'+(c.tipo===t[0]?' selected':'')+'>'+esc(t[1])+'</option>').join('')+'</select></td>'+
+ '<td><select data-k="met" aria-label="Método del caso '+(i+1)+'"><option'+(c.met==='GET'?' selected':'')+'>GET</option><option'+(c.met==='POST'?' selected':'')+'>POST</option></select></td>'+
+ '<td><input data-k="ruta" class="mono" maxlength="120" placeholder="/api/chat" value="'+esc(c.ruta)+'" aria-label="Ruta del caso '+(i+1)+'"></td>'+
+ '<td><textarea data-k="cuerpo" class="mono" rows="2" maxlength="600" placeholder=\'{"pregunta":"…"}\' aria-label="Cuerpo JSON del caso '+(i+1)+'"'+(c.met==='GET'?' disabled':'')+'>'+esc(c.cuerpo)+'</textarea></td>'+
+ '<td><input data-k="estado" class="mono" maxlength="3" style="width:62px" value="'+esc(c.estado)+'" aria-label="Estado HTTP esperado del caso '+(i+1)+'"></td>'+
+ '<td><input data-k="contiene" maxlength="80" placeholder="'+(c.tipo==='fuera'?'no tengo información':c.tipo==='caso'?'artículo':'')+'" value="'+esc(c.contiene)+'" aria-label="Texto esperado del caso '+(i+1)+'"></td>'+
+ '<td><span class="d '+(casoOk(c)?'si':'no')+'" title="'+(casoOk(c)?'Caso completo':'Falta algo')+'"></span> <button class="btn g mini" type="button" data-quitar="'+i+'" aria-label="Quitar caso '+(i+1)+'"'+(S.m6.casos.length<=1?' disabled':'')+'>×</button></td></tr>'; }
+function m6(){ const r=smokeRes(S.m6.salida);
+ return cabecera(6,'Las pruebas unitarias del pipeline usan el modelo simulado. Faltan las <b>pruebas funcionales</b>: llamar a la app <b>desplegada</b>, con el modelo real, como lo haría un usuario, y comprobar que responde lo esperado. Se llaman «de humo» porque son pocas y rápidas: si algo de esto falla, no tiene sentido seguir probando.')+
+ concepto('Qué casos y por qué','<div class="tres"><div><b>Lo que debe hacer</b><span><code>/health</code> y al menos dos preguntas o tareas reales de su caso, con un texto que debe aparecer en la respuesta (un artículo, un monto, una fecha).</span></div><div><b>Lo que debe negarse a hacer</b><span>Una pregunta fuera de su dominio (debe abstenerse) y un intento de inyección (no debe obedecerlo).</span></div><div><b>Lo que debe rechazar</b><span>Una entrada vacía o mal formada: la API responde 400 o 422 con un mensaje claro, nunca 500.</span></div></div>')+
+ '<div class="card bloque"><h3>Paso 1 · Escriban sus casos <span class="nivel min">Mínimo: 6</span></h3><p style="margin-top:0">Usen las rutas reales de <b>su</b> API (miren <code>/docs</code> si es FastAPI). «Texto esperado» es una palabra o frase que <b>debe</b> aparecer en la respuesta; no distingue mayúsculas.</p>'+
+ '<div class="scroll"><table class="tabla casos"><thead><tr><th>Tipo</th><th>Método</th><th>Ruta</th><th>Cuerpo JSON</th><th>Estado</th><th>Texto esperado</th><th></th></tr></thead><tbody id="m6tb">'+S.m6.casos.map(filaCaso).join('')+'</tbody></table></div>'+
+ '<div class="btns"><button class="btn g" type="button" id="m6add"'+(S.m6.casos.length>=12?' disabled':'')+'>+ Agregar caso</button></div></div>'+
+ '<div class="card bloque"><h3>Paso 2 · Generen y corran el script</h3><p style="margin-top:0">El taller arma <code>smoke.py</code> con sus casos. Guárdenlo en <code>tests/smoke.py</code> y córranlo contra su URL (si la app estaba dormida, el primer caso tardará más: es el arranque en frío).</p><div class="btns"><button class="btn s" type="button" id="m6dl">Descargar smoke.py</button><button class="btn g" type="button" id="m6ver">Ver el script</button></div><div id="m6code" style="display:none"></div>'+
+ bloqueCodigo('python tests/smoke.py '+(urlOk(base(S.m4.url))?base(S.m4.url):'https://SU-URL'))+'</div>'+
+ '<div class="card bloque"><h3>Paso 3 · Peguen la salida</h3><div class="campo"><label for="m6s">Salida completa de smoke.py</label>'+txtArea('m6s',S.m6.salida,'PASA   1. [salud] GET /health -> 200 en 8.2 s\n…\nRESULTADO: 6/6 pasan · p95 4.1 s · más lento 8.2 s',8)+'<small id="m6msg">'+(r?'<b>'+r.p+' de '+r.n+' pasan</b>'+(r.p95!==null?' · p95 '+r.p95+' s':''):(S.m6.salida.trim()?'No encuentro la línea «RESULTADO: X/Y pasan».':''))+'</small></div>'+
+ '<div class="campo"><label for="m6p">Si algún caso falla: qué está mal y qué van a corregir</label><textarea id="m6p" rows="3" maxlength="1000" placeholder="El caso 4 (fuera de dominio) respondió en vez de abstenerse: subir el umbral a 0,80 y repetir.">'+esc(S.m6.plan)+'</textarea></div>'+
+ '<p class="nota"><span class="nivel rec">Recomendado</span> Agreguen un job al pipeline que corra <code>smoke.py</code> contra la URL después de desplegar. <span class="nivel ava">Avanzado</span> Una prueba de punta a punta con Playwright que abra el frontend, escriba una pregunta y verifique que aparece la cita.</p></div>'+
+ htmlChecks(6)+navMision(6); }
+function bind6(){ const tb=$('#m6tb');
+ tb.addEventListener('input',e=>{ const tr=e.target.closest('[data-c]'), k=e.target.dataset.k; if(!tr||!k) return; const c=S.m6.casos[+tr.dataset.c]; c[k]=e.target.value.slice(0,k==='cuerpo'?600:k==='estado'?3:120);
+  if(k==='met'){ const ta=tr.querySelector('[data-k="cuerpo"]'); ta.disabled=c.met==='GET'; }
+  tr.querySelector('.d').className='d '+(casoOk(c)?'si':'no'); cambio(); refrescar(); });
+ tb.addEventListener('change',e=>{ if(e.target.tagName==='SELECT') tb.dispatchEvent(new Event('input')); });
+ tb.addEventListener('click',e=>{ const b=e.target.closest('[data-quitar]'); if(!b||b.disabled) return; S.m6.casos.splice(+b.dataset.quitar,1); cambio(); pintar(); });
+ $('#m6add').onclick=()=>{ if(S.m6.casos.length>=12) return; S.m6.casos.push({tipo:'caso',met:'POST',ruta:'',cuerpo:'',estado:'200',contiene:''}); cambio(); pintar(); };
+ $('#m6dl').onclick=()=>descargar('smoke.py',smokePy(),'text/x-python;charset=utf-8');
+ $('#m6ver').onclick=()=>{ const b=$('#m6code'); const on=b.style.display==='none'; b.style.display=on?'':'none'; if(on) b.innerHTML=bloqueCodigo(smokePy()); };
+ $('#m6s').addEventListener('input',e=>{ S.m6.salida=e.target.value.slice(0,3000); const r=smokeRes(S.m6.salida); $('#m6msg').innerHTML=r?'<b>'+r.p+' de '+r.n+' pasan</b>'+(r.p95!==null?' · p95 '+r.p95+' s':''):(S.m6.salida.trim()?'No encuentro la línea «RESULTADO: X/Y pasan».':''); cambio(); refrescar(); });
+ $('#m6p').addEventListener('input',e=>{ S.m6.plan=e.target.value.slice(0,1000); cambio(); refrescar(); });
+ // los selects disparan «input» en los navegadores modernos; este respaldo cubre los demás
+ tb.querySelectorAll('select').forEach(s=>s.addEventListener('change',ev=>{ const tr=ev.target.closest('[data-c]'); const c=S.m6.casos[+tr.dataset.c]; c[ev.target.dataset.k]=ev.target.value; if(ev.target.dataset.k==='met') tr.querySelector('[data-k="cuerpo"]').disabled=c.met==='GET'; tr.querySelector('.d').className='d '+(casoOk(c)?'si':'no'); cambio(); refrescar(); })); }
+
+function m7(){ const c=S.m7.ctl;
+ return cabecera(7,'Su app depende de un servicio que no controlan: Gemini o Groq pueden tardar, cortar por cuota (429) o caerse. «Integración estable» significa que, pase lo que pase con el modelo, la app <b>responde algo sensato</b> en un tiempo razonable y nunca muestra una traza de error al usuario.')+
+ concepto('Las cuatro defensas','<div class="tres cuatro"><div><b>Tiempo límite</b><span>Ninguna llamada espera para siempre (por ejemplo 30 s).</span></div><div><b>Reintento y respaldo</b><span>Ante 429 o 5xx: esperar, reintentar dos o tres veces y pasar al otro proveedor.</span></div><div><b>Límites</b><span>Tope de entrada, de tokens y de peticiones por usuario: protegen la cuota (LLM06).</span></div><div><b>Falla amable</b><span>Si nada funciona: «El asistente no está disponible, intente en un minuto», y un registro para ustedes.</span></div></div>')+
+ '<div class="card bloque"><h3>Evalúen su app <span class="nivel min">Mínimo: los marcados con *</span></h3><p style="margin-top:0">Para cada control digan si lo tienen y en qué archivo. Sean honestos: «parcial» o «no» también sirve, y se convierte en tarea para el sábado.</p><div class="scroll"><table class="tabla"><thead><tr><th>Control</th><th>¿Lo tienen?</th><th>Dónde (archivo)</th></tr></thead><tbody>'+CTL.map(x=>{ const v=c[x[0]]||{e:'',d:''}; return '<tr><td>'+esc(x[1])+(x[2]?' <b title="Mínimo">*</b>':'')+'</td><td><select data-ctl="'+x[0]+'" aria-label="'+esc(x[1])+'"><option value="">—</option><option value="si"'+(v.e==='si'?' selected':'')+'>Sí</option><option value="parcial"'+(v.e==='parcial'?' selected':'')+'>Parcial</option><option value="no"'+(v.e==='no'?' selected':'')+'>No</option></select></td><td><input data-ctld="'+x[0]+'" class="mono" maxlength="120" placeholder="app/services/llm.py" value="'+esc(v.d)+'" aria-label="Archivo de '+esc(x[1])+'"></td></tr>'; }).join('')+'</tbody></table></div></div>'+
+ '<div class="card bloque"><h3>Prueba de caída <span class="nivel rec">Recomendado</span></h3><ol class="pasos"><li>En la plataforma, cambien <b>temporalmente</b> la clave del proveedor principal por un valor inválido (por ejemplo <code>invalida</code>).</li><li>Hagan una pregunta desde el frontend o con <code>smoke.py</code>.</li><li>Anoten qué pasó: ¿respondió el respaldo?, ¿mostró un mensaje claro?, ¿o un error 500?</li><li><b>Restauren la clave correcta.</b></li></ol><div class="campo"><label for="m7f">Qué respondió la app sin el proveedor principal</label><textarea id="m7f" rows="3" maxlength="600" placeholder="Respondió Groq en 2,1 s; el registro muestra «principal: 401, respaldo: ok».">'+esc(S.m7.falla)+'</textarea></div></div>'+
+ cardReto('q7','Reto · Robustez',Q7,S.m7.quiz)+htmlChecks(7)+navMision(7); }
+function bind7(){ $$('[data-ctl]').forEach(s=>s.addEventListener('change',e=>{ const k=e.target.dataset.ctl; S.m7.ctl[k]=S.m7.ctl[k]||{e:'',d:''}; S.m7.ctl[k].e=e.target.value; cambio(); refrescar(); }));
+ $$('[data-ctld]').forEach(s=>s.addEventListener('input',e=>{ const k=e.target.dataset.ctld; S.m7.ctl[k]=S.m7.ctl[k]||{e:'',d:''}; S.m7.ctl[k].d=e.target.value.slice(0,120); cambio(); refrescar(); }));
+ $('#m7f').addEventListener('input',e=>{ S.m7.falla=e.target.value.slice(0,600); cambio(); }); bindQuiz('q7'); }
+
+function readmeMd(){ const r=smokeRes(S.m6.salida); const u=urlOk(base(S.m4.url))?base(S.m4.url):'(pendiente)';
+ const ctl=CTL.map(x=>{ const v=S.m7.ctl[x[0]]; return '| '+x[1]+' | '+(v&&v.e?{si:'Sí',parcial:'Parcial',no:'No'}[v.e]:'—')+' | '+(v&&v.d?'`'+v.d+'`':'')+' |'; }).join('\n');
+ return `# ${CASOS[S.grupo-1]} · Grupo ${S.grupo}
+
+> Seminario «Ingeniería de Software con IA Generativa» · UNIANDES 2026
+> Integrantes: ${S.integrantes||'(completar)'}
+
+## Qué problema resuelve y para quién
+(Completar en 3 o 4 líneas: usuario, problema y qué hace el asistente.)
+
+## Demo
+- URL pública: ${u}
+- Estado: \`${u}/health\`
+- Plataforma: ${PLATN(S.plat)||'(pendiente)'}${S.m4.frio!==''?` · arranque en frío medido: ${S.m4.frio} s`:''}
+
+## Arquitectura
+(Diagrama o lista: frontend, backend, modelo, RAG, agente y herramientas, base de datos.)
+
+## Cómo ejecutarlo en local
+\`\`\`bash
+git clone <repositorio>
+cp .env.example .env        # completar las claves; .env nunca se sube
+${S.stack==='java'?'mvn spring-boot:run':'python -m venv .venv && source .venv/bin/activate\npip install -r requirements.txt\nuvicorn app.main:app --reload --port 8080'}
+\`\`\`
+
+## Variables de entorno
+Ver \`.env.example\` (sin valores). En producción las claves están en ${S.plat==='cloudrun'?'Secret Manager / variables de Cloud Run':S.plat==='azure'?'los secretos de Azure Container Apps':'la configuración de la plataforma'}.
+
+## Despliegue
+\`\`\`bash
+${S.plat==='cloudrun'?`gcloud run deploy ${nombreServ()} --source . --region us-central1 --memory ${memSug()} --min-instances 0 --max-instances 1`:S.plat==='azure'?`az containerapp up --name ${nombreServ()} --resource-group rg-g${S.grupo} --source . --ingress external --target-port 8080`:'(describir el procedimiento o enlazar docs/despliegue.md)'}
+\`\`\`
+CI/CD: \`.github/workflows/ci-cd.yml\`${RE_RUN.test(S.m5.run.trim())?` · última corrida verde: ${S.m5.run.trim()}`:''}
+
+${adrDatos()}
+## Pruebas y evaluación
+- Pruebas unitarias con el modelo simulado: \`pytest -q\`
+- Pruebas funcionales contra la URL desplegada: \`python tests/smoke.py ${u}\`${r?` → **${r.p}/${r.n} pasan**${r.p95!==null?`, p95 ${r.p95} s`:''}`:''}
+- Evaluación del RAG: ver \`docs/07-evaluacion.md\`
+
+## Integración estable con el modelo
+| Control | Estado | Dónde |
+|---|---|---|
+${ctl}
+
+## Decisiones y riesgos
+- ADR: \`docs/adr/\` · Riesgos: \`docs/riesgos.md\`
+
+## Limitaciones conocidas
+(Lo que no hace o hace a medias, dicho con honestidad.)
+
+## Integrantes y responsabilidades
+(Quién hizo qué.)
+`; }
+function m8(){ const e=S.m8.ent;
+ return cabecera(8,'La documentación técnica es lo que permite que otra persona (el tribunal, otro equipo, ustedes en seis meses) <b>entienda, ejecute y despliegue</b> el proyecto sin preguntarles. El README es la puerta de entrada: corto, verdadero y con enlaces a lo demás.')+
+ '<div class="card bloque"><h3>Paso 1 · Borrador de README con sus datos <span class="nivel min">Mínimo</span></h3><p style="margin-top:0">El taller ya llenó lo que sabe de ustedes (URL, plataforma, datos, CI, pruebas y controles). Completen los apartados entre paréntesis y súbanlo como <code>README.md</code>. Un README que promete algo que no existe resta más que uno corto.</p><div class="btns"><button class="btn s" type="button" id="m8dl">Descargar README.md</button><button class="btn g" type="button" id="m8ver">Ver el borrador</button></div><div id="m8code" style="display:none"></div></div>'+
+ '<div class="card bloque"><h3>Paso 2 · Revisen su README</h3><div class="campo"><label for="m8u">Enlace a su README en GitHub</label><input id="m8u" type="url" maxlength="200" placeholder="https://github.com/usuario/repo#readme" value="'+esc(S.m8.readme)+'"></div><div class="lista2">'+README_CHK.map((x,i)=>'<label class="check"><input type="checkbox" data-rd="'+i+'"'+(S.m8.chk[i]?' checked':'')+'> '+esc(x)+'</label>').join('')+'</div></div>'+
+ '<div class="card bloque"><h3>Paso 3 · Autoevaluación del producto final</h3><p style="margin-top:0">Los seis entregables de la semana 4 del Complexivo. La evidencia es un enlace o un archivo concreto. Lo que quede «parcial» o «pendiente» es su lista para el sábado.</p><div class="scroll"><table class="tabla"><thead><tr><th>Entregable</th><th>Estado</th><th>Evidencia</th></tr></thead><tbody>'+ENTREGABLES.map((x,i)=>{ const v=e[i]||{e:'',ev:''}; return '<tr><td>'+esc(x)+'</td><td><select data-en="'+i+'" aria-label="Estado de '+esc(x)+'"><option value="">—</option><option value="completo"'+(v.e==='completo'?' selected':'')+'>Completo</option><option value="parcial"'+(v.e==='parcial'?' selected':'')+'>Parcial</option><option value="pendiente"'+(v.e==='pendiente'?' selected':'')+'>Pendiente</option></select></td><td><input data-env="'+i+'" maxlength="160" placeholder="'+esc(['URL pública + smoke 6/6','ADR de respaldo, misión 7','URL/health','README.md, docs/','tests/smoke.py','gitleaks en Actions'][i])+'" value="'+esc(v.ev)+'" aria-label="Evidencia de '+esc(x)+'"></td></tr>'; }).join('')+'</tbody></table></div></div>'+
+ '<div class="card bloque"><h3>Línea para el chat</h3><div id="m8linea">'+bloqueCodigo(lineaChat())+'</div><p style="margin:0;color:var(--mu)">Cuando las 8 misiones estén completas, usen <b>«Enviar versión final»</b> en la barra de abajo.</p></div>'+
+ '<div class="card bloque"><h3>Sus retos <span class="tag">primer intento</span></h3>'+tablaRetos(retos())+'</div>'+
+ htmlChecks(8)+navMision(8); }
+function tablaRetos(rt){ return '<div class="scroll"><table class="tabla"><thead><tr><th>Reto</th><th>Puntaje</th></tr></thead><tbody>'+rt.r.map(x=>'<tr><td>'+esc(x[0])+'</td><td>'+(x[1]===null?'<span class="chip n">pendiente</span>':x[1]+' / '+x[2])+'</td></tr>').join('')+'<tr><td><b>Total</b></td><td><b>'+rt.pts+' / '+rt.max+' ('+rt.pct+' %)</b></td></tr></tbody></table></div>'; }
+function lineaChat(){ const r=smokeRes(S.m6.salida); return 'Grupo '+S.grupo+' · '+(PLATN(S.plat)||'sin plataforma')+' · '+(urlOk(base(S.m4.url))?base(S.m4.url):'sin URL')+' · CI '+(RE_RUN.test(S.m5.run.trim())?'verde':'pendiente')+' · humo '+(r?r.p+'/'+r.n:'pendiente'); }
+function bind8(){ $('#m8dl').onclick=()=>descargar('README.md',readmeMd());
+ $('#m8ver').onclick=()=>{ const b=$('#m8code'); const on=b.style.display==='none'; b.style.display=on?'':'none'; if(on) b.innerHTML=bloqueCodigo(readmeMd()); };
+ $('#m8u').addEventListener('input',e=>{ S.m8.readme=e.target.value.slice(0,200); e.target.classList.toggle('inv',!!S.m8.readme&&!RE_README.test(S.m8.readme.trim())); cambio(); refrescar(); });
+ $$('[data-rd]').forEach(c=>c.addEventListener('change',e=>{ const i=+e.target.dataset.rd; if(e.target.checked) S.m8.chk[i]=true; else delete S.m8.chk[i]; cambio(); refrescar(); }));
+ $$('[data-en]').forEach(s=>s.addEventListener('change',e=>{ const i=+e.target.dataset.en; S.m8.ent[i]=S.m8.ent[i]||{e:'',ev:''}; S.m8.ent[i].e=e.target.value; cambio(); refrescar(); }));
+ $$('[data-env]').forEach(s=>s.addEventListener('input',e=>{ const i=+e.target.dataset.env; S.m8.ent[i]=S.m8.ent[i]||{e:'',ev:''}; S.m8.ent[i].ev=e.target.value.slice(0,160); cambio(); refrescar(); })); }
+
+const MV={1:[m1,bind1],2:[m2,bind2],3:[m3,bind3],4:[m4,bind4],5:[m5,bind5],6:[m6,bind6],7:[m7,bind7],8:[m8,bind8]};
+const KS=[1,2,3,4,5,6,7,8];
+
+// =====================================================================
+// 9. PINTADO Y NAVEGACIÓN
+// =====================================================================
+function pintarNav(){ $('#misNav').innerHTML=MIS.map((m,i)=>{ const k=i+1; return (k===1?'<span class="dia">Jueves</span>':k===6?'<span class="dia">Viernes</span>':'')+'<button type="button" class="mpill'+(k===mision?' on':'')+(misionOk(k)?' ok':'')+'" data-ir="'+k+'"'+(k===mision?' aria-current="step"':'')+'><span class="num"><span>'+k+'</span></span>'+esc(m.t)+'</button>'; }).join(''); }
+function pintar(){ if(!S) return; const y=window.scrollY; $('#misionBox').innerHTML='<div class="mision">'+MV[mision][0]()+'</div>'; MV[mision][1](); pintarNav(); avance(); window.scrollTo(0,y); }
+function ir(k){ if(k<1||k>NM) return; mision=k; try{ localStorage.setItem('taller_desp_mision_'+S.grupo,k); }catch(e){} pintar(); const top=$('#conGrupo').getBoundingClientRect().top+window.scrollY; window.scrollTo({top:top,behavior:'smooth'}); }
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-ir]'); if(b&&!b.disabled&&S) ir(+b.dataset.ir); });
+function avance(){ const n=KS.filter(misionOk).length; $('#barraAv').style.width=(100*n/NM)+'%'; const rt=retos(); $('#txtAv').textContent=n+' de '+NM+' misiones · retos '+rt.pts+'/'+rt.max; }
+function refrescar(){ const box=$('#chk'+mision); if(box) box.outerHTML=htmlChecks(mision); pintarNav(); avance(); const l=$('#m8linea'); if(l) l.innerHTML=bloqueCodigo(lineaChat()); }
+function cambio(){ guardarLocal(); }
+
+// =====================================================================
+// 10. GRUPO, ENVÍO Y RESPALDO
+// =====================================================================
+$('#selGrupo').innerHTML+=CASOS.map((c,i)=>'<option value="'+(i+1)+'">Grupo '+(i+1)+' · '+esc(c)+'</option>').join('');
+$('#selGrupo').addEventListener('change',e=>{ guardarYa(); const g=+e.target.value;
+ if(!g){ S=null; $('#sinGrupo').style.display=''; $('#conGrupo').style.display='none'; $('#barraEnvio').style.display='none'; $('#integrantes').disabled=true; $('#integrantes').value=''; $('#barraAv').style.width='0'; $('#txtAv').textContent='0 de '+NM+' misiones'; return; }
+ S=cargarLocal(g)||nuevo(g); try{ localStorage.setItem('taller_desp_ultimo',g); }catch(x){}
+ let m=1; try{ m=+localStorage.getItem('taller_desp_mision_'+g)||1; }catch(x){} mision=Math.min(NM,Math.max(1,m));
+ $('#integrantes').disabled=false; $('#integrantes').value=S.integrantes; $('#sinGrupo').style.display='none'; $('#conGrupo').style.display=''; $('#barraEnvio').style.display='';
+ const u=S.envios[S.envios.length-1]; $('#estadoEnvio').textContent=u?('Último envío: '+u.tipo+' a las '+u.hora):'Sin enviar todavía'; pintar(); });
+$('#integrantes').addEventListener('input',e=>{ if(!S) return; S.integrantes=e.target.value.slice(0,200); cambio(); });
+
+function pendientes(){ const L=[]; KS.forEach(k=>VAL[k]().forEach(x=>{ if(!x[0]) L.push('M'+k+': '+x[1]); })); return L; }
+function hayClaveEnEstado(){ return [S.m1.docker,S.m2.resp,S.m4.health,S.m5.yml,S.m6.salida,S.m7.falla].some(hayClave)||S.m6.casos.some(c=>hayClave(c.cuerpo)); }
+function resumen(tipo){ const rt=retos(), ok=KS.filter(misionOk).length, r=smokeRes(S.m6.salida), p=pendientes(); const u=urlOk(base(S.m4.url))?base(S.m4.url):'';
+ return {grupo:S.grupo,integrantes:S.integrantes,tipo:tipo,misiones:ok+'/'+NM,meta:'[Despliegue] '+(PLATN(S.plat)||'sin plataforma')+(u?' · '+u:''),libres:rt.pts,confirmacion:r?r.p:0,fuera:r?r.n:0,max_iter:rt.pct,
+  escenarios:'CI '+(RE_RUN.test(S.m5.run.trim())?'si':'no')+' health '+(saludOk(S.m4.health)?'ok':'no')+' humo '+(r?r.p+'/'+r.n:'?'),alertas:p.slice(0,6).join(' | ')||'Sin pendientes',json:JSON.stringify(S)}; }
+async function post(body){ for(let i=0;i<3;i++){ try{ const r=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)}); return await r.json(); }catch(x){ await new Promise(r=>setTimeout(r,1500*(i+1))); } } return null; }
+let enviando=false;
+async function enviar(tipo){ if(!S||enviando) return; if(!S.integrantes.trim()) return toast('Escriban los nombres de los integrantes antes de enviar.',true);
+ if(hayClaveEnEstado()) return toast('Hay algo con forma de clave real en lo que pegaron. Bórrenlo antes de enviar.',true);
+ const body=resumen(tipo); if(body.json.length>44000) return toast('El contenido es demasiado largo. Acorten el Dockerfile, el workflow o la salida pegada.',true);
+ enviando=true; $('#btnGuardar').disabled=true; $('#btnFinal').disabled=true; $('#estadoEnvio').textContent='Enviando…';
+ const j=await post(body); enviando=false; $('#btnGuardar').disabled=false; $('#btnFinal').disabled=false;
+ if(j&&j.ok){ const h=new Date().toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'}); S.envios.push({tipo:tipo==='final'?'versión final':'avance',hora:h}); guardarLocal(); $('#estadoEnvio').textContent='Último envío: '+(tipo==='final'?'versión final':'avance')+' a las '+h; toast(tipo==='final'?'Versión final enviada al docente.':'Avance guardado: el docente ya lo ve.'); }
+ else if(j){ $('#estadoEnvio').textContent='No se guardó'; toast('El servidor respondió: '+(j.error||'error desconocido'),true); }
+ else { $('#estadoEnvio').textContent='Sin conexión'; toast('No se pudo conectar después de 3 intentos. Su trabajo sigue guardado en este navegador; intenten en un minuto.',true); } }
+$('#btnGuardar').onclick=()=>enviar('avance');
+$('#btnFinal').onclick=()=>{ if(!S) return; if(!KS.every(misionOk)){ const p=pendientes(); toast('Falta: '+p[0]+(p.length>1?' (y '+(p.length-1)+' más)':''),true); return; } enviar('final'); };
+$('#btnRespaldo').onclick=()=>{ if(S) descargar('taller_despliegue_grupo'+S.grupo+'.json',JSON.stringify(S,null,2),'application/json'); };
+
+// =====================================================================
+// 11. PESTAÑAS
+// =====================================================================
+$$('.tab').forEach(b=>b.addEventListener('click',()=>{ $$('.tab').forEach(x=>{ x.classList.toggle('on',x===b); x.setAttribute('aria-selected',x===b); }); $$('.vista').forEach(v=>v.classList.toggle('on',v.id==='v-'+b.dataset.v)); const doc=b.dataset.v==='docente'; $('#grupoBar').style.display=doc?'none':''; $('#barraEnvio').style.display=(!doc&&S)?'':'none'; }));
+
+// =====================================================================
+// 12. PANEL DEL DOCENTE
+// =====================================================================
+let HUELLA=null, FILAS=[], timer=null;
+async function sha256(t){ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
+function tipoFila(f){ try{ return JSON.parse(f.json).taller||''; }catch(x){ return ''; } }
+async function cargarDocente(){ try{ const r=await fetch(ENDPOINT+'?a=taller&h='+HUELLA); const j=await r.json();
+  if(!j.ok){ if(j.error==='acceso'){ $('#loginMsg').textContent='Usuario o contraseña incorrectos.'; salir(); } else toast(j.error||'Error del servidor',true); return false; }
+  FILAS=(j.filas||[]).filter(f=>tipoFila(f)===TALLER); pintarPanel(); $('#actualizado').textContent='Actualizado '+new Date().toLocaleTimeString('es-EC'); return true;
+ }catch(x){ $('#loginMsg').textContent=''; toast('No se pudo leer el servidor.',true); return false; } }
+$('#btnLogin').onclick=async()=>{ const u=$('#d-u').value.trim(), p=$('#d-p').value; if(!u||!p) return; if(!(window.crypto&&crypto.subtle)){ $('#loginMsg').textContent='Abra la página con https para ingresar.'; return; } $('#loginMsg').textContent='Verificando…'; HUELLA=await sha256(u+':'+p);
+ if(await cargarDocente()){ $('#loginMsg').textContent=''; $('#login').style.display='none'; $('#panel').style.display=''; $('#d-p').value=''; programar(); } };
+$('#d-p').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#btnLogin').click(); });
+function salir(){ HUELLA=null; FILAS=[]; $('#panel').style.display='none'; $('#login').style.display=''; clearInterval(timer); const d=$('#detalle'); d.classList.remove('on'); d.dataset.g=''; d.innerHTML=''; }
+$('#btnSalir').onclick=salir; $('#btnRefrescar').onclick=cargarDocente;
+function programar(){ clearInterval(timer); if($('#auto').checked) timer=setInterval(cargarDocente,30000); }
+$('#auto').onchange=programar;
+function ultimos(){ const m={}; FILAS.forEach(f=>{ const g=+f.grupo; if(Number.isInteger(g)&&g>=1&&g<=11) m[g]=f; }); return m; }
+function horaDe(f){ const d=new Date(f.fecha); return f.fecha&&!isNaN(d)?d.toLocaleString('es-EC',{weekday:'short',hour:'2-digit',minute:'2-digit'}):'—'; }
+function leer(f){ try{ const o=JSON.parse(f.json); return o&&o.taller===TALLER?completar(o,+f.grupo):null; }catch(x){ return null; } }
+function enlace(u,txt){ return urlOk(u)?'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+esc(txt||u)+'</a>':esc(txt||u||'—'); }
+function pintarPanel(){ const U=ultimos(), L=Object.values(U); const est=L.map(leer).filter(Boolean);
+ const urls=est.filter(s=>urlOk(base(s.m4.url))&&saludOk(s.m4.health)).length, ci=est.filter(s=>RE_RUN.test(s.m5.run.trim())).length;
+ const hs=est.map(s=>smokeRes(s.m6.salida)).filter(Boolean); const humo=hs.length?Math.round(100*hs.reduce((a,r)=>a+r.p/r.n,0)/hs.length):0;
+ $('#kpis').innerHTML='<div class="kpi"><b>'+L.length+' / 11</b>grupos con envíos</div><div class="kpi"><b>'+urls+'</b>enlaces públicos con /health ok</div><div class="kpi"><b>'+ci+'</b>pipelines en verde</div><div class="kpi"><b>'+(hs.length?humo+' %':'—')+'</b>casos de humo que pasan (promedio)</div>';
+ $('#tbDoc').innerHTML=CASOS.map((c,i)=>{ const g=i+1, f=U[g]; if(!f) return '<tr><td><b>G'+g+'</b> · '+esc(c)+'</td><td colspan="9" style="color:var(--mu2)">Sin envíos todavía</td></tr>';
+  const s=leer(f)||nuevo(g); const mis=Math.min(NM,+String(f.misiones).split('/')[0]||0); const u=base(s.m4.url), r=smokeRes(s.m6.salida);
+  return '<tr><td><b>G'+g+'</b> · '+esc(c)+'<div style="color:var(--mu2);font-size:12px">'+esc(f.integrantes||'')+'</div></td><td>'+horaDe(f)+'<div style="color:var(--mu2);font-size:12px">'+esc(f.tipo)+' · envío '+FILAS.filter(x=>+x.grupo===g).length+'</div></td><td class="dots">'+KS.map(k=>'<span class="'+(k<=mis?'on':'')+'"></span>').join('')+'<div style="font-size:12px">'+esc(f.misiones)+'</div></td><td><b>'+(PN(f.max_iter)||0)+' %</b></td><td>'+esc(PLATN(s.plat)||'—')+'</td><td>'+(urlOk(u)?enlace(u+'/health','abrir /health')+' '+(saludOk(s.m4.health)?'<span class="chip ok">ok</span>':'<span class="chip no">?</span>'):'<span class="chip n">sin URL</span>')+'</td><td>'+(RE_RUN.test(s.m5.run.trim())?enlace(s.m5.run.trim(),'verde'):'<span class="chip n">—</span>')+'</td><td>'+(r?'<span class="chip '+(r.p===r.n?'ok':'no')+'">'+r.p+'/'+r.n+'</span>':'<span class="chip n">—</span>')+'</td><td style="font-size:12px;max-width:240px">'+esc(f.alertas||'')+'</td><td><button class="btn g" type="button" data-ver="'+g+'" style="padding:6px 12px">Ver</button></td></tr>'; }).join('');
+ const ab=$('#detalle').dataset.g; if(ab&&U[ab]) verDetalle(+ab); }
+$('#tbDoc').addEventListener('click',e=>{ const b=e.target.closest('[data-ver]'); if(b) verDetalle(+b.dataset.ver,true); });
+function verDetalle(g,scroll){ const f=ultimos()[g]; if(!f) return; const s=leer(f), d=$('#detalle'); d.dataset.g=g; d.classList.add('on'); if(!s){ d.innerHTML='<p>No se pudo leer el contenido del envío.</p>'; return; }
+ const rt=retos(s); const prev=S; S=s; // los validadores leen S
+ let html; try{
+ const sec=(t,cuerpo)=>'<h4 style="margin:16px 0 6px">'+t+'</h4>'+cuerpo;
+ const lista=L=>'<ul class="chk">'+L.map(x=>'<li><span class="d '+(x[0]?'si':'no')+'" aria-hidden="true"></span><span>'+esc(x[1])+'</span></li>').join('')+'</ul>';
+ const r=smokeRes(s.m6.salida);
+ html='<div class="estadoM"><h3>G'+g+' · '+esc(CASOS[g-1])+'</h3><button class="btn g" type="button" id="cerrarDet">Cerrar</button></div><p style="color:var(--mu)">'+esc(s.integrantes)+' · '+esc(PLATN(s.plat)||'sin plataforma')+' · '+(s.stack==='java'?'Java':'Python')+' · embeddings '+esc(s.emb)+'</p>'+
+  '<p>'+rt.r.map(x=>esc(x[0])+': <b>'+(x[1]===null?'—':x[1]+'/'+x[2])+'</b>').join(' · ')+'</p>'+
+  sec('1 · Dockerfile',lista(v1().slice(1,-1)))+(s.m1.docker.trim()?'<details><summary>Ver Dockerfile</summary>'+bloqueCodigo(s.m1.docker)+'</details>':'')+
+  sec('2 · /health local',lista(v2()))+
+  sec('3 · Datos','<div class="scroll"><table class="tabla"><tbody>'+COMP.map(c=>'<tr><td>'+esc(c[1])+'</td><td>'+esc((DEST.find(x=>x[0]===s.m3.dest[c[0]])||['','—'])[1])+'</td></tr>').join('')+'</tbody></table></div>'+(s.m3.porque?'<p>'+esc(s.m3.porque)+'</p>':''))+
+  sec('4 · Despliegue','<p>'+(urlOk(base(s.m4.url))?enlace(base(s.m4.url)+'/health',base(s.m4.url)):'Sin URL')+' · health: <code>'+esc(s.m4.health||'—')+'</code> · memoria '+esc(s.m4.mem||'—')+' · máx. '+esc(s.m4.max||'—')+' · frío '+esc(s.m4.frio||'—')+' s · prueba: '+esc(s.m4.prueba||'—')+'</p>'+lista(v4()))+
+  sec('5 · Pipeline',lista(v5().slice(1,-1))+(s.m5.yml.trim()?'<details><summary>Ver workflow</summary>'+bloqueCodigo(s.m5.yml)+'</details>':''))+
+  sec('6 · Pruebas funcionales','<div class="scroll"><table class="tabla"><thead><tr><th>Tipo</th><th>Método</th><th>Ruta</th><th>Esperado</th></tr></thead><tbody>'+s.m6.casos.map(c=>'<tr><td>'+esc(c.tipo)+'</td><td>'+esc(c.met)+'</td><td><code>'+esc(c.ruta)+'</code></td><td>'+esc(c.estado)+(c.contiene?' · «'+esc(c.contiene)+'»':'')+'</td></tr>').join('')+'</tbody></table></div><p><b>'+(r?r.p+'/'+r.n+' pasan'+(r.p95!==null?' · p95 '+r.p95+' s':''):'Sin resultado')+'</b>'+(s.m6.plan?' · Plan: '+esc(s.m6.plan):'')+'</p>'+(s.m6.salida.trim()?'<details><summary>Ver salida</summary>'+bloqueCodigo(s.m6.salida)+'</details>':''))+
+  sec('7 · Integración estable','<div class="scroll"><table class="tabla"><tbody>'+CTL.map(x=>{ const v=s.m7.ctl[x[0]]||{}; return '<tr><td>'+esc(x[1])+'</td><td>'+esc({si:'Sí',parcial:'Parcial',no:'No'}[v.e]||'—')+'</td><td><code>'+esc(v.d||'')+'</code></td></tr>'; }).join('')+'</tbody></table></div>'+(s.m7.falla?'<p><b>Prueba de caída:</b> '+esc(s.m7.falla)+'</p>':''))+
+  sec('8 · Documentación','<p>README: '+(RE_README.test(s.m8.readme.trim())?enlace(s.m8.readme.trim()):'—')+' · '+Object.keys(s.m8.chk).length+'/'+README_CHK.length+' puntos</p><div class="scroll"><table class="tabla"><tbody>'+ENTREGABLES.map((x,i)=>{ const v=s.m8.ent[i]||{}; return '<tr><td>'+esc(x)+'</td><td>'+esc(v.e||'—')+'</td><td>'+esc(v.ev||'')+'</td></tr>'; }).join('')+'</tbody></table></div>');
+ } finally { S=prev; }
+ d.innerHTML=html; $('#cerrarDet').onclick=()=>{ d.classList.remove('on'); d.dataset.g=''; }; if(scroll) d.scrollIntoView({behavior:'smooth',block:'start'}); }
+
+// =====================================================================
+// 13. ARRANQUE
+// =====================================================================
+try{ const u=localStorage.getItem('taller_desp_ultimo'); if(u&&+u>=1&&+u<=11){ $('#selGrupo').value=u; $('#selGrupo').dispatchEvent(new Event('change')); } }catch(x){}
+</script>
+</body>
+</html>
