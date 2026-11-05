@@ -115,6 +115,48 @@ footer{color:var(--mu);font-size:13.5px;text-align:center;padding:24px}
 .ficha{display:block}
 #vista{display:none;padding-top:24px}
 #acceso{padding-top:32px}
+/* producto */
+.piezas{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+@media(max-width:900px){.piezas{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:520px){.piezas{grid-template-columns:repeat(2,1fr)}}
+.pieza{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:14px;text-align:center}
+.pieza svg{width:56px;height:56px}
+.pieza b{display:block;font-family:Outfit;font-size:15px;margin-top:6px}
+.pieza small{color:var(--mu);font-size:13px;display:block;margin-top:2px}
+.pieza .barra{display:flex;gap:2px;margin-top:10px;height:8px;border-radius:4px;overflow:hidden}
+.pieza .barra i{flex:1}
+.pieza .cnt{font-size:12.5px;color:var(--mu);margin-top:4px}
+/* semanas */
+.semanas{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:16px;position:relative}
+@media(max-width:800px){.semanas{grid-template-columns:1fr 1fr;gap:10px}}
+.sem{padding:14px 16px;border-top:6px solid var(--off);background:#fff;border-right:1px solid var(--bd)}
+.sem:first-child{border-radius:14px 0 0 14px}.sem:last-child{border-radius:0 14px 14px 0;border-right:0}
+@media(max-width:800px){.sem{border-radius:14px!important;border-right:0}}
+.sem.pas{border-top-color:var(--ok)}.sem.hoy{border-top-color:var(--vi);background:var(--viS)}
+.sem .q{font-family:'JetBrains Mono';font-size:12px;color:var(--mu)}
+.sem h4{font-size:16px;margin:4px 0 6px}
+.sem ul{margin:0;padding-left:18px;font-size:14px;color:var(--mu)}
+.sem .tag{display:inline-block;font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 7px;margin-left:4px}
+.tag.pas{background:var(--okS);color:#0E7A52}.tag.hoy{background:var(--vi);color:#fff}.tag.fut{background:var(--offS);color:var(--mu)}
+/* mapa */
+.mapa{overflow-x:auto}
+table.hm{border-collapse:separate;border-spacing:4px;width:100%;min-width:900px}
+table.hm th{font-size:12px;font-weight:700;color:var(--mu);text-align:center;padding:4px;vertical-align:bottom;line-height:1.2}
+table.hm th.g{text-align:left}
+table.hm td{height:42px;border-radius:9px;text-align:center;font-size:15px;font-weight:700;cursor:pointer;transition:transform .12s}
+table.hm td:hover{transform:scale(1.04)}
+table.hm td.n{background:transparent;text-align:left;font-weight:600;font-size:14.5px;cursor:pointer;white-space:nowrap;padding-right:8px}
+table.hm td.n b{font-family:Outfit;color:var(--vi)}
+td.h{background:var(--ok);color:#fff}td.p{background:var(--pa);color:#3B2A00}td.f{background:#fff;border:2px dashed #E7A9A7;color:var(--no)}td.x{background:var(--offS);color:var(--mu);border:1px solid var(--bd)}
+td.pct{background:transparent!important;border:0!important;min-width:120px}
+.pctbar{height:12px;background:var(--offS);border-radius:6px;overflow:hidden;position:relative}
+.pctbar div{height:100%;background:linear-gradient(90deg,var(--vi),#9C82F0)}
+.pcttxt{font-family:'JetBrains Mono';font-size:12px;color:var(--ink);margin-top:3px;text-align:left}
+.dsec{margin-bottom:34px}
+.dsec .sh h2{font-size:24px}
+.dtabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 18px}
+.dtabs a{text-decoration:none;color:var(--mu);font-weight:700;font-size:14px;padding:7px 12px;border-radius:9px;background:#fff;border:1px solid var(--bd)}
+.dtabs a:hover{background:var(--viS);color:var(--vi)}
 .docLink{margin-top:14px;text-align:center}
 .docLink button{background:none;border:0;color:var(--mu);font-size:13.5px;text-decoration:underline;padding:4px}
 #docForm{display:none;margin-top:14px;border-top:1px solid var(--bd);padding-top:16px}
@@ -129,7 +171,7 @@ footer{color:var(--mu);font-size:13.5px;text-align:center;padding:24px}
 .gsel .cod{font-family:'JetBrains Mono',monospace;letter-spacing:1px}
 @media(max-width:520px){header h1{font-size:30px}.card{padding:16px}}
 
-@media print{header,.barraSesion,#acceso,.gsel{display:none!important}body{background:#fff}.card{box-shadow:none}}
+@media print{header,.barraSesion,#acceso,.gsel,.dtabs,#d-producto,#d-mapa,#d-fichas>.sh{display:none!important}body{background:#fff}.card{box-shadow:none}}
 </style>
 </head>
 <body>
@@ -164,8 +206,13 @@ footer{color:var(--mu);font-size:13.5px;text-align:center;padding:24px}
  </section>
  <section id="vdoc">
   <div class="barraSesion"><div class="q" id="dquien">Vista docente</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="dref" type="button">Actualizar</button><button class="btn" id="dimp" type="button">Imprimir esta ficha</button><button class="btn" id="dsalir" type="button">Salir</button></div></div>
+  <nav class="dtabs"><a href="#d-producto">El producto que se pide</a><a href="#d-mapa">Mapa del curso</a><a href="#d-fichas">Cada proyecto</a></nav>
+  <div class="dsec" id="d-producto"><div class="sh"><h2>El producto que pide el Complexivo</h2><p>Seis piezas. Debajo de cada una, cuántos de los once proyectos ya la tienen.</p></div><div class="piezas" id="piezas"></div><div class="semanas" id="semanas"></div></div>
+  <div class="dsec" id="d-mapa"><div class="sh"><h2>Mapa del curso</h2><p>Cada fila es un proyecto; cada columna, algo que se pide hasta la semana 3. Pase el cursor sobre una celda para ver el detalle, o pulse la fila para abrir la ficha.</p></div>
+   <div class="card mapa"><table class="hm" id="hm"></table><p class="nota">El avance de la semana 3 suma los cinco entregables de la semana (corpus, RAG, agente, calidad, evaluación): completo vale 1, a medias vale 0,5. Las herramientas del caso cuentan cuántas de las que define su caso existen en el código.</p></div></div>
+  <div class="dsec" id="d-fichas"><div class="sh"><h2>Cada proyecto</h2><p>Con su código y las consultas que ha hecho cada grupo en esta página.</p></div>
   <div class="gsel" id="gsel"></div>
-  <div id="dficha"></div>
+  <div id="dficha"></div></div>
  </section>
  <section id="vista">
   <div class="barraSesion"><div class="q" id="quien"></div><div style="display:flex;gap:8px"><button class="btn" id="imprimir" type="button">Imprimir o guardar PDF</button><button class="btn" id="salir" type="button">Salir</button></div></div>
@@ -285,6 +332,29 @@ function mostrar(g){
 function salir(){ $('fichaBox').innerHTML=''; $('vista').style.display='none'; $('acceso').style.display='block'; $('codigo').value=''; $('grupo').focus(); }
 $('form').addEventListener('submit',consultar);
 
+
+// ============ RESUMEN DEL CURSO (solo docente) ============
+const PIEZAS=[['web','Aplicación web funcional','Frontend y backend',g=>g.comp.front==='h'&&g.comp.back==='h'?'h':'p'],
+ ['modelo','Integración con un modelo generativo','OpenAI, Gemini o similar',g=>g.comp.modelo],
+ ['docs','Base de conocimiento propia','Documentos del caso, recuperados',g=>g.comp.rag==='h'&&g.comp.docs!=='f'?(g.comp.docs==='h'?'h':'p'):(g.comp.rag==='p'||g.comp.docs==='h'?'p':'f')],
+ ['agente','Agente inteligente especializado','Con las herramientas del caso',g=>g.comp.agente==='h'?'h':(g.comp.tools==='f'?'f':'p')],
+ ['git','Repositorio Git','Con commits del grupo',g=>'h'],
+ ['nube','Despliegue en la nube','Semana 4',g=>g.comp.nube==='f'?'x':g.comp.nube]];
+const SEM=[['Semana 1','Problema y diseño',['Propuesta','Requisitos','Arquitectura'],'pas',''],['Semana 2','MVP con IA',['Backend y frontend','Integración con el modelo','Evidencia técnica'],'pas',''],['Semana 3','RAG, agente y calidad',['Conocimiento especializado','RAG','Agente','Calidad','Evaluación'],'hoy','Entregada · revisada'],['Semana 4','Despliegue y validación',['Producto operativo','Despliegue','Documentación','Pruebas funcionales'],'fut','En curso · 4 al 7 de noviembre']];
+const MCOLS=[['S1','Semana 1<br>diseño',g=>g.s1||'h'],['S2','Semana 2<br>MVP',g=>g.comp.front==='p'?'p':'h'],['corpus','Corpus',g=>g.s3.corpus],['rag','RAG con<br>citas',g=>g.s3.rag],['agente','Agente',g=>g.s3.agente],['tools','Herramientas<br>del caso',g=>{const v=toolPct(g);return v>=75?'h':v>0?'p':'f'}],['calidad','Calidad',g=>g.s3.calidad],['eval','Evaluación',g=>g.s3.eval],['nube','Despliegue',g=>g.comp.nube==='f'?'x':g.comp.nube]];
+const TIP={S1:'Propuesta, requisitos y arquitectura en docs/',S2:'Backend, frontend e integración con el modelo',corpus:'Documentos del caso en el repositorio, cortados en fragmentos',rag:'Búsqueda en los documentos, con cita y silencio',agente:'El modelo pide herramientas: lista cerrada, tope y confirmación',tools:'Herramientas que define su caso',calidad:'Pruebas, validación, CI, sin secretos',eval:'Preguntas con respuesta esperada y un script que las corre',nube:'Corresponde a la semana 4'};
+const TXT2={...TXT,x:'Aún no corresponde'};
+function pintarResumen(F){
+ const s1=F.filter(g=>(g.s1||'h')==='h').length, s2=F.filter(g=>g.comp.front!=='p').length;
+ SEM[0][4]=s1+' de '+F.length+' completas'; SEM[1][4]=s2===F.length?'Los '+F.length+' la tienen':s2+' de '+F.length;
+ $('piezas').innerHTML=PIEZAS.map(([ic,t,st,f])=>{const est=F.map(f);const c={h:0,p:0,f:0,x:0};est.forEach(e=>c[e]++);
+  return `<div class="pieza">${icon(ic,'#6C4CD6')}<b>${t}</b><small>${st}</small><div class="barra">${est.map(e=>`<i style="background:${e==='f'?'#F3C4C2':COL[e]}"></i>`).join('')}</div><div class="cnt">${[c.h?c.h+(c.h>1?' la tienen':' la tiene'):'',c.p?c.p+' a medias':'',c.f?c.f+' sin empezar':'',c.x?c.x+' para la semana 4':''].filter(Boolean).join(' · ')}</div></div>`;}).join('');
+ $('semanas').innerHTML=SEM.map(x=>`<div class="sem ${x[3]}"><div class="q">${x[0]}<span class="tag ${x[3]}">${x[4]}</span></div><h4>${x[1]}</h4><ul>${x[2].map(y=>'<li>'+y+'</li>').join('')}</ul></div>`).join('');
+ let hm='<tr><th class="g">Proyecto</th>'+MCOLS.map(c=>'<th>'+c[1]+'</th>').join('')+'<th>Avance<br>semana 3</th></tr>';
+ F.forEach((g,i)=>{ hm+=`<tr><td class="n" data-gi="${i}"><b>G${g.n}</b> ${esc(String(g.nombre).split(' (')[0])}</td>`+MCOLS.map(c=>{const e=c[2](g);const lab=c[0]==='tools'?toolPct(g)+' %':(e==='h'?'✓':e==='p'?'½':e==='x'?'—':'＋');return `<td class="${e}" data-gi="${i}" title="${TIP[c[0]]}: ${TXT2[e]}">${lab}</td>`;}).join('')+`<td class="pct" data-gi="${i}"><div class="pctbar"><div style="width:${s3pct(g)}%"></div></div><div class="pcttxt">${s3pct(g)} %</div></td></tr>`; });
+ $('hm').innerHTML=hm; }
+$('hm').addEventListener('click',e=>{ const c=e.target.closest('[data-gi]'); if(!c) return; DSEL=+c.dataset.gi; pintarDoc(); $('d-fichas').scrollIntoView({behavior:'smooth'}); });
+
 // ============ ACCESO DOCENTE ============
 let HUELLA=null, DOC=null, DSEL=0;
 async function sha256(t){ const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
@@ -305,7 +375,8 @@ function pintarDoc(){
  $('dquien').textContent='Vista docente · '+gs.length+' grupos · '+tot+' consultas de los grupos';
  $('gsel').innerHTML=gs.map((g,i)=>{ const p=s3pct(g.ficha),r=11,C=2*Math.PI*r,a=(DOC.accesos||{})[g.grupo]||{consultas:0,fallidos:0};
   return `<button type="button" data-g="${i}" class="${i===DSEL?'on':''}"><svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="${r}" stroke="#EEEAF7" stroke-width="4" fill="none"/><circle cx="15" cy="15" r="${r}" stroke="#6C4CD6" stroke-width="4" fill="none" stroke-dasharray="${C*p/100} ${C}" transform="rotate(-90 15 15)"/></svg><span><b>G${g.grupo} · ${p} %</b><small>código <span class="cod">${esc(g.codigo)}</span></small><small>${a.consultas} consulta${a.consultas===1?'':'s'}${a.fallidos?' · '+a.fallidos+' fallido'+(a.fallidos===1?'':'s'):''}${a.ultima?' · '+esc(fecha(a.ultima)):''}</small></span></button>`; }).join('');
- $('dficha').innerHTML=ficha(gs[DSEL].ficha); }
+ $('dficha').innerHTML=ficha(gs[DSEL].ficha);
+ pintarResumen(gs.map(g=>g.ficha)); }
 $('docToggle').addEventListener('click',()=>{ const f=$('docForm'); const on=!f.classList.contains('on'); f.classList.toggle('on',on); $('docToggle').setAttribute('aria-expanded',on); if(on) $('d-u').focus(); });
 $('docForm').addEventListener('submit',async ev=>{ ev.preventDefault();
  const u=$('d-u').value.trim(), p=$('d-p').value; if(!u||!p){ daviso('Escriba usuario y contraseña.'); return; }
@@ -318,7 +389,7 @@ $('docForm').addEventListener('submit',async ev=>{ ev.preventDefault();
 $('gsel').addEventListener('click',e=>{ const b=e.target.closest('[data-g]'); if(!b) return; DSEL=+b.dataset.g; pintarDoc(); $('dficha').scrollIntoView({behavior:'smooth',block:'start'}); });
 $('dref').addEventListener('click',async()=>{ const b=$('dref'); b.disabled=true; b.textContent='Actualizando…'; if(await cargarDoc()) pintarDoc(); b.disabled=false; b.textContent='Actualizar'; });
 $('dimp').addEventListener('click',()=>window.print());
-$('dsalir').addEventListener('click',()=>{ HUELLA=null; DOC=null; $('gsel').innerHTML=''; $('dficha').innerHTML=''; $('vdoc').style.display='none'; $('acceso').style.display='block'; $('d-u').value=''; $('docForm').classList.remove('on'); });
+$('dsalir').addEventListener('click',()=>{ HUELLA=null; DOC=null; $('gsel').innerHTML=''; $('dficha').innerHTML=''; $('piezas').innerHTML=''; $('semanas').innerHTML=''; $('hm').innerHTML=''; $('vdoc').style.display='none'; $('acceso').style.display='block'; $('d-u').value=''; $('docForm').classList.remove('on'); });
 $('salir').addEventListener('click',salir);
 $('imprimir').addEventListener('click',()=>window.print());
 $('codigo').addEventListener('input',e=>{ e.target.value=e.target.value.replace(/\D/g,'').slice(0,6); });
