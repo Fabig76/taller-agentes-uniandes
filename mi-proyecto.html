@@ -171,7 +171,7 @@ const TXT={h:'Lo tiene',p:'A medias',f:'Le falta',x:'Semana 4'};
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 
-const ENDPOINT=''; // URL /exec del Apps Script «Mi proyecto»
+const ENDPOINT='https://script.google.com/macros/s/AKfycbyT2T2BxSJcQHXIR3-LVxRdcg2wzTHneFJKDGJKJuemDPsitkcJFpuSyxlanLWFhiCG/exec'; // URL /exec del Apps Script «Mi proyecto»
 const CHK=[["Ingesta reproducible", "scripts/ingest.py corta los documentos con metadatos"], ["Documento del RAG", "docs/06-rag.md"], ["Respuestas con cita", "La respuesta trae sus fuentes, validadas en código"], ["Abstención probada", "Si no hay evidencia, lo dice; con umbral y prueba"], ["Agente con bucle real", "El modelo elige la herramienta; lista cerrada y tope"], ["Parámetros en config/", "Valores de negocio y umbrales fuera del código"], ["Confirmación humana", "Las acciones con efecto esperan aprobación"], ["Conjunto de evaluación", "eval/ con respuesta esperada y preguntas fuera de dominio"], ["Resultados de evaluación", "docs/07-evaluacion.md con cifras reales"], ["Pruebas y CI", "pytest con el modelo simulado y GitHub Actions"], ["Evidencias", "docs/evidencias/semana-3/"]];
 const V={h:1,p:.5,f:0,x:0};
 const s3pct=g=>Math.round(100*Object.values(g.s3).reduce((a,v)=>a+V[v],0)/5);
