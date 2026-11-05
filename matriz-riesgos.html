@@ -317,7 +317,7 @@ function tarjeta(r,idx){ const nv=nivel(r.p,r.i); return '<article class="riesgo
  '<button class="quitar" type="button" data-quitar="'+r.id+'" aria-label="Quitar riesgo '+(idx+1)+'">✕ Quitar</button></div></article>'; }
 function visibles(){ return S.riesgos.filter(r=>filtro==='todos'||(filtro==='abiertos'?r.est==='Abierto':nivel(r.p,r.i)===filtro)); }
 function pintarLista(){ const V=visibles(); const L=$('#lista');
- if(!S.riesgos.length){ L.innerHTML='<div class="vacio"><h3>Todavía no hay riesgos</h3><p>Empiecen con «+ Nuevo riesgo» o elijan del catálogo. Si quieren ver cómo queda una matriz llena, usen «Ver ejemplo».</p></div>'; return; }
+ if(!S.riesgos.length){ L.innerHTML='<div class="vacio"><h3>Todavía no hay riesgos</h3><p>Empiecen con «+ Nuevo riesgo» o elijan del catálogo. Si quieren ver cómo queda una matriz llena, usen «Ver ejemplo» (una app de pedidos a domicilio).</p></div>'; return; }
  if(!V.length){ L.innerHTML='<div class="vacio"><h3>Ningún riesgo con ese filtro</h3></div>'; return; }
  L.innerHTML=V.map((r,i)=>tarjeta(r,S.riesgos.indexOf(r))).join(''); }
 function pintarTodo(){ pintarCifras(); pintarLista(); if($('#v-mapa').classList.contains('on')) pintarMapa(); guardar(); }
@@ -369,17 +369,17 @@ $('#btnJson').onclick=()=>{ descargar('matriz-riesgos-'+slug()+'.json',JSON.stri
 $('#inJson').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; const fr=new FileReader(); fr.onload=()=>{ try{ const o=JSON.parse(fr.result); if(!o||!Array.isArray(o.riesgos)) throw 0; if(S.riesgos.length&&!confirm('Esto reemplaza los '+S.riesgos.length+' riesgos actuales por los del archivo. ¿Continuar?')) return; S=normal(o); [['#pNombre','nombre'],['#pGrupo','grupo'],['#pResp','resp']].forEach(([id,k])=>$(id).value=S[k]); pintarTodo(); ir('matriz'); toast('Copia abierta: '+S.riesgos.length+' riesgos.'); }catch(x){ toast('Ese archivo no es una copia de esta matriz.'); } e.target.value=''; }; fr.readAsText(f); });
 $('#btnPrint').onclick=()=>window.print();
 $('#btnEjemplo').onclick=()=>{ if(S.riesgos.length&&!confirm('El ejemplo reemplaza su matriz actual. Si quieren conservarla, primero «Guardar copia (.json)». ¿Continuar?')) return;
- S={nombre:'Asistente de orientación sobre dengue (ejemplo)',grupo:'Grupo de ejemplo',resp:'Ana, Luis, Sofía',riesgos:[
-  {t:'Un síntoma de alarma escrito en lenguaje cotidiano no se detecta y la persona no acude al hospital',cat:CATS[0],ref:'LLM07',p:4,i:5,m:'Sinónimos de cada signo en config/, extracción por campos booleanos y 20 frases reales como pruebas',ev:'app/tools/evaluar_signos_alarma.py · tests/test_signos.py',resp:'Ana',est:'Abierto'},
-  {t:'Conversaciones con síntomas de personas quedan en el repositorio',cat:CATS[2],ref:'LOPDP',p:5,i:5,m:'git rm --cached del archivo, limpiar el historial y anonimizar antes de guardar',ev:'historial de git · docs/09-decisiones.md',resp:'Luis',est:'Mitigado'},
-  {t:'La búsqueda devuelve fragmentos lejanos y el modelo responde fuera de la guía',cat:CATS[0],ref:'LLM07',p:4,i:4,m:'Umbral de distancia calibrado con 20 preguntas, 5 de ellas fuera de tema',ev:'app/tools/consultar_guia_msp.py · eval/evaluar.py',resp:'Sofía',est:'Abierto'},
-  {t:'La notificación al contacto de emergencia dice «enviado» cuando es simulada',cat:CATS[1],ref:'ASI09',p:4,i:4,m:'Estado «simulado» en la herramienta y en la interfaz hasta tener un envío real',ev:'app/tools/notificar_contacto_emergencia.py',resp:'Ana',est:'Mitigado'},
-  {t:'La cuota gratuita de Gemini se agota durante la defensa',cat:CATS[5],ref:'Proyecto',p:4,i:5,m:'Groq como alterno, respuestas en caché y video de la demo de respaldo',ev:'app/services/llm.py · docs/runbook.md',resp:'Luis',est:'Abierto'},
-  {t:'Un documento del corpus con una orden cambia el comportamiento del asistente',cat:CATS[0],ref:'LLM01',p:2,i:4,m:'Contexto delimitado como datos y prueba con documentos hostiles',ev:'app/prompts/system_agente.md · tests/test_inyeccion.py',resp:'Sofía',est:'Abierto'},
-  {t:'Render Free duerme la app y la primera respuesta tarda un minuto',cat:CATS[3],ref:'Despliegue',p:5,i:2,m:'Llamar a /health dos minutos antes de la demo; migrar a Cloud Run si hay tarjeta',ev:'docs/adr/0003-plataforma.md',resp:'Luis',est:'Aceptado'},
-  {t:'La evaluación da 87 % porque las reglas conocen los casos de prueba',cat:CATS[4],ref:'Calidad',p:3,i:3,m:'10 casos nuevos escritos por quien no vio el código; errores cuentan como fallos',ev:'eval/evaluar.py · eval/casos_nuevos.jsonl',resp:'Ana',est:'Abierto'}
+ S={nombre:'App de pedidos a domicilio para restaurantes (ejemplo)',grupo:'Equipo de ejemplo',resp:'Valeria, Andrés, Camila',riesgos:[
+  {t:'El repartidor no recibe la notificación del pedido y el cliente queda esperando',cat:CATS[3],ref:'Operación',p:4,i:4,m:'Reintento automático de la notificación y alerta al restaurante si nadie acepta en 3 minutos',ev:'servicios/notificaciones.py · tests/test_reintentos.py',resp:'Andrés',est:'Abierto'},
+  {t:'Se cobra dos veces el mismo pedido cuando el cliente pulsa «Pagar» dos veces',cat:CATS[6],ref:'Pagos',p:3,i:5,m:'Clave de idempotencia por pedido en la pasarela de pago y botón deshabilitado tras el primer clic',ev:'api/pagos.py · tests/test_idempotencia.py',resp:'Valeria',est:'Mitigado'},
+  {t:'El asistente de IA recomienda un plato con un alérgeno que el cliente declaró',cat:CATS[0],ref:'LLM07',p:3,i:5,m:'Filtro de alérgenos en código antes de mostrar la recomendación; la IA solo ordena, no decide',ev:'recomendador/filtro_alergenos.py',resp:'Camila',est:'Abierto'},
+  {t:'Direcciones y teléfonos de clientes se envían al proveedor del modelo en el prompt',cat:CATS[2],ref:'LLM02',p:4,i:4,m:'Anonimizar los datos del cliente antes de llamar al modelo; el prompt solo lleva el historial de platos',ev:'recomendador/anonimizar.py',resp:'Camila',est:'Abierto'},
+  {t:'La clave de la pasarela de pagos quedó en el repositorio',cat:CATS[2],ref:'Seguridad',p:3,i:5,m:'Rotar la clave, .env en .gitignore y gitleaks en cada push',ev:'.github/workflows/secretos.yml',resp:'Andrés',est:'Mitigado'},
+  {t:'El servidor gratuito se duerme y el primer pedido de la noche tarda un minuto',cat:CATS[3],ref:'Despliegue',p:5,i:3,m:'Precalentar con una llamada a /health cada 10 minutos; migrar de plan si crecen los pedidos',ev:'docs/adr/0003-plataforma.md',resp:'Andrés',est:'Aceptado'},
+  {t:'Un usuario pide 500 recomendaciones seguidas y agota la cuota de la API de IA',cat:CATS[0],ref:'LLM06',p:3,i:3,m:'Límite de 20 recomendaciones por usuario y hora, y respuestas en caché por plato',ev:'api/limites.py',resp:'Valeria',est:'Abierto'},
+  {t:'Solo Andrés sabe desplegar; si se enferma, no se puede publicar una corrección',cat:CATS[5],ref:'Proyecto',p:2,i:4,m:'Dockerfile y runbook en el repositorio; Valeria hace un despliegue de prueba',ev:'docs/runbook.md',resp:'Valeria',est:'Abierto'}
  ].map((r,i)=>({id:'ej'+i,...r}))};
- [['#pNombre','nombre'],['#pGrupo','grupo'],['#pResp','resp']].forEach(([id,k])=>$(id).value=S[k]); pintarTodo(); toast('Ejemplo cargado: 8 riesgos de un proyecto del seminario.'); };
+ [['#pNombre','nombre'],['#pGrupo','grupo'],['#pResp','resp']].forEach(([id,k])=>$(id).value=S[k]); pintarTodo(); toast('Ejemplo cargado: 8 riesgos de una app de pedidos a domicilio.'); };
 
 // ---------- arranque ----------
 pintarTodo();
