@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulador de despliegue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700&family=Nunito+Sans:wght@400;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0B1736;--bg2:#14254F;--bg3:#1B2E63;--crema:#F6F3EC;--cielo:#4CC9F0;--ambar:#FFB627;--suave:#C9D4EE;--mu:#8FA0C8;--ok:#3DDC97;--mal:#FF6B6B;--term:#060E24;
+ --f:'Nunito Sans',Arial,sans-serif;--fd:'Rubik',Arial,sans-serif;--fm:'Fira Code','Courier New',monospace}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:radial-gradient(circle at 85% 10%,#1B2E63 0%,var(--bg) 55%);color:var(--crema);font:16px/1.5 var(--f);overflow:hidden}
+button{font:inherit;cursor:pointer}
+.app{display:grid;grid-template-rows:auto auto 1fr auto;height:100vh;padding:18px 26px 16px;gap:14px}
+header{display:flex;align-items:center;gap:18px}
+header h1{font:700 30px/1.1 var(--fd);margin:0;letter-spacing:-.5px}
+header h1 span{color:var(--ambar)}
+.sim{font:600 13px var(--fm);letter-spacing:2px;text-transform:uppercase;background:var(--ambar);color:var(--bg);border-radius:999px;padding:5px 12px}
+header .esp{flex:1}
+.pasos{display:flex;gap:8px;flex-wrap:wrap}
+.paso{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1.5px solid #2A3F78;color:var(--suave);border-radius:999px;padding:6px 14px 6px 6px;font-weight:700;font-size:14px;transition:.3s}
+.paso i{font-style:normal;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#22366E;font:600 13px var(--fm)}
+.paso.on{background:var(--ambar);color:var(--bg);border-color:var(--ambar);transform:translateY(-2px)}
+.paso.on i{background:var(--bg);color:var(--ambar)}
+.paso.ok{border-color:var(--ok);color:var(--crema)}
+.paso.ok i{background:var(--ok);color:var(--bg)}
+main{display:grid;grid-template-columns:1.05fr 1fr;gap:18px;min-height:0}
+.panel{background:var(--bg2);border:1.5px solid #2A3F78;border-radius:18px;display:flex;flex-direction:column;min-height:0;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.barra{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0E1D45;border-bottom:1.5px solid #2A3F78;font:600 13px var(--fm);color:var(--mu)}
+.barra .pt{width:12px;height:12px;border-radius:50%}
+.term{flex:1;background:var(--term);padding:16px 18px;overflow-y:auto;font:15px/1.6 var(--fm);white-space:pre-wrap;word-break:break-word}
+.term .pr{color:var(--ok)}.term .pr b{color:var(--cielo);font-weight:600}
+.term .cmd{color:var(--crema)}
+.term .out{color:var(--suave)}
+.term .ok{color:var(--ok)}.term .am{color:var(--ambar)}.term .mal{color:var(--mal)}.term .gr{color:var(--mu)}
+.cursor{display:inline-block;width:9px;height:18px;background:var(--crema);vertical-align:-3px;animation:parp 1s steps(1) infinite}
+@keyframes parp{50%{opacity:0}}
+.lado{display:flex;flex-direction:column;gap:14px;min-height:0}
+.expl{background:var(--bg3);border-radius:18px;padding:18px 22px;border-left:6px solid var(--ambar)}
+.expl h2{font:700 24px/1.2 var(--fd);margin:0 0 6px}
+.expl p{margin:0;color:var(--suave);font-size:18px;line-height:1.45}
+.vista{flex:1;min-height:0;position:relative}
+.vista>div{position:absolute;inset:0;opacity:0;transform:translateY(14px);transition:.45s;pointer-events:none;display:flex;flex-direction:column}
+.vista>div.on{opacity:1;transform:none;pointer-events:auto}
+/* flujo */
+.flujo{display:flex;align-items:center;gap:10px;justify-content:center;flex:1;padding:10px}
+.caja{background:#0E1D45;border:2px solid #2A3F78;border-radius:16px;padding:16px 12px;width:150px;text-align:center;transition:.4s}
+.caja .ic{font-size:36px;line-height:1}
+.caja b{display:block;font:700 16px var(--fd);margin-top:6px}
+.caja small{color:var(--mu);font-size:13px}
+.caja.act{border-color:var(--ambar);box-shadow:0 0 0 4px rgba(255,182,39,.25);transform:scale(1.05)}
+.caja.hecho{border-color:var(--ok)}
+.flecha{color:#3C5296;font-size:26px;transition:.4s}.flecha.act{color:var(--ambar)}
+.prog{height:12px;background:#0E1D45;border-radius:99px;overflow:hidden;margin:0 24px}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cielo),var(--ambar));transition:width .5s}
+/* navegador */
+.nav{background:#F6F3EC;color:#0B1736;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;flex:1}
+.nav .url{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#E6E1D5;font:14px var(--fm)}
+.nav .url span.lock{flex:none;background:none;padding:0}
+.nav .url span{flex:1;background:#fff;border-radius:99px;padding:6px 14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav .url .lock{color:#1D8B5A}
+.nav .cuerpo{padding:22px;flex:1;overflow:auto}
+.json{font:18px/1.6 var(--fm);background:#fff;border:1.5px solid #DCD6C8;border-radius:12px;padding:16px 18px;white-space:pre-wrap}
+.json .k{color:#164A86}.json .s{color:#9A5B00}.json .t{color:#1D8B5A;font-weight:600}.json .f{color:#B42318;font-weight:600}
+.prueba{display:flex;gap:10px;margin:14px 0}
+.prueba input{flex:1;font:17px var(--f);padding:10px 14px;border-radius:10px;border:1.5px solid #C9C2B2}
+.btn{border:0;border-radius:12px;padding:10px 18px;font-weight:700}
+.btn.a{background:var(--ambar);color:var(--bg)}
+.btn.c{background:var(--bg3);color:var(--crema)}
+.btn.o{background:transparent;color:var(--suave);border:1.5px solid #3C5296}
+.cod{display:inline-block;font:700 15px var(--fm);border-radius:8px;padding:3px 10px;margin-bottom:8px}
+.cod.v{background:#DDF4E8;color:#1D6B4A}.cod.r{background:#FDE7E4;color:#B42318}
+/* caja fuerte */
+.fuerte{flex:1;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;padding:10px}
+.tarj{background:#0E1D45;border:2px solid #2A3F78;border-radius:18px;padding:20px;text-align:center}
+.tarj .ic{font-size:54px}
+.tarj b{display:block;font:700 19px var(--fd);margin-top:6px}
+.tarj small{color:var(--mu);font-size:14px}
+.llave{font-size:40px;transition:transform 1.2s cubic-bezier(.5,0,.3,1),opacity .4s}
+.estado{font:600 20px var(--fm);text-align:center;margin-top:6px}
+.rev{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.rev span{font:600 14px var(--fm);background:#0E1D45;border:1.5px solid #2A3F78;border-radius:10px;padding:6px 12px}
+.rev span.act{border-color:var(--ok);color:var(--ok)}
+/* frío */
+.grafico{flex:1;background:#0E1D45;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.grafico svg{width:100%;flex:1}
+.grafico .bt{display:flex;gap:10px;flex-wrap:wrap}
+.leyenda{color:var(--suave);font-size:16px}
+footer{display:flex;align-items:center;gap:12px}
+footer .tip{color:var(--mu);font-size:14px;flex:1}
+footer .tip kbd{font:600 12px var(--fm);background:var(--bg2);border:1px solid #3C5296;border-radius:6px;padding:2px 7px;color:var(--suave)}
+.grande{font-size:20px;padding:14px 28px}
+@media(max-width:1000px){body{overflow:auto}.app{height:auto}main{grid-template-columns:1fr}.term{min-height:300px}.vista{min-height:420px}}
+</style>
+</head>
+<body>
+<div class="app">
+ <header>
+  <h1>Del portátil <span>a internet</span></h1>
+  <span class="sim">Simulación de la demostración</span>
+  <div class="esp"></div>
+  <span style="color:var(--mu);font:600 14px var(--fm)">Google Cloud Run · Cloud Shell</span>
+ </header>
+ <div class="pasos" id="pasos"></div>
+ <main>
+  <section class="panel" aria-label="Terminal simulada">
+   <div class="barra"><span class="pt" style="background:#FF6B6B"></span><span class="pt" style="background:#FFB627"></span><span class="pt" style="background:#3DDC97"></span>&nbsp; Cloud Shell · demo-seminario</div>
+   <div class="term" id="term" aria-live="polite"></div>
+  </section>
+  <section class="lado">
+   <div class="expl" id="expl"><h2></h2><p></p></div>
+   <div class="vista" id="vista">
+    <!-- 0 inicio -->
+    <div data-v="inicio"><div class="flujo"><div class="caja" style="width:auto;padding:28px 34px"><div class="ic">💻</div><b>Hoy el proyecto vive aquí</b><small>Si este computador se apaga, el producto desaparece</small></div><div class="flecha act">➜</div><div class="caja" style="width:auto;padding:28px 34px"><div class="ic">☁️</div><b>Meta: una dirección https</b><small>que cualquiera, también el tribunal, pueda abrir</small></div></div></div>
+    <!-- flujo de despliegue -->
+    <div data-v="flujo"><div class="flujo">
+     <div class="caja" id="c1"><div class="ic">📁</div><b>Su carpeta</b><small>código + Dockerfile</small></div><div class="flecha" id="f1">➜</div>
+     <div class="caja" id="c2"><div class="ic">🛠️</div><b>Cloud Build</b><small>arma la caja</small></div><div class="flecha" id="f2">➜</div>
+     <div class="caja" id="c3"><div class="ic">📦</div><b>Artifact Registry</b><small>guarda la imagen</small></div><div class="flecha" id="f3">➜</div>
+     <div class="caja" id="c4"><div class="ic">🚀</div><b>Cloud Run</b><small>la ejecuta con URL</small></div>
+    </div><div class="prog"><i id="progreso"></i></div><p class="leyenda" style="text-align:center;margin:10px 0 0" id="progtxt">Esperando…</p></div>
+    <!-- dockerfile -->
+    <div data-v="docker"><div class="flujo" style="flex-direction:column;align-items:stretch;gap:12px">
+     <div class="caja" style="width:auto;text-align:left;padding:18px 22px"><b>📄 Dockerfile = la receta</b><small style="font-size:15px">Sistema base con versión fija · instalar dependencias · copiar el código · usuario sin privilegios · arrancar en ${PORT}</small></div>
+     <div class="caja" style="width:auto;text-align:left;padding:18px 22px"><b>🚫 .dockerignore</b><small style="font-size:15px">El .env y la carpeta .git NUNCA entran a la caja</small></div>
+     <div class="caja" style="width:auto;text-align:left;padding:18px 22px"><b>💓 /health</b><small style="font-size:15px">Responde «estoy viva» sin llamar al modelo</small></div>
+    </div></div>
+    <!-- navegador -->
+    <div data-v="nav"><div class="nav">
+     <div class="url"><span class="lock">🔒</span><span id="navUrl">https://demo-despliegue-7xk2q-uc.a.run.app/health</span></div>
+     <div class="cuerpo">
+      <div id="navResp"></div>
+      <div id="navPrueba" style="display:none">
+       <p style="margin:18px 0 4px;font-weight:700">Pruebe la app como un usuario:</p>
+       <div class="prueba"><input id="pregunta" placeholder="Escriba una pregunta… o déjela vacía" aria-label="Pregunta"><button class="btn a" id="enviar" type="button">Enviar</button></div>
+       <div id="respPregunta"></div>
+      </div>
+     </div>
+    </div></div>
+    <!-- caja fuerte -->
+    <div data-v="secreto"><div class="fuerte">
+     <div class="tarj"><div class="ic">🔐</div><b>Secret Manager</b><small>la caja fuerte de Google</small><div class="llave" id="llave">🔑</div></div>
+     <div style="font-size:30px;color:var(--ambar)">➜</div>
+     <div class="tarj"><div class="ic">🚀</div><b>Cloud Run</b><small>recibe la clave como variable al arrancar</small><div class="estado" id="estClave">clave_configurada: <span style="color:var(--mal)">false</span></div></div>
+    </div><div class="rev" id="revs"><span class="act">revisión 1 · v1.0</span></div></div>
+    <!-- registros -->
+    <div data-v="logs"><div class="grafico"><p class="leyenda" style="margin:0">Cada visita deja un registro. Si algo falla, aquí está el porqué.</p><div class="term" id="logs" style="border-radius:12px;font-size:14px"></div></div></div>
+    <!-- arranque en frío -->
+    <div data-v="frio"><div class="grafico">
+     <svg viewBox="0 0 600 220" aria-label="Instancias activas a lo largo del tiempo" id="svgFrio"><line x1="20" y1="190" x2="590" y2="190" stroke="#3C5296" stroke-width="2"/><text x="22" y="34" fill="#8FA0C8" font-size="13" font-family="Fira Code">1 copia</text><text x="22" y="182" fill="#8FA0C8" font-size="13" font-family="Fira Code">0</text><polyline id="linea" fill="none" stroke="#4CC9F0" stroke-width="5" stroke-linejoin="round" points="20,190 80,190 80,50 260,50"/><circle id="punto" cx="260" cy="50" r="8" fill="#4CC9F0"/></svg>
+     <p class="leyenda" id="frioTxt">Hay visitas: una copia encendida atiende.</p>
+     <div class="bt"><button class="btn c" id="dormir" type="button">⏩ Pasan 20 minutos sin visitas</button><button class="btn a" id="visita" type="button">👤 Llega una visita</button></div>
+    </div></div>
+    <!-- fin -->
+    <div data-v="fin"><div class="flujo" style="flex-direction:column;gap:14px">
+     <div class="caja" style="width:auto;padding:22px 30px"><div class="ic">✅</div><b>Una dirección https que responde</b><small style="font-size:15px">Eso es lo que cada grupo debe tener hoy</small></div>
+     <div class="caja" style="width:auto;padding:18px 26px;border-color:var(--ambar)"><b>Ahora ustedes, con su propio proyecto</b><small style="font-size:15px">Taller · misión 4 · la guía tiene los comandos exactos para su plataforma</small></div>
+    </div></div>
+   </div>
+  </section>
+ </main>
+ <footer>
+  <span class="tip"><kbd>→</kbd> o <kbd>Espacio</kbd> siguiente · <kbd>←</kbd> anterior · <kbd>R</kbd> reiniciar · Los comandos son los reales; el resultado es una simulación para la clase.</span>
+  <button class="btn o" id="ant" type="button">← Anterior</button>
+  <button class="btn a grande" id="sig" type="button">Siguiente paso ▶</button>
+ </footer>
+</div>
+<script>
+const URL_APP='https://demo-despliegue-7xk2q-uc.a.run.app';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const term=$('#term');
+let token=0, actual=-1, version='1.0', clave=false;
+const espera=ms=>new Promise(r=>setTimeout(r,ms));
+function vivo(t){ return t===token; }
+function linea(html,cls){ const d=document.createElement('div'); if(cls) d.className=cls; d.innerHTML=html; term.appendChild(d); term.scrollTop=term.scrollHeight; return d; }
+async function escribir(cmd,t){ const d=linea('<span class="pr">usuario@cloudshell:~ (<b>demo-seminario</b>)$</span> <span class="cmd"></span><span class="cursor"></span>');
+ const c=d.querySelector('.cmd'); for(let i=0;i<cmd.length;i++){ if(!vivo(t)) return false; c.textContent+=cmd[i]; term.scrollTop=term.scrollHeight; await espera(cmd[i]===' '?14:22); }
+ d.querySelector('.cursor').remove(); await espera(250); return vivo(t); }
+async function salida(lineas,t,ms){ for(const [cls,txt] of lineas){ if(!vivo(t)) return false; linea(esc(txt),'out '+(cls||'')); await espera(ms||220); } return vivo(t); }
+function ver(v){ document.querySelectorAll('#vista>div').forEach(x=>x.classList.toggle('on',x.dataset.v===v)); }
+function expl(h,p){ $('#expl h2').textContent=h; $('#expl p').innerHTML=p; }
+function json(o){ return '<div class="json">'+esc(JSON.stringify(o,null,2)).replace(/&quot;([^&]+)&quot;:/g,'<span class="k">"$1"</span>:').replace(/: &quot;([^&]*)&quot;/g,': <span class="s">"$1"</span>').replace(/: true/g,': <span class="t">true</span>').replace(/: false/g,': <span class="f">false</span>').replace(/&quot;/g,'"')+'</div>'; }
+
+const PASOS=[
+ {t:'Proyecto',run:async t=>{ ver('inicio'); expl('Paso 0 · ¿Dónde trabajamos?','Cloud Shell es una terminal dentro del navegador: ya trae todo instalado. Primero le decimos a Google en qué proyecto trabajar; el proyecto es también quien paga.');
+  if(!await escribir('gcloud config set project demo-seminario',t)) return; await salida([['ok','Updated property [core/project].']],t); }},
+ {t:'Servicios',run:async t=>{ ver('flujo'); resetFlujo(); expl('Paso 1 · Encender los servicios','Cuatro servicios trabajan juntos: <b>Cloud Build</b> arma la caja, <b>Artifact Registry</b> la guarda, <b>Cloud Run</b> la ejecuta y <b>Secret Manager</b> guarda la clave.');
+  if(!await escribir('gcloud services enable run cloudbuild artifactregistry secretmanager',t)) return;
+  for(const id of ['c2','c3','c4']){ if(!vivo(t)) return; $('#'+id).classList.add('hecho'); await espera(350); }
+  await salida([['gr','Operation "operations/acf.p2-…" finished successfully.']],t); }},
+ {t:'La app',run:async t=>{ ver('docker'); expl('Paso 2 · La app y su receta','Una app mínima con dos rutas: <b>/health</b> («estoy viva») y <b>/api/chat</b>. El Dockerfile es la receta de la caja; el .dockerignore deja fuera el .env.');
+  if(!await escribir('ls -a ~/demo-despliegue',t)) return; await salida([['','.  ..  .dockerignore  Dockerfile  main.py  requirements.txt']],t);
+  if(!await escribir('cat Dockerfile',t)) return;
+  await salida([['am','FROM python:3.12-slim'],['','WORKDIR /app'],['','COPY requirements.txt .'],['','RUN pip install --no-cache-dir -r requirements.txt'],['','COPY . .'],['','RUN useradd --create-home app'],['','USER app'],['','ENV PORT=8080'],['am','CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT}"]']],t,140); }},
+ {t:'Desplegar',run:async t=>{ ver('flujo'); resetFlujo(); expl('Paso 3 · Desplegar','<b>--source .</b> construye con su Dockerfile · <b>--memory</b> la memoria de la caja · <b>--min-instances 0</b> se duerme sin visitas · <b>--max-instances 1</b> nunca más de una copia. En la vida real tarda de 3 a 6 minutos.');
+  if(!await escribir('gcloud run deploy demo-despliegue --source . --region us-central1 --memory 512Mi --min-instances 0 --max-instances 1 --allow-unauthenticated',t)) return;
+  const fases=[['c1','f1',12,'Subiendo su carpeta…',[['','Building using Dockerfile and deploying container to Cloud Run service [demo-despliegue]'],['gr','Uploading sources...done']]],
+   ['c2','f2',55,'Cloud Build arma la caja (instala Python y FastAPI)…',[['gr','Building Container... Logs are available at [https://console.cloud.google.com/cloud-build/…]'],['gr','Step 1/10 : FROM python:3.12-slim'],['gr','Step 5/10 : RUN pip install --no-cache-dir -r requirements.txt'],['gr','Successfully installed fastapi uvicorn pydantic …'],['gr','Step 10/10 : CMD ["sh", "-c", "uvicorn main:app …"]']]],
+   ['c3','f3',75,'Artifact Registry guarda la imagen…',[['gr','Pushing image to us-central1-docker.pkg.dev/demo-seminario/cloud-run-source-deploy/demo-despliegue']]],
+   ['c4',null,100,'Cloud Run crea la revisión y dirige el tráfico…',[['gr','Creating Revision...done'],['gr','Routing traffic...done'],['gr','Setting IAM Policy...done']]]];
+  for(const [c,f,p,txt,ls] of fases){ if(!vivo(t)) return; document.querySelectorAll('.caja').forEach(x=>x.classList.remove('act')); $('#'+c).classList.add('act'); if(f) $('#'+f).classList.add('act'); $('#progreso').style.width=p+'%'; $('#progtxt').textContent=txt;
+   if(!await salida(ls,t,420)) return; await espera(500); $('#'+c).classList.remove('act'); $('#'+c).classList.add('hecho'); }
+  $('#progtxt').innerHTML='<b style="color:var(--ok)">¡Desplegada!</b>';
+  await salida([['ok','Done.'],['ok','Service [demo-despliegue] revision [demo-despliegue-00001-abc] has been deployed and is serving 100 percent of traffic.'],['am','Service URL: '+URL_APP]],t,300); }},
+ {t:'Probar',run:async t=>{ ver('nav'); expl('Paso 4 · Probar en internet','Esta dirección es pública: cualquiera la puede abrir. Esto es lo que verá el tribunal. Fíjense en <b>clave_configurada: false</b>: todavía no le dimos ninguna clave.');
+  $('#navUrl').textContent=URL_APP+'/health'; $('#navResp').innerHTML=''; $('#navPrueba').style.display='none'; $('#respPregunta').innerHTML='';
+  if(!await escribir('curl -s '+URL_APP+'/health',t)) return; const h={status:'ok',version:version,segundos_vivo:42}; await salida([['ok',JSON.stringify(h)]],t);
+  $('#navResp').innerHTML='<span class="cod v">HTTP 200 · /health</span>'+json(h); await espera(500);
+  if(!await escribir("curl -s -X POST "+URL_APP+"/api/chat -d '{\"pregunta\":\"hola\"}'",t)) return; await salida([['',JSON.stringify({respuesta:'Recibí: hola',clave_configurada:clave})]],t);
+  if(!await escribir("curl -s -o /dev/null -w '%{http_code}' -X POST "+URL_APP+"/api/chat -d '{\"pregunta\":\"\"}'",t)) return; await salida([['am','422']],t);
+  $('#navPrueba').style.display=''; }},
+ {t:'La clave',run:async t=>{ ver('secreto'); expl('Paso 5 · La clave en la caja fuerte','El .env no viaja a la nube. La clave se guarda cifrada en Secret Manager y Cloud Run la entrega a la app al arrancar. <b>El valor nunca aparece en el código, en la imagen ni en pantalla.</b>');
+  $('#llave').style.transform='none'; $('#llave').style.opacity='1'; $('#estClave').innerHTML='clave_configurada: <span style="color:var(--mal)">false</span>'; $('#revs').innerHTML='<span class="act">revisión 1 · v1.0</span>';
+  if(!await escribir('read -s CLAVE && printf %s "$CLAVE" | gcloud secrets create clave-demo --data-file=-',t)) return; await salida([['gr','Created version [1] of the secret [clave-demo].']],t);
+  if(!await escribir('gcloud run services update demo-despliegue --set-secrets CLAVE_DEMO=clave-demo:latest --update-env-vars APP_VERSION=1.1',t)) return;
+  $('#llave').style.transform='translateX(calc(100% + 230px))'; await espera(1300); if(!vivo(t)) return; $('#llave').style.opacity='0';
+  await salida([['gr','Deploying...'],['gr','Creating Revision...done'],['ok','Service [demo-despliegue] revision [demo-despliegue-00002-xyz] is serving 100 percent of traffic.']],t,350);
+  clave=true; version='1.1'; $('#estClave').innerHTML='🔑 clave_configurada: <span style="color:var(--ok)">true</span>'; $('#revs').innerHTML='<span>revisión 1 · v1.0</span><span class="act">revisión 2 · v1.1</span>';
+  if(!await escribir("curl -s -X POST "+URL_APP+"/api/chat -d '{\"pregunta\":\"hola\"}'",t)) return; await salida([['ok',JSON.stringify({respuesta:'Recibí: hola',clave_configurada:true})]],t); }},
+ {t:'Registros',run:async t=>{ ver('logs'); expl('Paso 6 · Los registros','Cada visita queda anotada: hora, ruta, código de respuesta y cuánto tardó. Cuando algo falla, el porqué está aquí, no en adivinar.');
+  const L=$('#logs'); L.innerHTML=''; if(!await escribir('gcloud run services logs read demo-despliegue --limit 8',t)) return;
+  const reg=[['ok','GET  200 /health        12 ms'],['ok','POST 200 /api/chat      38 ms'],['am','POST 422 /api/chat       9 ms  · pregunta vacía'],['gr','Default STARTUP TCP probe succeeded on port 8080'],['ok','GET  200 /health         8 ms'],['ok','POST 200 /api/chat      41 ms']];
+  for(const [c,x] of reg){ if(!vivo(t)) return; const h=new Date(); const d=document.createElement('div'); d.className=c; d.textContent=h.toISOString().slice(11,19)+'  '+x; L.appendChild(d); linea(esc(h.toISOString().slice(11,19)+'  '+x),'out '+c); await espera(380); } }},
+ {t:'Arranque en frío',run:async t=>{ ver('frio'); resetFrio(); expl('Paso 7 · Se duerme sola','Con <b>--min-instances 0</b>, si nadie la usa, la app se apaga y no gasta. La primera visita después tarda unos segundos en despertarla: es el <b>arranque en frío</b>. Antes de una presentación, abran /health.');
+  if(!await escribir('# Pulse los botones de la derecha para ver qué pasa',t)) return; }},
+ {t:'Ahora ustedes',run:async t=>{ ver('fin'); expl('Lo que vimos','La caja (Dockerfile) · la publicamos con un comando · la probamos en internet · la clave en la caja fuerte · registros · se duerme sola. <b>Ahora cada grupo con su propio proyecto: taller, misión 4.</b>');
+  await salida([['am','fabig76.github.io/taller-agentes-uniandes/despliegue.html  → misión 4']],t); }}
+];
+function resetFlujo(){ document.querySelectorAll('.caja').forEach(x=>x.classList.remove('act','hecho')); document.querySelectorAll('.flecha').forEach(x=>x.classList.remove('act')); $('#progreso').style.width='0'; $('#progtxt').textContent='Esperando…'; }
+function resetFrio(){ $('#linea').setAttribute('points','20,190 80,190 80,50 260,50'); $('#punto').setAttribute('cx',260); $('#punto').setAttribute('cy',50); $('#punto').setAttribute('fill','#4CC9F0'); $('#frioTxt').textContent='Hay visitas: una copia encendida atiende.'; dormido=false; }
+let dormido=false;
+$('#dormir').onclick=()=>{ $('#linea').setAttribute('points','20,190 80,190 80,50 260,50 260,190 420,190'); $('#punto').setAttribute('cx',420); $('#punto').setAttribute('cy',190); $('#punto').setAttribute('fill','#8FA0C8'); $('#frioTxt').innerHTML='20 minutos sin visitas: la app <b>se apagó</b>. Cero copias, cero gasto.'; dormido=true; linea(esc('# 20 minutos sin visitas → instancias: 0'),'out gr'); };
+$('#visita').onclick=async()=>{ if(!dormido){ $('#frioTxt').innerHTML='Está despierta: responde en <b>milisegundos</b>. Primero pulse «Pasan 20 minutos sin visitas».'; return; }
+ $('#frioTxt').innerHTML='⏳ Despertando la app… (arranque en frío)'; $('#punto').setAttribute('fill','#FFB627'); linea(esc('# Llega una visita → despertando…'),'out am');
+ for(let s=1;s<=4;s++){ await espera(700); $('#frioTxt').innerHTML='⏳ Despertando la app… '+s+' s'; }
+ $('#linea').setAttribute('points','20,190 80,190 80,50 260,50 260,190 420,190 420,50 580,50'); $('#punto').setAttribute('cx',580); $('#punto').setAttribute('cy',50); $('#punto').setAttribute('fill','#3DDC97');
+ $('#frioTxt').innerHTML='✅ Respondió en <b>4,2 s</b>: ese es el arranque en frío. Las siguientes visitas, en milisegundos.'; linea(esc('GET 200 /health  4.2 s (arranque en frío)'),'out ok'); dormido=false; };
+$('#enviar').onclick=()=>{ const q=$('#pregunta').value; const r=$('#respPregunta');
+ if(!q.trim()){ r.innerHTML='<span class="cod r">HTTP 422 · pregunta vacía</span>'+json({detail:'La pregunta está vacía'}); linea(esc('POST 422 /api/chat (pregunta vacía)'),'out am'); }
+ else { r.innerHTML='<span class="cod v">HTTP 200</span>'+json({respuesta:'Recibí: '+q,clave_configurada:clave}); linea(esc('POST 200 /api/chat'),'out ok'); } };
+$('#pregunta').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); $('#enviar').click(); } });
+function pintarPasos(){ $('#pasos').innerHTML=PASOS.map((p,i)=>'<button type="button" class="paso'+(i===actual?' on':i<actual?' ok':'')+'" data-i="'+i+'"><i>'+i+'</i>'+p.t+'</button>').join(''); }
+$('#pasos').addEventListener('click',e=>{ const b=e.target.closest('[data-i]'); if(b) ir(+b.dataset.i); });
+function ir(i){ if(i<0||i>=PASOS.length) return; token++; const t=token; actual=i; pintarPasos(); if(i===0){ term.innerHTML=''; version='1.0'; clave=false; }
+ linea('','') ; PASOS[i].run(t); $('#sig').textContent=i===PASOS.length-1?'Fin ✔':'Siguiente paso ▶'; }
+$('#sig').onclick=()=>ir(actual+1); $('#ant').onclick=()=>ir(actual-1);
+document.addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT') return; if(e.key==='ArrowRight'||e.key===' '){ e.preventDefault(); ir(actual+1); } else if(e.key==='ArrowLeft') ir(actual-1); else if(e.key==='r'||e.key==='R') ir(0); });
+pintarPasos(); ver('inicio'); expl('Simulación de la demostración','Así se ve desplegar una app en Google Cloud Run. Los comandos son los reales; el resultado está simulado para la clase. Pulse <b>Siguiente paso</b> para empezar.');
+linea('<span class="gr">Welcome to Cloud Shell! Type "help" to get started.</span>');
+</script>
+</body>
+</html>
