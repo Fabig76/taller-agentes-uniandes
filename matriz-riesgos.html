@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matriz de riesgos · Proyectos con IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+ --bg:#0F1F1C;--bg2:#163A33;--bg3:#1F4A40;--cream:#F4EFE4;--card:#FBF8F1;--ink:#14231F;--mu:#4A5A55;--mu2:#5A6964;--line:#D9D1C0;
+ --or:#FF6B35;--orL:#FF8A5B;--te:#3DD6C3;--teD:#0F766E;--soft:#BFD8D2;
+ --bajo:#16A36F;--bajoS:#DDF5EA;--medio:#E5A11A;--medioS:#FFF1D6;--alto:#F26B21;--altoS:#FFE4D8;--critico:#C8102E;--criticoS:#FDE2E4;
+ --r:18px;--sh:0 8px 30px rgba(15,31,28,.12);
+ --f:'Work Sans',Arial,sans-serif;--fd:'Space Grotesk',Arial,sans-serif;--fm:'JetBrains Mono','Courier New',monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.5 var(--f)}
+h1,h2,h3,h4{font-family:var(--fd);margin:0;line-height:1.15}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+code{font-family:var(--fm);font-size:.9em;background:#EDE6D6;border-radius:5px;padding:1px 5px}
+
+/* ---------- cabecera ---------- */
+header{background:radial-gradient(circle at 88% 10%,var(--bg3) 0%,var(--bg) 55%);color:var(--cream);padding:26px 0 18px;position:relative;overflow:hidden}
+header::before{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border:2px dashed rgba(61,214,195,.3);border-radius:50%;animation:girar 60s linear infinite}
+@keyframes girar{to{transform:rotate(360deg)}}
+.eyebrow{font-family:var(--fm);font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--te)}
+header h1{font-size:clamp(26px,4.4vw,44px);letter-spacing:-1px;margin:6px 0 4px}
+header h1 span{color:var(--or)}
+header p.sub{color:var(--soft);margin:0 0 16px;max-width:720px}
+.proy{display:grid;grid-template-columns:2fr 1fr 1.6fr;gap:10px;position:relative;z-index:1}
+.proy label{display:block;font-size:12px;color:var(--soft);margin-bottom:4px}
+.proy input{width:100%;background:var(--bg2);border:1.5px solid rgba(61,214,195,.35);border-radius:10px;padding:9px 11px;color:var(--cream)}
+.proy input:focus{outline:2px solid var(--te);outline-offset:1px}
+.tabs{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap;position:relative;z-index:1}
+.tab{background:transparent;border:1.5px solid rgba(244,239,228,.3);color:var(--cream);border-radius:999px;padding:7px 16px;cursor:pointer;font-weight:600;transition:.2s}
+.tab:hover{border-color:var(--te)}
+.tab.on{background:var(--or);border-color:var(--or);color:#14120F}
+
+/* ---------- vistas ---------- */
+.vista{display:none;animation:aparecer .35s ease}
+.vista.on{display:block}
+@keyframes aparecer{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- tablero de cifras ---------- */
+.cifras{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:18px 0}
+.cifra{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;position:relative;overflow:hidden;transition:transform .2s}
+.cifra:hover{transform:translateY(-2px)}
+.cifra b{display:block;font-family:var(--fd);font-size:30px;line-height:1}
+.cifra small{color:var(--mu2);font-size:12px}
+.cifra i{position:absolute;left:0;bottom:0;height:4px;width:100%;background:var(--te)}
+.cifra.c i{background:var(--critico)}.cifra.a i{background:var(--alto)}.cifra.m i{background:var(--medio)}.cifra.b i{background:var(--bajo)}.cifra.x i{background:var(--bg)}
+.termo{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:16px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.termo .barra{height:14px;background:#E9E2D2;border-radius:7px;overflow:hidden;position:relative}
+.termo .barra i{position:absolute;left:0;top:0;height:100%;border-radius:7px;background:linear-gradient(90deg,var(--bajo),var(--medio),var(--alto),var(--critico));width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.termo b{font-family:var(--fd);font-size:20px}
+.termo small{display:block;color:var(--mu2);font-size:12px}
+
+/* ---------- barra de acciones ---------- */
+.acciones{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.btn{border:none;border-radius:11px;padding:9px 15px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:.15s}
+.btn.p{background:var(--or);color:#14120F}.btn.p:hover{background:var(--orL)}
+.btn.s{background:var(--bg);color:var(--cream)}.btn.s:hover{background:var(--bg2)}
+.btn.g{background:transparent;border:1.5px solid var(--line);color:var(--ink)}.btn.g:hover{border-color:var(--ink)}
+.btn.peligro{background:transparent;border:1.5px solid #F4B3AA;color:var(--critico)}
+.btn:active{transform:scale(.97)}
+.sep{flex:1}
+.filtros{display:flex;gap:6px;flex-wrap:wrap}
+.fil{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:13px;font-weight:600}
+.fil.on{background:var(--bg);color:var(--cream);border-color:var(--bg)}
+
+/* ---------- tarjetas de riesgo ---------- */
+.lista{display:flex;flex-direction:column;gap:12px}
+.riesgo{background:var(--card);border:1.5px solid var(--line);border-left:7px solid var(--bajo);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh);animation:entrar .4s ease both;transition:border-color .3s}
+@keyframes entrar{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.riesgo.saliendo{animation:salir .3s ease forwards}
+@keyframes salir{to{opacity:0;transform:translateX(30px);height:0;padding:0;margin:0}}
+.riesgo.nBajo{border-left-color:var(--bajo)}.riesgo.nMedio{border-left-color:var(--medio)}.riesgo.nAlto{border-left-color:var(--alto)}.riesgo.nCrítico{border-left-color:var(--critico)}
+.riesgo.mitigado{opacity:.72}
+.rhead{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:start}
+.num{width:36px;height:36px;border-radius:12px;background:var(--bg);color:var(--cream);display:grid;place-items:center;font-family:var(--fd);font-weight:700}
+.rhead input.titulo{width:100%;border:none;background:transparent;font:600 17px var(--fd);padding:6px 4px;border-bottom:1.5px dashed transparent}
+.rhead input.titulo:focus,.rhead input.titulo:hover{border-bottom-color:var(--line);outline:none}
+.nivel{font-family:var(--fm);font-size:12px;letter-spacing:1px;text-transform:uppercase;border-radius:999px;padding:5px 12px;font-weight:600;white-space:nowrap;transition:background .3s,color .3s}
+.nivel.nBajo{background:var(--bajoS);color:var(--bajo)}.nivel.nMedio{background:var(--medioS);color:#8A5A00}.nivel.nAlto{background:var(--altoS);color:#B93D0A}.nivel.nCrítico{background:var(--criticoS);color:var(--critico)}
+.nivel.cambio{animation:pulso .5s ease}
+@keyframes pulso{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.rcuerpo{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:10px;margin-top:10px}
+.campo label{display:block;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:4px;font-weight:600}
+.campo input,.campo select,.campo textarea{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;font-size:14px}
+.campo textarea{min-height:40px;height:40px;resize:vertical}
+.campo input:focus,.campo select:focus,.campo textarea:focus{outline:2px solid var(--te);outline-offset:1px;border-color:var(--teD)}
+.escala{display:flex;gap:4px}
+.escala button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:8px;padding:7px 0;cursor:pointer;font-family:var(--fd);font-weight:700;transition:.15s}
+.escala button:hover{transform:translateY(-2px)}
+.escala button.on{background:var(--bg);color:var(--cream);border-color:var(--bg)}
+.escala small{display:block;font-family:var(--f);font-weight:400;font-size:10px;color:var(--mu2)}
+.escala button.on small{color:var(--soft)}
+.rpie{display:grid;grid-template-columns:1.5fr 1fr 1fr auto;gap:10px;margin-top:10px;align-items:start}
+.rpie .quitar{align-self:end}
+.quitar{background:transparent;border:none;color:var(--mu2);cursor:pointer;font-size:13px;padding:8px}
+.quitar:hover{color:var(--critico)}
+.vacio{text-align:center;padding:46px 18px;border:2px dashed var(--line);border-radius:var(--r);color:var(--mu)}
+.vacio h3{font-size:22px;margin-bottom:6px;color:var(--ink)}
+
+/* ---------- mapa de calor ---------- */
+.mapa{display:grid;grid-template-columns:auto 1fr;gap:10px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+.ejeY{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-weight:600;color:var(--mu);font-size:13px}
+.grid5{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:5px;aspect-ratio:1;max-height:560px;width:100%}
+.celda{border-radius:10px;position:relative;display:flex;flex-wrap:wrap;align-content:flex-start;gap:4px;padding:6px;min-height:0;transition:.3s}
+.celda span.pi{position:absolute;right:7px;bottom:4px;font-family:var(--fm);font-size:11px;opacity:.55}
+.celda.nBajo{background:var(--bajoS)}.celda.nMedio{background:var(--medioS)}.celda.nAlto{background:var(--altoS)}.celda.nCrítico{background:var(--criticoS)}
+.punto{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--fd);font-weight:700;font-size:13px;color:#fff;cursor:pointer;animation:caer .5s cubic-bezier(.2,.9,.3,1.3) both;box-shadow:0 3px 10px rgba(0,0,0,.25);position:relative}
+.punto.nBajo{background:var(--bajo)}.punto.nMedio{background:var(--medio)}.punto.nAlto{background:var(--alto)}.punto.nCrítico{background:var(--critico);animation:caer .5s cubic-bezier(.2,.9,.3,1.3) both,latir 1.6s ease-in-out 1s infinite}
+.punto.mitigado{opacity:.45;box-shadow:none}
+@keyframes caer{from{opacity:0;transform:translateY(-18px) scale(.5)}to{opacity:1;transform:none}}
+@keyframes latir{0%,100%{box-shadow:0 0 0 0 rgba(200,16,46,.45)}50%{box-shadow:0 0 0 9px rgba(200,16,46,0)}}
+.punto:hover::after,.punto:focus::after{content:attr(data-t);position:absolute;left:50%;bottom:120%;transform:translateX(-50%);background:var(--ink);color:var(--cream);font:500 12px var(--f);padding:6px 10px;border-radius:8px;white-space:nowrap;z-index:5;max-width:260px;white-space:normal;width:max-content}
+.ejeX{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:6px;font-size:12px;color:var(--mu);text-align:center;font-weight:600}
+.ejeXt{text-align:center;font-weight:600;color:var(--mu);font-size:13px;margin-top:6px}
+.leyenda{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:13px}
+.leyenda span{display:flex;align-items:center;gap:6px}
+.leyenda i{width:14px;height:14px;border-radius:4px;display:inline-block}
+.ranking{margin-top:16px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:16px}
+.ranking h3{font-size:18px;margin-bottom:8px}
+.rfila{display:grid;grid-template-columns:30px 1fr 120px 60px;gap:10px;align-items:center;padding:7px 0;border-top:1px dashed var(--line);font-size:14px}
+.rfila:first-of-type{border-top:none}
+.rbar{height:9px;background:#E9E2D2;border-radius:5px;overflow:hidden}
+.rbar i{display:block;height:100%;width:0;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.rbar i.nBajo{background:var(--bajo)}.rbar i.nMedio{background:var(--medio)}.rbar i.nAlto{background:var(--alto)}.rbar i.nCrítico{background:var(--critico)}
+
+/* ---------- catálogo ---------- */
+.catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.catcard{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;transition:.2s;animation:entrar .4s ease both}
+.catcard:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+.catcard .cat{font-family:var(--fm);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--teD)}
+.catcard b{font-family:var(--fd);font-size:16px}
+.catcard p{margin:0;font-size:13.5px;color:var(--mu)}
+.catcard .pie{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+.catcard .pie small{font-family:var(--fm);font-size:11px;color:var(--mu2)}
+.catcard .btn{padding:6px 12px;font-size:13px}
+.catcard.ya{opacity:.5}
+.catfil{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+
+/* ---------- instrucciones ---------- */
+.inst{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.paso{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:18px;animation:entrar .4s ease both}
+.paso .n{width:40px;height:40px;border-radius:13px;background:var(--or);color:#14120F;display:grid;place-items:center;font-family:var(--fd);font-weight:700;font-size:20px;margin-bottom:10px}
+.paso h3{font-size:19px;margin-bottom:6px}
+.paso p,.paso li{color:var(--mu);font-size:14px;margin:0}
+.paso ul{padding-left:18px;margin:6px 0 0}
+.tablaE{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+.tablaE th{background:var(--bg);color:var(--cream);text-align:left;padding:7px 9px}
+.tablaE td{border-bottom:1px solid var(--line);padding:6px 9px;vertical-align:top}
+.nota{background:var(--bg);color:var(--cream);border-radius:14px;padding:16px 18px;margin-top:14px;display:flex;gap:14px;align-items:flex-start}
+.nota b{color:var(--or)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--cream);padding:11px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:20;max-width:92vw;box-shadow:var(--sh)}
+.toast.on{opacity:1;transform:translateX(-50%)}
+footer{text-align:center;color:var(--mu2);font-size:12.5px;padding:26px 0 40px}
+
+@media (max-width:900px){.cifras{grid-template-columns:repeat(3,minmax(0,1fr))}.rcuerpo{grid-template-columns:1fr 1fr}.rpie{grid-template-columns:1fr 1fr}.proy{grid-template-columns:1fr}}
+@media (max-width:600px){.cifras{grid-template-columns:repeat(2,minmax(0,1fr))}.rcuerpo,.rpie{grid-template-columns:1fr}.mapa{padding:10px;grid-template-columns:1fr}.ejeY{display:none}.punto{width:24px;height:24px;font-size:11px}.celda span.pi{display:none}.rfila{grid-template-columns:26px 1fr 50px}.rfila .rbar{display:none}.termo{grid-template-columns:1fr}}
+@media print{header,.acciones,.tabs,.quitar,.filtros,footer{display:none!important}.vista{display:none}.vista.on{display:block}body{background:#fff}.riesgo{box-shadow:none;break-inside:avoid}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap">
+  <div class="eyebrow">Herramienta para proyectos con IA · gestión de riesgos</div>
+  <h1>Matriz de <span>riesgos</span></h1>
+  <p class="sub">Identifiquen lo que puede salir mal, midan qué tan probable y qué tan grave es, y decidan qué hacer primero. Sirve para este proyecto y para cualquier otro.</p>
+  <div class="proy">
+   <div><label for="pNombre">Proyecto</label><input id="pNombre" type="text" placeholder="Nombre del proyecto o producto" maxlength="120"></div>
+   <div><label for="pGrupo">Equipo o grupo</label><input id="pGrupo" type="text" placeholder="Grupo 5" maxlength="60"></div>
+   <div><label for="pResp">Integrantes</label><input id="pResp" type="text" placeholder="Nombres separados por coma" maxlength="200"></div>
+  </div>
+  <div class="tabs" role="tablist">
+   <button class="tab on" data-v="instrucciones" role="tab">Instrucciones</button>
+   <button class="tab" data-v="matriz" role="tab">Matriz</button>
+   <button class="tab" data-v="mapa" role="tab">Mapa de calor</button>
+   <button class="tab" data-v="catalogo" role="tab">Catálogo de riesgos</button>
+  </div>
+ </div>
+</header>
+
+<main class="wrap">
+ <div class="cifras" id="cifras"></div>
+ <div class="termo"><div><b id="expo">0</b><small>exposición total (suma de P × I)</small></div><div class="barra"><i id="termoBar"></i></div><div><b id="mitPct">0 %</b><small>riesgos mitigados o aceptados</small></div></div>
+
+<section class="vista on" id="v-instrucciones">
+  <div class="acciones" style="margin-top:14px"><button class="btn p" id="btnEmpezar">Empezar: ir a la matriz →</button><span style="color:var(--mu)">Lean los seis pasos una vez; después todo está en la pestaña Matriz.</span></div>
+  <div class="inst">
+   <div class="paso"><div class="n">1</div><h3>Nombren el proyecto</h3><p>Arriba: el nombre, el grupo y los integrantes. Todo lo que escriban se guarda solo en este navegador; para llevarlo a otra computadora usen «Guardar copia (.json)».</p></div>
+   <div class="paso"><div class="n">2</div><h3>Agreguen riesgos</h3><p>Un riesgo es algo que <b>puede</b> pasar y haría daño: no es un problema que ya tienen. Escríbanlo como «ocurre X y provoca Y».</p><ul><li>«+ Nuevo riesgo» para escribirlo desde cero.</li><li>«Catálogo» para partir de los típicos de proyectos con IA.</li><li>Cinco riesgos bien pensados valen más que veinte vagos.</li></ul></div>
+   <div class="paso"><div class="n">3</div><h3>Midan probabilidad e impacto</h3><p>Dos escalas de 1 a 5. El nivel se calcula solo: <b>P × I</b>.</p>
+    <table class="tablaE"><tr><th>Valor</th><th>Probabilidad</th><th>Impacto</th></tr><tr><td>1</td><td>Muy baja: casi nunca</td><td>Insignificante: nadie lo nota</td></tr><tr><td>2</td><td>Baja: alguna vez al año</td><td>Menor: molestia, se arregla rápido</td></tr><tr><td>3</td><td>Media: alguna vez al mes</td><td>Moderado: afecta a usuarios, horas de trabajo</td></tr><tr><td>4</td><td>Alta: cada semana</td><td>Mayor: pérdida de datos, dinero o confianza</td></tr><tr><td>5</td><td>Muy alta: ya pasó o pasará seguro</td><td>Crítico: daño a personas, legal o irreversible</td></tr></table></div>
+   <div class="paso"><div class="n">4</div><h3>Escriban la mitigación</h3><p>Qué van a hacer para que sea menos probable o menos grave, y <b>dónde se puede ver</b>: un archivo, una prueba, un documento. Una mitigación que no se puede ver no existe.</p><ul><li>«Umbral de abstención en app/rag.py» sí.</li><li>«Tener cuidado» no.</li></ul></div>
+   <div class="paso"><div class="n">5</div><h3>Asignen un responsable y un estado</h3><p>Una persona por riesgo, con nombre. El estado cambia con el tiempo:</p><ul><li><b>Abierto:</b> todavía no se mitigó.</li><li><b>Mitigado:</b> la mitigación está hecha y se puede ver.</li><li><b>Aceptado:</b> decidieron convivir con él y lo dejan escrito.</li></ul></div>
+   <div class="paso"><div class="n">6</div><h3>Usen el mapa de calor</h3><p>Muestra todos los riesgos en una cuadrícula probabilidad × impacto. Lo que está arriba a la derecha se atiende primero. Revisen la matriz cada semana: los riesgos cambian cuando el proyecto cambia.</p></div>
+  </div>
+  <div class="nota"><div style="font-size:28px">💡</div><div><b>Cómo se lee el nivel.</b> Bajo (1–4): vigilar. Medio (5–9): mitigar cuando se pueda. Alto (10–14): mitigar esta semana. Crítico (15–25): mitigar antes de seguir con otra cosa. Para entregar, descarguen <code>riesgos.md</code> y súbanlo a la carpeta <code>docs/</code> del repositorio.</div></div>
+ </section>
+
+ <section class="vista" id="v-matriz">
+  <div class="acciones">
+   <button class="btn p" id="btnNuevo">+ Nuevo riesgo</button>
+   <button class="btn g" id="btnCatalogo">Elegir del catálogo</button>
+   <span class="sep"></span>
+   <div class="filtros" id="filtros"><button class="fil on" data-f="todos">Todos</button><button class="fil" data-f="Crítico">Críticos</button><button class="fil" data-f="Alto">Altos</button><button class="fil" data-f="Medio">Medios</button><button class="fil" data-f="Bajo">Bajos</button><button class="fil" data-f="abiertos">Abiertos</button></div>
+  </div>
+  <div class="acciones">
+   <button class="btn s" id="btnMd">Descargar riesgos.md</button>
+   <button class="btn g" id="btnCsv">CSV</button>
+   <button class="btn g" id="btnJson">Guardar copia (.json)</button>
+   <label class="btn g" for="inJson" style="cursor:pointer">Abrir copia (.json)</label><input id="inJson" type="file" accept="application/json" style="display:none">
+   <button class="btn g" id="btnPrint">Imprimir / PDF</button>
+   <span class="sep"></span>
+   <button class="btn g" id="btnEjemplo">Ver ejemplo</button>
+   <button class="btn peligro" id="btnLimpiar">Vaciar</button>
+  </div>
+  <div class="lista" id="lista"></div>
+ </section>
+
+ <section class="vista" id="v-mapa">
+  <div class="mapa">
+   <div class="ejeY">Probabilidad →</div>
+   <div><div class="grid5" id="grid5"></div><div class="ejeX" id="ejeX"></div><div class="ejeXt">Impacto →</div></div>
+  </div>
+  <div class="leyenda"><span><i style="background:var(--bajo)"></i>Bajo 1–4</span><span><i style="background:var(--medio)"></i>Medio 5–9</span><span><i style="background:var(--alto)"></i>Alto 10–14</span><span><i style="background:var(--critico)"></i>Crítico 15–25</span><span>· Los puntos tenues están mitigados o aceptados. Pasen el cursor sobre un punto para ver el riesgo.</span></div>
+  <div class="ranking"><h3>Qué atender primero</h3><div id="ranking"></div></div>
+ </section>
+
+ <section class="vista" id="v-catalogo">
+  <p style="margin:14px 0 4px;color:var(--mu)">Riesgos frecuentes en proyectos con IA generativa. Al agregar uno, se copia a su matriz con una probabilidad e impacto sugeridos y una mitigación de partida: <b>ajústenlos a su caso</b>. Las referencias OWASP corresponden al Top 10 para aplicaciones LLM, edición 2026, y al Top 10 para aplicaciones agénticas.</p>
+  <div class="catfil" id="catfil"></div>
+  <div class="catgrid" id="catgrid"></div>
+ </section>
+
+ 
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<footer>Matriz de riesgos para proyectos con IA · Seminario Ingeniería de Software con IA Generativa · UNIANDES · Úsenla en cualquier proyecto.</footer>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const KEY='matriz_riesgos_v1';
+const PROB=['Muy baja','Baja','Media','Alta','Muy alta'], IMP=['Insignif.','Menor','Moderado','Mayor','Crítico'];
+const CATS=['IA · OWASP LLM 2026','Agente · OWASP agéntico','Datos y privacidad','Despliegue e infraestructura','Calidad y evaluación','Proyecto y equipo','Otro'];
+const ESTADOS=['Abierto','Mitigado','Aceptado'];
+function nivel(p,i){ const v=p*i; return v>=15?'Crítico':v>=10?'Alto':v>=5?'Medio':'Bajo'; }
+let toastT; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),3200); }
+
+// ---------- catálogo ----------
+const CAT=[
+ {c:0,t:'Inyección de instrucciones desde un documento o un usuario',d:'Un texto que el sistema lee («ignora tus instrucciones y…») cambia el comportamiento del modelo.',ref:'LLM01',p:4,i:4,m:'Delimitar el contexto como datos, no como órdenes; probar con 10 documentos con inyección; herramientas de solo lectura.'},
+ {c:0,t:'Datos personales enviados al proveedor del modelo',d:'Cédulas, nombres, diagnósticos o correos viajan en el prompt a un servidor externo.',ref:'LLM02',p:4,i:5,m:'Anonimizar antes de llamar al modelo (regex o Presidio); registrar sin datos personales.'},
+ {c:0,t:'Agente que actúa sin aprobación humana',d:'El agente envía, registra o borra algo con efecto real sin que una persona lo confirme.',ref:'LLM03',p:3,i:5,m:'Lista cerrada de herramientas, tope de vueltas y confirmación obligatoria para acciones con efecto.'},
+ {c:0,t:'Dependencias o modelos de origen no verificado',d:'Una librería, un modelo o un dataset descargado sin revisar trae código o datos maliciosos.',ref:'LLM04',p:2,i:4,m:'Fijar versiones en requirements, revisar licencias y origen; escaneo de dependencias en CI.'},
+ {c:0,t:'Consumo sin límites de la API',d:'Un usuario o un bucle agota la cuota gratuita o genera costos; el día de la demo todo responde 429.',ref:'LLM06',p:4,i:4,m:'Límite de peticiones por usuario o IP, max_tokens fijo, modelo alterno configurado y respuestas en caché.'},
+ {c:0,t:'Respuesta inventada sin respaldo en las fuentes',d:'El modelo responde con seguridad algo que no está en la base de conocimiento.',ref:'LLM07',p:5,i:4,m:'Umbral de abstención en la búsqueda, citas validadas en código y conjunto dorado con preguntas fuera de dominio.'},
+ {c:0,t:'Fuga del prompt de sistema o del contexto interno',d:'Un usuario logra que el modelo muestre sus instrucciones internas o datos de otros usuarios.',ref:'LLM08',p:3,i:3,m:'No poner secretos ni datos de terceros en el prompt; filtrar por usuario antes de recuperar.'},
+ {c:0,t:'Índice vectorial sin filtros de acceso',d:'La búsqueda devuelve fragmentos de documentos que ese usuario no debería ver.',ref:'LLM09',p:2,i:4,m:'Metadatos de permiso en cada fragmento y filtro en la consulta.'},
+ {c:0,t:'Salida del modelo insertada sin escapar',d:'El texto del modelo se muestra como HTML o se ejecuta como código.',ref:'LLM10',p:3,i:4,m:'Escapar siempre la salida; validar con esquema (Pydantic) antes de usarla.'},
+ {c:1,t:'Secuestro del objetivo del agente',d:'Contenido que el agente lee le cambia la meta («tu nueva tarea es…»).',ref:'ASI01',p:3,i:5,m:'Separar instrucciones de datos; el objetivo viene solo del código; prueba automática con contenido hostil.'},
+ {c:1,t:'Mal uso de una herramienta',d:'Una herramienta válida se usa con argumentos peligrosos o para un fin distinto.',ref:'ASI02',p:3,i:4,m:'Esquemas estrictos (extra="forbid"), rangos válidos y herramientas de solo lectura por defecto.'},
+ {c:1,t:'La persona cree que algo pasó y no pasó',d:'El sistema dice «enviado» o «registrado» cuando fue una simulación o falló.',ref:'ASI09',p:3,i:4,m:'Estados honestos («simulado», «falló»); nunca afirmar efectos que no se verificaron.'},
+ {c:2,t:'Secretos en el repositorio',d:'Claves de API, contraseñas o tokens escritos en el código o subidos en un .env.',ref:'Seguridad',p:4,i:5,m:'Rotar claves expuestas, .env en .gitignore, .env.example sin valores y gitleaks en CI.'},
+ {c:2,t:'Datos reales de usuarios en el repositorio o en logs',d:'Conversaciones, bases de datos o archivos con información de personas quedan versionados.',ref:'LOPDP',p:3,i:5,m:'Sacar el archivo del historial, política de retención escrita y anonimización antes de guardar.'},
+ {c:2,t:'Transferencia internacional de datos sin informar',d:'Los datos de usuarios ecuatorianos se procesan en servidores de otro país sin aviso ni consentimiento.',ref:'LOPDP · SPDP',p:3,i:4,m:'Aviso de uso de IA y de dónde se procesan los datos; consentimiento antes de guardar conversaciones.'},
+ {c:3,t:'El servicio se duerme o se queda sin memoria',d:'El plan gratuito apaga la app tras minutos sin uso, o el modelo de embeddings no cabe en la RAM.',ref:'Despliegue',p:4,i:3,m:'Elegir plataforma por RAM real; precalentar /health antes de la demo; embeddings por API si no caben.'},
+ {c:3,t:'Pérdida de datos en disco efímero',d:'SQLite o el índice vectorial se escriben en un disco que se borra al reiniciar.',ref:'Despliegue',p:4,i:4,m:'Construir el índice en la imagen; datos de usuarios en una base gestionada (Postgres).'},
+ {c:3,t:'Despliegue que nadie más puede repetir',d:'Solo una persona sabe cómo se levanta el servidor y no está documentado.',ref:'Operación',p:3,i:4,m:'Dockerfile o unidad systemd en el repositorio, runbook con los pasos y dos personas con acceso.'},
+ {c:3,t:'Proveedor cambia o retira el modelo',d:'El modelo que usan deja de existir o cambia su comportamiento sin aviso.',ref:'Proveedor',p:3,i:3,m:'Nombre del modelo en configuración, modelo alterno probado y evaluación que detecte el cambio.'},
+ {c:4,t:'Evaluación que no mide nada',d:'El conjunto de prueba lo conoce el código o lo escribió quien hizo el prompt: da 100 % siempre.',ref:'Calidad',p:4,i:3,m:'Conjunto dorado escrito por otra persona, con preguntas fuera de dominio, y resultados que puedan bajar.'},
+ {c:4,t:'Sin pruebas automáticas ni CI',d:'Un cambio rompe algo y nadie lo nota hasta la demo.',ref:'Calidad',p:4,i:4,m:'pytest con el modelo simulado y GitHub Actions en cada push.'},
+ {c:4,t:'Prompt cambia y la calidad baja sin que se note',d:'Alguien mejora un caso y empeora diez.',ref:'Calidad',p:3,i:3,m:'Prompts versionados en archivos y evaluación de regresión antes de fusionar.'},
+ {c:5,t:'Cuota del proveedor agotada el día de la defensa',d:'Las pruebas de último momento consumen el límite diario gratuito.',ref:'Proyecto',p:4,i:5,m:'No probar en vivo la última hora; video de la demo de respaldo; segundo proveedor configurado.'},
+ {c:5,t:'Una sola persona sabe cómo funciona el sistema',d:'Si falta ese integrante, nadie puede desplegar, explicar o corregir.',ref:'Proyecto',p:3,i:4,m:'Documentación en el README, ADR de decisiones y rotación de tareas en el tablero.'},
+ {c:5,t:'Alcance mayor que el tiempo disponible',d:'Se prometen funciones que no llegan y el README describe lo que no existe.',ref:'Proyecto',p:4,i:3,m:'Tablero Kanban con límite de trabajo en curso; README con la tabla de estado real.'},
+];
+
+// ---------- estado ----------
+let S=cargar()||nuevo();
+function nuevo(){ return {nombre:'',grupo:'',resp:'',riesgos:[]}; }
+function cargar(){ try{ const o=JSON.parse(localStorage.getItem(KEY)); return o&&Array.isArray(o.riesgos)?normal(o):null; }catch(e){ return null; } }
+function normal(o){ o.nombre=String(o.nombre||'').slice(0,120); o.grupo=String(o.grupo||'').slice(0,60); o.resp=String(o.resp||'').slice(0,200);
+ o.riesgos=o.riesgos.filter(r=>r&&typeof r==='object').map(r=>({id:String(r.id||Date.now()+Math.random()),t:String(r.t||'').slice(0,200),cat:CATS.includes(r.cat)?r.cat:'Otro',ref:String(r.ref||'').slice(0,40),p:Math.min(5,Math.max(1,parseInt(r.p)||3)),i:Math.min(5,Math.max(1,parseInt(r.i)||3)),m:String(r.m||'').slice(0,500),ev:String(r.ev||'').slice(0,200),resp:String(r.resp||'').slice(0,80),est:ESTADOS.includes(r.est)?r.est:'Abierto'})); return o; }
+let guardT; function guardar(){ clearTimeout(guardT); guardT=setTimeout(()=>{ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} },150); }
+window.addEventListener('pagehide',()=>{ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} });
+let filtro='todos';
+
+// ---------- cifras ----------
+function animarNum(el,v,suf){ const de=+el.dataset.v||0; if(de===v){ el.textContent=v+(suf||''); return; } const t0=performance.now(), d=600; const paso=t=>{ const k=Math.min(1,(t-t0)/d), e=1-Math.pow(1-k,3); el.textContent=Math.round(de+(v-de)*e)+(suf||''); if(k<1) requestAnimationFrame(paso); else el.dataset.v=v; }; requestAnimationFrame(paso); }
+function pintarCifras(){ const R=S.riesgos, n={Crítico:0,Alto:0,Medio:0,Bajo:0}; R.forEach(r=>n[nivel(r.p,r.i)]++); const cerr=R.filter(r=>r.est!=='Abierto').length;
+ const def=[['x',R.length,'riesgos'],['c',n.Crítico,'críticos'],['a',n.Alto,'altos'],['m',n.Medio,'medios'],['b',n.Bajo,'bajos'],['x',cerr,'mitigados o aceptados']];
+ const box=$('#cifras'); if(box.children.length!==6) box.innerHTML=def.map(d=>'<div class="cifra '+d[0]+'"><b data-v="0">0</b><small>'+d[2]+'</small><i></i></div>').join('');
+ def.forEach((d,i)=>animarNum(box.children[i].querySelector('b'),d[1]));
+ const expo=R.reduce((a,r)=>a+r.p*r.i,0), max=Math.max(25,R.length*25); animarNum($('#expo'),expo); $('#termoBar').style.width=(100*expo/max)+'%';
+ animarNum($('#mitPct'),R.length?Math.round(100*cerr/R.length):0,' %'); }
+
+// ---------- matriz ----------
+function escalaHtml(id,campo,val,labels){ return '<div class="escala" role="group">'+[1,2,3,4,5].map(v=>'<button type="button" data-id="'+id+'" data-c="'+campo+'" data-v="'+v+'" class="'+(v===val?'on':'')+'" aria-pressed="'+(v===val)+'">'+v+'<small>'+labels[v-1]+'</small></button>').join('')+'</div>'; }
+function tarjeta(r,idx){ const nv=nivel(r.p,r.i); return '<article class="riesgo n'+nv+(r.est!=='Abierto'?' mitigado':'')+'" data-id="'+r.id+'" style="animation-delay:'+Math.min(idx*60,400)+'ms">'+
+ '<div class="rhead"><div class="num">'+(idx+1)+'</div><input class="titulo" data-id="'+r.id+'" data-c="t" value="'+esc(r.t)+'" placeholder="Describan el riesgo: ocurre X y provoca Y" maxlength="200" aria-label="Riesgo '+(idx+1)+'"><span class="nivel n'+nv+'" data-nv="'+r.id+'">'+nv+' · '+(r.p*r.i)+'</span></div>'+
+ '<div class="rcuerpo"><div class="campo"><label>Categoría · referencia</label><div style="display:flex;gap:6px"><select data-id="'+r.id+'" data-c="cat" aria-label="Categoría">'+CATS.map(c=>'<option'+(c===r.cat?' selected':'')+'>'+esc(c)+'</option>').join('')+'</select><input data-id="'+r.id+'" data-c="ref" value="'+esc(r.ref)+'" placeholder="LLM01" maxlength="40" style="width:88px" aria-label="Referencia"></div></div>'+
+ '<div class="campo"><label>Probabilidad</label>'+escalaHtml(r.id,'p',r.p,PROB)+'</div><div class="campo"><label>Impacto</label>'+escalaHtml(r.id,'i',r.i,IMP)+'</div>'+
+ '<div class="campo"><label>Estado</label><select data-id="'+r.id+'" data-c="est" aria-label="Estado">'+ESTADOS.map(e=>'<option'+(e===r.est?' selected':'')+'>'+e+'</option>').join('')+'</select></div></div>'+
+ '<div class="rpie"><div class="campo"><label>Mitigación: qué van a hacer</label><textarea data-id="'+r.id+'" data-c="m" maxlength="500" placeholder="Qué hace que sea menos probable o menos grave">'+esc(r.m)+'</textarea></div>'+
+ '<div class="campo"><label>Dónde se ve</label><input data-id="'+r.id+'" data-c="ev" value="'+esc(r.ev)+'" maxlength="200" placeholder="app/rag.py · tests/test_x.py · docs/…"></div>'+
+ '<div class="campo"><label>Responsable</label><input data-id="'+r.id+'" data-c="resp" value="'+esc(r.resp)+'" maxlength="80" placeholder="Nombre"></div>'+
+ '<button class="quitar" type="button" data-quitar="'+r.id+'" aria-label="Quitar riesgo '+(idx+1)+'">✕ Quitar</button></div></article>'; }
+function visibles(){ return S.riesgos.filter(r=>filtro==='todos'||(filtro==='abiertos'?r.est==='Abierto':nivel(r.p,r.i)===filtro)); }
+function pintarLista(){ const V=visibles(); const L=$('#lista');
+ if(!S.riesgos.length){ L.innerHTML='<div class="vacio"><h3>Todavía no hay riesgos</h3><p>Empiecen con «+ Nuevo riesgo» o elijan del catálogo. Si quieren ver cómo queda una matriz llena, usen «Ver ejemplo».</p></div>'; return; }
+ if(!V.length){ L.innerHTML='<div class="vacio"><h3>Ningún riesgo con ese filtro</h3></div>'; return; }
+ L.innerHTML=V.map((r,i)=>tarjeta(r,S.riesgos.indexOf(r))).join(''); }
+function pintarTodo(){ pintarCifras(); pintarLista(); if($('#v-mapa').classList.contains('on')) pintarMapa(); guardar(); }
+function refrescarTarjeta(r){ const art=document.querySelector('.riesgo[data-id="'+r.id+'"]'); if(!art) return; const nv=nivel(r.p,r.i); art.className='riesgo n'+nv+(r.est!=='Abierto'?' mitigado':''); const b=art.querySelector('.nivel'); const antes=b.textContent; b.className='nivel n'+nv; b.textContent=nv+' · '+(r.p*r.i); if(antes!==b.textContent){ b.classList.remove('cambio'); void b.offsetWidth; b.classList.add('cambio'); }
+ art.querySelectorAll('.escala button').forEach(x=>{ const on=+x.dataset.v===r[x.dataset.c]; x.classList.toggle('on',on); x.setAttribute('aria-pressed',on); }); }
+
+$('#lista').addEventListener('click',e=>{ const b=e.target.closest('.escala button'); if(b){ const r=S.riesgos.find(x=>x.id===b.dataset.id); r[b.dataset.c]=+b.dataset.v; refrescarTarjeta(r); pintarCifras(); guardar(); if(filtro!=='todos'&&filtro!=='abiertos'&&nivel(r.p,r.i)!==filtro) setTimeout(pintarLista,400); return; }
+ const q=e.target.closest('[data-quitar]'); if(q){ const id=q.dataset.quitar; const art=q.closest('.riesgo'); art.classList.add('saliendo'); setTimeout(()=>{ S.riesgos=S.riesgos.filter(x=>x.id!==id); pintarTodo(); toast('Riesgo quitado.'); },280); } });
+$('#lista').addEventListener('input',e=>{ const el=e.target; if(!el.dataset.id) return; const r=S.riesgos.find(x=>x.id===el.dataset.id); if(!r) return; r[el.dataset.c]=el.value; if(el.dataset.c==='est'){ refrescarTarjeta(r); pintarCifras(); } guardar(); });
+$('#filtros').addEventListener('click',e=>{ const b=e.target.closest('.fil'); if(!b) return; filtro=b.dataset.f; $$('.fil').forEach(x=>x.classList.toggle('on',x===b)); pintarLista(); });
+function agregar(r,arriba){ const n={id:String(Date.now())+Math.random().toString(36).slice(2,6),t:'',cat:'Otro',ref:'',p:3,i:3,m:'',ev:'',resp:'',est:'Abierto',...r}; if(arriba) S.riesgos.unshift(n); else S.riesgos.push(n); filtro='todos'; $$('.fil').forEach(x=>x.classList.toggle('on',x.dataset.f==='todos')); pintarTodo(); return n; }
+$('#btnNuevo').onclick=()=>{ const n=agregar({},true); ir('matriz'); setTimeout(()=>{ const i=document.querySelector('.riesgo[data-id="'+n.id+'"] input.titulo'); if(i){ i.focus(); i.scrollIntoView({behavior:'smooth',block:'center'}); } },80); };
+$('#btnCatalogo').onclick=()=>ir('catalogo');
+$('#btnLimpiar').onclick=()=>{ if(!S.riesgos.length) return; if(confirm('¿Vaciar la matriz? Se borran los '+S.riesgos.length+' riesgos de este navegador. Si quieren conservarlos, primero «Guardar copia (.json)».')){ S.riesgos=[]; pintarTodo(); toast('Matriz vacía.'); } };
+
+// ---------- mapa ----------
+function pintarMapa(){ const g=$('#grid5'); let h=''; for(let p=5;p>=1;p--){ for(let i=1;i<=5;i++){ const nv=nivel(p,i); const R=S.riesgos.map((r,k)=>[r,k]).filter(x=>x[0].p===p&&x[0].i===i); h+='<div class="celda n'+nv+'" title="P '+p+' × I '+i+' = '+(p*i)+'">'+R.map((x,j)=>'<button type="button" class="punto n'+nivel(x[0].p,x[0].i)+(x[0].est!=='Abierto'?' mitigado':'')+'" style="animation-delay:'+(j*70+(5-p)*40)+'ms" data-t="'+esc((x[1]+1)+'. '+(x[0].t||'(sin nombre)')+' · '+x[0].est)+'" data-ir="'+x[0].id+'" aria-label="'+esc(x[0].t)+'">'+(x[1]+1)+'</button>').join('')+'<span class="pi">'+(p*i)+'</span></div>'; } } g.innerHTML=h;
+ $('#ejeX').innerHTML=IMP.map((l,i)=>'<div>'+(i+1)+'<br><small>'+l+'</small></div>').join('');
+ const ord=[...S.riesgos].sort((a,b)=>b.p*b.i-a.p*a.i||(a.est==='Abierto'?-1:1)); $('#ranking').innerHTML=ord.length?ord.map(r=>{ const nv=nivel(r.p,r.i); return '<div class="rfila"><b>'+(S.riesgos.indexOf(r)+1)+'</b><span>'+esc(r.t||'(sin nombre)')+(r.est!=='Abierto'?' <small style="color:var(--mu2)">· '+r.est+'</small>':'')+'</span><div class="rbar"><i class="n'+nv+'" data-w="'+(100*r.p*r.i/25)+'"></i></div><span class="nivel n'+nv+'" style="justify-self:end">'+(r.p*r.i)+'</span></div>'; }).join(''):'<p style="color:var(--mu)">Agreguen riesgos para ver el orden de atención.</p>';
+ requestAnimationFrame(()=>$$('#ranking .rbar i').forEach(b=>b.style.width=b.dataset.w+'%')); }
+$('#grid5').addEventListener('click',e=>{ const b=e.target.closest('[data-ir]'); if(!b) return; ir('matriz'); setTimeout(()=>{ const a=document.querySelector('.riesgo[data-id="'+b.dataset.ir+'"]'); if(a){ a.scrollIntoView({behavior:'smooth',block:'center'}); a.style.outline='3px solid var(--or)'; setTimeout(()=>a.style.outline='',1500); } },80); });
+
+// ---------- catálogo ----------
+let catF='todas';
+function pintarCat(){ $('#catfil').innerHTML=['todas',...CATS.slice(0,6)].map(c=>'<button type="button" class="fil'+(catF===c?' on':'')+'" data-cf="'+esc(c)+'">'+(c==='todas'?'Todas':esc(c))+'</button>').join('');
+ const ya=new Set(S.riesgos.map(r=>r.t)); $('#catgrid').innerHTML=CAT.map((c,k)=>({...c,k})).filter(c=>catF==='todas'||CATS[c.c]===catF).map((c,j)=>'<div class="catcard'+(ya.has(c.t)?' ya':'')+'" style="animation-delay:'+Math.min(j*40,400)+'ms"><div class="cat">'+esc(CATS[c.c])+' · '+esc(c.ref)+'</div><b>'+esc(c.t)+'</b><p>'+esc(c.d)+'</p><div class="pie"><small>sugerido P '+c.p+' · I '+c.i+' · '+nivel(c.p,c.i)+'</small><button type="button" class="btn p" data-add="'+c.k+'">'+(ya.has(c.t)?'Agregar otra vez':'+ Agregar')+'</button></div></div>').join(''); }
+$('#catfil').addEventListener('click',e=>{ const b=e.target.closest('[data-cf]'); if(b){ catF=b.dataset.cf; pintarCat(); } });
+$('#catgrid').addEventListener('click',e=>{ const b=e.target.closest('[data-add]'); if(!b) return; const c=CAT[+b.dataset.add]; agregar({t:c.t,cat:CATS[c.c],ref:c.ref,p:c.p,i:c.i,m:c.m}); pintarCat(); toast('Agregado a la matriz: '+c.t.slice(0,50)+(c.t.length>50?'…':'')); });
+
+// ---------- proyecto ----------
+[['#pNombre','nombre'],['#pGrupo','grupo'],['#pResp','resp']].forEach(([id,k])=>{ $(id).value=S[k]; $(id).addEventListener('input',e=>{ S[k]=e.target.value; guardar(); }); });
+
+// ---------- pestañas ----------
+function ir(v){ $$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.v===v)); $$('.vista').forEach(s=>s.classList.toggle('on',s.id==='v-'+v)); if(v==='mapa') pintarMapa(); if(v==='catalogo') pintarCat(); if(v==='matriz') pintarLista(); window.scrollTo({top:0,behavior:'smooth'}); }
+$$('.tab').forEach(b=>b.addEventListener('click',()=>ir(b.dataset.v)));
+$('#btnEmpezar').onclick=()=>ir('matriz');
+// Si ya tienen riesgos guardados, abrir directo en la matriz
+if(S.riesgos.length) ir('matriz');
+
+// ---------- exportar / importar ----------
+function md(){ const hoy=new Date().toLocaleDateString('es-EC'); const R=[...S.riesgos].sort((a,b)=>b.p*b.i-a.p*a.i); const cel=x=>String(x||'').replace(/\|/g,'/').replace(/\r?\n/g,' ');
+ return '# Matriz de riesgos · '+(S.nombre||'Proyecto')+'\n\n'+(S.grupo?'- Equipo: '+S.grupo+'\n':'')+(S.resp?'- Integrantes: '+S.resp+'\n':'')+'- Fecha: '+hoy+'\n- Escala: probabilidad e impacto de 1 a 5; nivel = P × I (Bajo 1–4, Medio 5–9, Alto 10–14, Crítico 15–25).\n- Referencias: OWASP Top 10 for LLM Applications 2026 y OWASP Top 10 for Agentic Applications.\n\n| # | Riesgo | Categoría | Ref. | P | I | Nivel | Mitigación | Dónde se ve | Responsable | Estado |\n|---|---|---|---|---|---|---|---|---|---|---|\n'+R.map((r,i)=>'| '+(i+1)+' | '+[r.t,r.cat,r.ref,r.p,r.i,nivel(r.p,r.i)+' ('+(r.p*r.i)+')',r.m,r.ev,r.resp,r.est].map(cel).join(' | ')+' |').join('\n')+'\n\nExposición total: '+S.riesgos.reduce((a,r)=>a+r.p*r.i,0)+' · Mitigados o aceptados: '+S.riesgos.filter(r=>r.est!=='Abierto').length+' de '+S.riesgos.length+'\n'; }
+function csv(){ const q=x=>'"'+String(x||'').replace(/"/g,'""')+'"'; return ['Riesgo','Categoría','Referencia','Probabilidad','Impacto','Nivel','Puntaje','Mitigación','Dónde se ve','Responsable','Estado'].map(q).join(',')+'\n'+S.riesgos.map(r=>[r.t,r.cat,r.ref,r.p,r.i,nivel(r.p,r.i),r.p*r.i,r.m,r.ev,r.resp,r.est].map(q).join(',')).join('\n')+'\n'; }
+function descargar(nombre,txt,tipo){ const u=URL.createObjectURL(new Blob([txt],{type:tipo})); const a=document.createElement('a'); a.href=u; a.download=nombre; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500); }
+const slug=()=>(S.nombre||'proyecto').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'proyecto';
+$('#btnMd').onclick=()=>{ if(!S.riesgos.length) return toast('Agreguen al menos un riesgo.'); descargar('riesgos.md',md(),'text/markdown;charset=utf-8'); toast('riesgos.md descargado: súbanlo a docs/ en el repositorio.'); };
+$('#btnCsv').onclick=()=>{ if(!S.riesgos.length) return toast('Agreguen al menos un riesgo.'); descargar('riesgos-'+slug()+'.csv','﻿'+csv(),'text/csv;charset=utf-8'); };
+$('#btnJson').onclick=()=>{ descargar('matriz-riesgos-'+slug()+'.json',JSON.stringify(S,null,2),'application/json'); toast('Copia guardada. Ábranla en otra computadora con «Abrir copia».'); };
+$('#inJson').addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; const fr=new FileReader(); fr.onload=()=>{ try{ const o=JSON.parse(fr.result); if(!o||!Array.isArray(o.riesgos)) throw 0; if(S.riesgos.length&&!confirm('Esto reemplaza los '+S.riesgos.length+' riesgos actuales por los del archivo. ¿Continuar?')) return; S=normal(o); [['#pNombre','nombre'],['#pGrupo','grupo'],['#pResp','resp']].forEach(([id,k])=>$(id).value=S[k]); pintarTodo(); ir('matriz'); toast('Copia abierta: '+S.riesgos.length+' riesgos.'); }catch(x){ toast('Ese archivo no es una copia de esta matriz.'); } e.target.value=''; }; fr.readAsText(f); });
+$('#btnPrint').onclick=()=>window.print();
+$('#btnEjemplo').onclick=()=>{ if(S.riesgos.length&&!confirm('El ejemplo reemplaza su matriz actual. Si quieren conservarla, primero «Guardar copia (.json)». ¿Continuar?')) return;
+ S={nombre:'Asistente de orientación sobre dengue (ejemplo)',grupo:'Grupo de ejemplo',resp:'Ana, Luis, Sofía',riesgos:[
+  {t:'Un síntoma de alarma escrito en lenguaje cotidiano no se detecta y la persona no acude al hospital',cat:CATS[0],ref:'LLM07',p:4,i:5,m:'Sinónimos de cada signo en config/, extracción por campos booleanos y 20 frases reales como pruebas',ev:'app/tools/evaluar_signos_alarma.py · tests/test_signos.py',resp:'Ana',est:'Abierto'},
+  {t:'Conversaciones con síntomas de personas quedan en el repositorio',cat:CATS[2],ref:'LOPDP',p:5,i:5,m:'git rm --cached del archivo, limpiar el historial y anonimizar antes de guardar',ev:'historial de git · docs/09-decisiones.md',resp:'Luis',est:'Mitigado'},
+  {t:'La búsqueda devuelve fragmentos lejanos y el modelo responde fuera de la guía',cat:CATS[0],ref:'LLM07',p:4,i:4,m:'Umbral de distancia calibrado con 20 preguntas, 5 de ellas fuera de tema',ev:'app/tools/consultar_guia_msp.py · eval/evaluar.py',resp:'Sofía',est:'Abierto'},
+  {t:'La notificación al contacto de emergencia dice «enviado» cuando es simulada',cat:CATS[1],ref:'ASI09',p:4,i:4,m:'Estado «simulado» en la herramienta y en la interfaz hasta tener un envío real',ev:'app/tools/notificar_contacto_emergencia.py',resp:'Ana',est:'Mitigado'},
+  {t:'La cuota gratuita de Gemini se agota durante la defensa',cat:CATS[5],ref:'Proyecto',p:4,i:5,m:'Groq como alterno, respuestas en caché y video de la demo de respaldo',ev:'app/services/llm.py · docs/runbook.md',resp:'Luis',est:'Abierto'},
+  {t:'Un documento del corpus con una orden cambia el comportamiento del asistente',cat:CATS[0],ref:'LLM01',p:2,i:4,m:'Contexto delimitado como datos y prueba con documentos hostiles',ev:'app/prompts/system_agente.md · tests/test_inyeccion.py',resp:'Sofía',est:'Abierto'},
+  {t:'Render Free duerme la app y la primera respuesta tarda un minuto',cat:CATS[3],ref:'Despliegue',p:5,i:2,m:'Llamar a /health dos minutos antes de la demo; migrar a Cloud Run si hay tarjeta',ev:'docs/adr/0003-plataforma.md',resp:'Luis',est:'Aceptado'},
+  {t:'La evaluación da 87 % porque las reglas conocen los casos de prueba',cat:CATS[4],ref:'Calidad',p:3,i:3,m:'10 casos nuevos escritos por quien no vio el código; errores cuentan como fallos',ev:'eval/evaluar.py · eval/casos_nuevos.jsonl',resp:'Ana',est:'Abierto'}
+ ].map((r,i)=>({id:'ej'+i,...r}))};
+ [['#pNombre','nombre'],['#pGrupo','grupo'],['#pResp','resp']].forEach(([id,k])=>$(id).value=S[k]); pintarTodo(); toast('Ejemplo cargado: 8 riesgos de un proyecto del seminario.'); };
+
+// ---------- arranque ----------
+pintarTodo();
+</script>
+</body>
+</html>
