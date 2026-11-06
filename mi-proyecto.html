@@ -272,14 +272,16 @@ function arq(g){ const c=g.comp;
 function anillo(p,label){ const r=46,C=2*Math.PI*r; return `<div class="anillo"><svg width="128" height="128" viewBox="0 0 128 128"><circle cx="64" cy="64" r="${r}" stroke="#EEEAF7" stroke-width="14" fill="none"/><circle cx="64" cy="64" r="${r}" stroke="url(#gr)" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="${C*p/100} ${C}" transform="rotate(-90 64 64)"/><defs><linearGradient id="gr"><stop offset="0" stop-color="#6C4CD6"/><stop offset="1" stop-color="#16A36F"/></linearGradient></defs><text x="64" y="70" text-anchor="middle" font-family="Outfit, Arial, sans-serif" font-weight="700" font-size="28" fill="#18162B">${p}%</text></svg><small>${label}</small></div>`; }
 
 
+const S4=[['docker','Dockerfile','versión fija, usuario sin privilegios, .dockerignore, PORT'],['health','/health','responde sin llamar al modelo'],['despliegue','Desplegado','URL pública https que responde'],['pipeline','Pipeline CI/CD','pruebas en cada push y despliegue con needs: pruebas'],['pruebas_func','Pruebas funcionales','casos reales contra la URL (smoke)'],['docs','Documentación técnica','README e instalación al día con lo que existe'],['credenciales','Credenciales protegidas','sin secretos en código ni historial; variables en la plataforma']];
+function s4pct(g){ if(!g.s4) return g.comp.nube==='h'?30:g.comp.nube==='p'?10:0; const v=S4.map(k=>g.s4[k[0]]); return Math.round(100*v.reduce((a,e)=>a+(e==='h'?1:e==='p'?.5:0),0)/S4.length); }
 // ============ FICHA ============
 function ficha(g){ const p3=s3pct(g);
- const sem=[['S1',g.s1==='p'?70:100,g.s1==='p'?'#E5A11A':'#16A36F'],['S2',g.comp.front==='p'?90:100,'#16A36F'],['S3',p3,'#6C4CD6'],['S4',g.comp.nube==='h'?30:g.comp.nube==='p'?10:0,g.comp.nube==='h'?'#16A36F':'#B9B3CC']];
+ const sem=[['S1',g.s1==='p'?70:100,g.s1==='p'?'#E5A11A':'#16A36F'],['S2',g.comp.front==='p'?90:100,'#16A36F'],['S3',p3,'#6C4CD6'],['S4',s4pct(g),s4pct(g)>=70?'#16A36F':s4pct(g)?'#E5A11A':'#B9B3CC']];
  const ck=(g.checklist||[]); const nh=ck.filter(e=>e==='h').length, np=ck.filter(e=>e==='p').length;
  return `<div class="ficha"><div class="card">
   <div class="fhead"><div class="num">${g.n}</div><div><h3>${esc(g.nombre)}</h3><div class="tipo">${esc(g.tipo)}</div><div class="chips">${(g.stack||[]).map(x=>'<span>'+esc(x)+'</span>').join('')}</div></div>${anillo(p3,'avance de la semana 3')}</div>
   ${g.alerta?`<div class="alerta"><b>Primero esto.</b> ${esc(g.alerta)}</div>`:''}
-  <div class="nota" style="margin-top:10px"><b>Entrega 3</b> · último cambio ${esc(g.entrega)} · ${esc(g.pruebas)} pruebas · CI ${g.ci?'sí':'no'}${g.resueltos?` · resueltos de la revisión anterior: ${esc(String(g.resueltos).replace(/ pendientes de la revisión anterior/,''))}`:''}</div>
+  <div class="nota" style="margin-top:10px"><b>Entrega 3</b> · último cambio ${esc(g.entrega)} · ${esc(g.pruebas)} pruebas · CI ${g.ci?'sí':'no'}${g.nube_url&&/^https?:/.test(g.nube_url)?` · <a href="${esc(g.nube_url)}" target="_blank" rel="noopener">URL desplegada</a>`:g.nube_url?` · ${esc(g.nube_url)}`:''}${g.resueltos?` · resueltos de la revisión anterior: ${esc(String(g.resueltos).replace(/ pendientes de la revisión anterior/,''))}`:''}</div>
   <div class="fgrid" style="margin-top:14px">
    <div class="arq"><h4>Su producto hoy</h4>${arq(g)}</div>
    <div>
@@ -288,6 +290,7 @@ function ficha(g){ const p3=s3pct(g);
    </div>
   </div>
   ${ck.length?`<div class="box card" style="margin-top:16px;padding:16px 18px"><h4>Lista de verificación de la Entrega 3 · ${nh} completos, ${np} a medias, ${ck.length-nh-np} pendientes</h4><ul class="chk">${CHK.map((c,i)=>{const e=ck[i]||'f';return `<li class="${e}"><span class="ic">${e==='h'?'✓':e==='p'?'½':'+'}</span><div>${i+1}. ${esc(c[0])}<small>${esc(c[1])}</small></div></li>`}).join('')}</ul></div>`:''}
+  ${g.s4?`<div class="box card" style="margin-top:16px;padding:16px 18px"><h4>Semana 4 · Proyecto y despliegue · ${s4pct(g)} %</h4><ul class="chk">${S4.map(k=>{const e=g.s4[k[0]]||'f';return `<li class="${e}"><span class="ic">${e==='h'?'✓':e==='p'?'½':'+'}</span><div>${esc(k[1])}<small>${esc(k[2])}</small></div></li>`}).join('')}</ul></div>`:''}
   <div class="dos">
    <div class="box card tiene-b" style="padding:16px 18px"><h4>Lo que ya lograron</h4><ul class="lista tiene">${g.tiene.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></div>
    <div class="box card falta-b" style="padding:16px 18px"><h4>Lo que les falta para el producto final</h4><ul class="lista falta">${g.falta.map(x=>'<li>'+esc(x)+'</li>').join('')}</ul></div>
