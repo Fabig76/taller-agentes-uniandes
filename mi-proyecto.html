@@ -56,6 +56,8 @@ section{margin-bottom:44px}
 .semb .v{font-family:'JetBrains Mono';font-size:12.5px;text-align:right}
 .tools{display:grid;gap:8px}
 .tool{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;border-radius:12px;padding:9px 12px;border:1.5px solid var(--bd);background:#fff}
+.dos>*,.fgrid>*{min-width:0}.lista li{overflow-wrap:anywhere}
+.tool>div{min-width:0;overflow-wrap:anywhere}
 .tool.h{border-color:#9BDCC2;background:var(--okS)}.tool.p{border-color:#F0CF83;background:var(--paS)}.tool.f{border-style:dashed;border-color:#E7A9A7;background:#fff}
 .tool .ic{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-weight:700;color:#fff;font-size:15px}
 .tool.h .ic{background:var(--ok)}.tool.p .ic{background:var(--pa);color:#3B2A00}.tool.f .ic{background:#fff;border:2px dashed var(--no);color:var(--no)}
@@ -80,6 +82,15 @@ section{margin-bottom:44px}
 .paso p,.estrella p{margin:0;font-size:15px}
 .alerta{margin-top:14px;background:var(--noS);border-left:5px solid var(--no);border-radius:12px;padding:12px 16px;font-size:15px}
 .alerta b{color:var(--no)}
+.pend{margin:0 0 18px;border-radius:18px;background:#FFF8EC;border:2px solid #E5A11A;padding:18px 20px}
+.pend .et{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;background:#E5A11A;color:#2A1A00;padding:3px 10px;border-radius:999px;margin-bottom:8px}
+.pend h4{margin:0 0 4px;font-family:Outfit,sans-serif;font-size:21px;line-height:1.2;color:#3A2600}
+.pend .fecha{margin:0 0 12px;font-size:14.5px;color:#6B4E00}
+.pend ol{margin:0;padding-left:22px}.pend li{font-size:15.5px;line-height:1.5;margin-bottom:7px;color:#2A1D00;overflow-wrap:anywhere}
+.pend .e4{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.pend .e4 span{font-size:12.5px;border-radius:999px;padding:3px 10px;font-weight:700;border:1.5px solid}
+.pend .e4 .h{background:#E6F6EE;border-color:#16A36F;color:#0E7A52}.pend .e4 .p{background:#FFF1D6;border-color:#E5A11A;color:#7A5200}.pend .e4 .f{background:#FDECEB;border-color:#D9534F;color:#A3231F}
+.pend small{display:block;margin-top:10px;font-size:12.5px;color:#6B4E00}
 .urgente{position:relative;overflow:hidden;margin:0 0 18px;border-radius:18px;padding:20px 22px 18px 92px;color:#fff;background:linear-gradient(135deg,#B42318 0%,#D9534F 55%,#E8743B 100%);box-shadow:0 10px 28px rgba(180,35,24,.35);border:2px solid #7A1610}
 .urgente::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.07) 0 14px,transparent 14px 28px);pointer-events:none}
 .urgente .ico{position:absolute;left:20px;top:20px;width:56px;height:56px;border-radius:50%;background:#fff;color:#B42318;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;box-shadow:0 0 0 0 rgba(255,255,255,.7);animation:latido 1.6s infinite}
@@ -288,12 +299,16 @@ function anillo(p,label){ const r=46,C=2*Math.PI*r; return `<div class="anillo">
 
 const S4=[['docker','Dockerfile','versión fija, usuario sin privilegios, .dockerignore, PORT'],['health','/health','responde sin llamar al modelo'],['despliegue','Desplegado','URL pública https que responde'],['pipeline','Pipeline CI/CD','pruebas en cada push y despliegue con needs: pruebas'],['pruebas_func','Pruebas funcionales','casos reales contra la URL (smoke)'],['docs','Documentación técnica','README e instalación al día con lo que existe'],['credenciales','Credenciales protegidas','sin secretos en código ni historial; variables en la plataforma']];
 function s4pct(g){ if(!g.s4) return g.comp.nube==='h'?30:g.comp.nube==='p'?10:0; const v=S4.map(k=>g.s4[k[0]]); return Math.round(100*v.reduce((a,e)=>a+(e==='h'?1:e==='p'?.5:0),0)/S4.length); }
+const E4N=[['s4a','URL en el README'],['s4b','Credenciales'],['s4c','Índice persistente'],['s4d','08-pruebas.md (15+)'],['s4e','Evaluación comparada'],['s4f','Límite de tasa y errores'],['s4g','Aviso de IA y datos'],['s4h','README y 09-decisiones'],['s4i','Declaración de IA y aportes'],['s4j','Presentación PDF'],['s4k','Evidencias semana 4']];
+function pend(g){ if(!g.pendientes||!g.pendientes.length) return '';
+ return `<div class="pend" role="region" aria-label="Lo que les falta para la entrega final"><span class="et">Nota del docente · entrega final</span><h4>Lo que les falta para la entrega final</h4><p class="fecha">Lunes 9 de noviembre, 11:59 p. m. · plazo máximo con prórroga: miércoles 11, 11:59 p. m. Háganlo en este orden.</p><ol>${g.pendientes.map(x=>'<li>'+esc(x)+'</li>').join('')}</ol>${g.e4?`<div class="e4">${E4N.map(k=>{const e=g.e4[k[0]]||'f';return `<span class="${e}">${e==='h'?'✓':e==='p'?'½':'✗'} ${k[0]} · ${esc(k[1])}</span>`}).join('')}</div><small>Los 11 puntos de la Entrega 4 del portal de entregas: ✓ cumplido · ½ a medias · ✗ falta. Marquen en el portal solo lo que de verdad está en el .zip y en el repositorio.</small>`:''}</div>`; }
 // ============ FICHA ============
 function ficha(g){ const p3=s3pct(g);
  const sem=[['S1',g.s1==='p'?70:100,g.s1==='p'?'#E5A11A':'#16A36F'],['S2',g.comp.front==='p'?90:100,'#16A36F'],['S3',p3,'#6C4CD6'],['S4',s4pct(g),s4pct(g)>=70?'#16A36F':s4pct(g)?'#E5A11A':'#B9B3CC']];
  const ck=(g.checklist||[]); const nh=ck.filter(e=>e==='h').length, np=ck.filter(e=>e==='p').length;
  return `<div class="ficha"><div class="card">
-  ${g.alerta?`<div class="urgente" role="alert"><div class="ico" aria-hidden="true">!</div><span class="et">Falla crítica · resolver antes del sábado</span><h4>Atención: su proyecto tiene una falla que el tribunal puede encontrar</h4><p>${esc(g.alerta)}</p>${g.paso?`<div class="hacer"><b>Qué hacer hoy:</b> ${esc(g.paso)}</div>`:''}<small>Revisión: ${esc(g.revision||'')}. Cuando lo corrijan y hagan push, la ficha se actualiza en la siguiente revisión.</small></div>`:''}
+  ${g.alerta?`<div class="urgente" role="alert"><div class="ico" aria-hidden="true">!</div><span class="et">Falla crítica · resolver antes de la entrega final</span><h4>Atención: su proyecto tiene una falla que el tribunal puede encontrar</h4><p>${esc(g.alerta)}</p>${g.paso?`<div class="hacer"><b>Qué hacer hoy:</b> ${esc(g.paso)}</div>`:''}<small>Revisión: ${esc(g.revision||'')}. Cuando lo corrijan y hagan push, la ficha se actualiza en la siguiente revisión.</small></div>`:''}
+  ${pend(g)}
   <div class="fhead"><div class="num">${g.n}</div><div><h3>${esc(g.nombre)}</h3><div class="tipo">${esc(g.tipo)}</div><div class="chips">${(g.stack||[]).map(x=>'<span>'+esc(x)+'</span>').join('')}</div></div>${anillo(p3,'avance de la semana 3')}</div>
   <div class="nota" style="margin-top:10px"><b>Entrega 3</b> · último cambio ${esc(g.entrega)} · ${esc(g.pruebas)} pruebas · CI ${g.ci?'sí':'no'}${g.nube_url&&/^https?:/.test(g.nube_url)?` · <a href="${esc(g.nube_url)}" target="_blank" rel="noopener">URL desplegada</a>`:g.nube_url?` · ${esc(g.nube_url)}`:''}${g.resueltos?` · resueltos de la revisión anterior: ${esc(String(g.resueltos).replace(/ pendientes de la revisión anterior/,''))}`:''}</div>
   <div class="fgrid" style="margin-top:14px">
